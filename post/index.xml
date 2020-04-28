@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Categories | Tom Beer</title>
-    <link>https://tom-beer.github.io/categories/</link>
-      <atom:link href="https://tom-beer.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
-    <description>Categories</description>
+    <title>Posts | Tom Beer</title>
+    <link>https://tom-beer.github.io/post/</link>
+      <atom:link href="https://tom-beer.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <description>Posts</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language>
     <image>
       <url>https://tom-beer.github.io/images/icon_hu38ccfc29e57c26895d9d6767b9173c0e_7839_512x512_fill_lanczos_center_2.png</url>
-      <title>Categories</title>
-      <link>https://tom-beer.github.io/categories/</link>
+      <title>Posts</title>
+      <link>https://tom-beer.github.io/post/</link>
     </image>
     
   </channel>

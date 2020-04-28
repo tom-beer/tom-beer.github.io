@@ -1,15 +1,15 @@
 {
-  "name": "Tom Beer - under construction",
-  "short_name": "Tom Beer - under construction",
+  "name": "Tom Beer",
+  "short_name": "Tom Beer",
   "lang": "en-us",
   "theme_color": "#2962ff",
   "background_color": "#2962ff",
   "icons": [{
-    "src": "img/icon-192.png",
+    "src": "/images/icon_hu38ccfc29e57c26895d9d6767b9173c0e_7839_192x192_fill_lanczos_center_2.png",
     "sizes": "192x192",
     "type": "image/png"
     }, {
-    "src": "img/icon-512.png",
+    "src": "/images/icon_hu38ccfc29e57c26895d9d6767b9173c0e_7839_512x512_fill_lanczos_center_2.png",
     "sizes": "512x512",
     "type": "image/png"
      }],
