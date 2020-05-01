@@ -17,7 +17,10 @@
       <link>https://tom-beer.github.io/author/tom-beer/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>https://tom-beer.github.io/author/tom-beer/</guid>
-      <description>&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed neque elit, tristique placerat feugiat ac, facilisis vitae arcu. Proin eget egestas augue. Praesent ut sem nec arcu pellentesque aliquet. Duis dapibus diam vel metus tempus vulputate.&lt;/p&gt;
+      <description>&lt;p&gt;I&amp;rsquo;m a graduate student working with &lt;a href=&#34;https://shalit.net.technion.ac.il/&#34;&gt;Uri Shalit&lt;/a&gt; at the Technion.
+I develop machine learning algorithms for causal inference from observational data, like medical records.
+I&amp;rsquo;m also interested in physiological signal processing (ECG, EEG, fMRI) and extracting insights from learned representations in neural networks.
+I completed a Bsc in Electrical Engineering at the Tehcnion.&lt;/p&gt;
 </description>
     </item>
     
