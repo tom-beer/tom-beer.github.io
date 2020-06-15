@@ -14,13 +14,16 @@
     
     <item>
       <title>Analysis of Air Pollution in Haifa</title>
-      <link>https://tom-beer.github.io/post/exploration/</link>
+      <link>https://tom-beer.github.io/post/air-pollution-haifa/</link>
       <pubDate>Mon, 15 Jun 2020 09:25:50 +0300</pubDate>
-      <guid>https://tom-beer.github.io/post/exploration/</guid>
+      <guid>https://tom-beer.github.io/post/air-pollution-haifa/</guid>
       <description>&lt;p&gt;As part of a project evaluating the effect of Haifa&amp;rsquo;s low emission zone (LEZ) using the synthetic control method (coming soon!), I ran a short exploration of the data. It&amp;rsquo;s always beneficial to have a thorough look at the data before starting to model it. I think it&amp;rsquo;s safe to say that any investment of time in exploratory data analysis will be returned at a later stage in terms of better modelling insights, less bugs and valid conclusions.&lt;/p&gt;
 &lt;p&gt;Disclaimer: I have no expertise in air quality analysis, in fact this is the first time I look at data collected from an air pollution monitoring system.&lt;/p&gt;
+&lt;blockquote&gt;
 &lt;p&gt;This post was generated from a Jupyter notebook, which can be downloaded from 
-&lt;a href=&#34;https://github.com/tom-beer/Air-Pollution&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;. The notebook goes through the following steps:&lt;/p&gt;
+&lt;a href=&#34;https://github.com/tom-beer/Air-Pollution&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;The notebook goes through the following steps:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Dataset cleaning and tidying&lt;/li&gt;
 &lt;li&gt;Handling of missing values&lt;/li&gt;
@@ -731,7 +734,7 @@ However, it could also be that the logging system simply adds an entry for every
 &lt;p&gt;So we can conclude this step with the reassurance that the data does not exhibit major systematic data collection flaws, and we can move on in to the analysis. Let&amp;rsquo;s plot the data in its most raw form - just a scatterplot of every datapoint:&lt;/p&gt;
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;axes=df_aqm[pollutants].plot(marker=&#39;.&#39;, alpha=0.5, linestyle=&#39;None&#39;, figsize=(11, 11), subplots=True, colormap=&#39;Dark2&#39;);
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;Exploration_files/output_19_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://tom-beer.github.io/Exploration_files/output_19_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;We can notice a few things from this plot:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;PM10 and SO2 are not continuously monitored along the 8 year period. Plots and analyses in the following will not ignore them, as we can still draw some conclusions using these limited measurements&lt;/li&gt;
@@ -748,7 +751,7 @@ df_aqm.rolling(
     window=window, center=False, min_periods=samples_per_week).mean()[samples_per_week*2::overlap].plot(
     marker=&#39;.&#39;, alpha=0.5, linestyle=&#39;None&#39;, figsize=(11, 11), subplots=True, colormap=&#39;Dark2&#39;);
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;Exploration_files/output_21_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://tom-beer.github.io/Exploration_files/output_21_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;This plot shows rolling averages of the measurements, with windows of 4 weeks and an overlap of 2 weeks. A similar result could be obtained using a simple groupby with a monthly frequency:&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;df_aqm.groupby(pd.Grouper(freq=&#39;M&#39;)).mean()&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;But the overlapping windows add a degree of smoothing which is (arguably) preferable in this case.&lt;/p&gt;
@@ -759,20 +762,20 @@ df_aqm.rolling(
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_aqm.groupby(df_aqm.index.dayofyear).mean().plot(marker=&#39;.&#39;, alpha=0.5, linestyle=&#39;None&#39;, figsize=(11, 11), subplots=True, colormap=&#39;Dark2&#39;);
 plt.xlabel(&#39;Day of the Year&#39;);
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;Exploration_files/output_23_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://tom-beer.github.io/Exploration_files/output_23_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;The annual trend of NO, NO2, NOx and benzene is validated through this plot. In addition, we can notice a peculiar drop in CO values around day 240. A closer look reveals that this drop is at day 243. This day is August 31st, the last day of summer vacation for 1.5 million kids. Coincidence? I don&amp;rsquo;t know. What do you think?&lt;/p&gt;
 &lt;p&gt;Let&amp;rsquo;s move now to a weekly analysis:&lt;/p&gt;
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;ax = sns.boxplot(data=df_aqm, x=&#39;Weekday Name&#39;, y=&#39;NOX&#39;, 
                  order=[&#39;Sunday&#39;, &#39;Monday&#39;, &#39;Tuesday&#39;, &#39;Wednesday&#39;, &#39;Thursday&#39;, &#39;Friday&#39;, &#39;Saturday&#39;], 
                  palette=sns.cubehelix_palette(7, start=.5, rot=-.75, dark=0.3, reverse=True)).set_ylim([0,70]);
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;Exploration_files/output_25_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://tom-beer.github.io/Exploration_files/output_25_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;For NOx, there is a clear weekly trend in the amount of air pollution measured. Note that the outliers have been cropped out of the plot. For other pollutants, the trend is not as impressive:&lt;/p&gt;
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;ax = sns.boxplot(data=df_aqm, x=&#39;Weekday Name&#39;, y=&#39;CO&#39;, 
                  order=[&#39;Sunday&#39;, &#39;Monday&#39;, &#39;Tuesday&#39;, &#39;Wednesday&#39;, &#39;Thursday&#39;, &#39;Friday&#39;, &#39;Saturday&#39;], 
                  palette=sns.cubehelix_palette(7, start=.5, rot=-.75, dark=0.3, reverse=True)).set_ylim([0,1]);
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;Exploration_files/output_27_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://tom-beer.github.io/Exploration_files/output_27_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;And we also see the discrete nature of the CO measurements, as noted earlier. Another way to look at the weekly flactations would be to plot the raw measurements for a specific period of time:&lt;/p&gt;
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_sub = df_aqm.loc[&#39;2019-07&#39;:&#39;2019-09&#39;] 
 fig, ax = plt.subplots(figsize=(20,5))
@@ -782,22 +785,22 @@ ax.set_title(&#39;&#39;)
 ax.xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.SATURDAY))
 ax.xaxis.set_major_formatter(mdates.DateFormatter(&#39;%b %d&#39;));
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;Exploration_files/output_29_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://tom-beer.github.io/Exploration_files/output_29_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;For this 3-month period, the lowest measured values were always on Saturdays, agreeing with the boxplot above.&lt;/p&gt;
 &lt;p&gt;The third and last seasonal trend to be analyzed is the dependence on the hour of the day.&lt;/p&gt;
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_aqm.groupby(df_aqm.index.time).mean().plot(marker=&#39;.&#39;, alpha=0.5, linestyle=&#39;None&#39;, figsize=(11, 11), subplots=True, colormap=&#39;Dark2&#39;);
 plt.xticks([&amp;quot;08:00&amp;quot;,&amp;quot;12:00&amp;quot;, &amp;quot;16:00&amp;quot;, &amp;quot;20:00&amp;quot;, &amp;quot;00:00&amp;quot;, &amp;quot;04:00&amp;quot;]);
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;Exploration_files/output_31_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://tom-beer.github.io/Exploration_files/output_31_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Some notes about this plot:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;Most pollutants peak in the morning. Some right at the rush hour (CO, NO, NO2, NOX, Benzene) and some a bit later (SO2, PM10)&lt;/li&gt;
+&lt;li&gt;Most pollutants peak in the morning. Some right at the rush hour (NO, NO2, NOX, Benzene) and some a bit later (SO2, PM10)&lt;/li&gt;
 &lt;li&gt;It doesn&amp;rsquo;t seem like PM2.5 adheres to any logical pattern.&lt;/li&gt;
 &lt;li&gt;CO peaks around midnight. It seems as it has a slow buildup process, followed by a slow decreasing phase.&lt;/li&gt;
 &lt;li&gt;If nitrogen oxides are caused mainly by transportation, then the rush hour attribution above could make sense. In this case, we could also attribute the slow increase and plateau in the afternoon/evening to the fact (or assumption?) that commute back home is spread on longer hours, compared to the narrow rush hour.&lt;/li&gt;
 &lt;li&gt;I&amp;rsquo;m no expert on the sources of each pollutant, be it transportation, industry, the port or natural factors. So I don&amp;rsquo;t know if any of these hypotheses make any sort of sense.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2 id=&#34;air-pollution-and-temperatures&#34;&gt;Air pollution and temperatures&lt;/h2&gt;
+&lt;h3 id=&#34;air-pollution-and-temperatures&#34;&gt;Air pollution and temperatures&lt;/h3&gt;
 &lt;p&gt;The above trends show a clear correlation between the season/month and the average measured pollutants (at least for nitrogen oxides and benzene). But what is the cause of this modulation - is it the time itself? Or maybe it is the temperature? There could be many potential causes, and estimating each of these effects is a difficult problem, according to the identification strategies of causal inference. Instead, we can choose to stay in the realm of mere correlations, and while they do not imply causation, we could speculate what is a reasonable claim and what is not.&lt;/p&gt;
 &lt;p&gt;A simple examination would be to evaluate how much of this modulation is governed by the change in temperature (disregarding the day of the year). To this end, I downloaded a second dataset, this time from Israeli Meteorological Service. It includes daily measurements (low and high temperatures) from the meteorological station closest to the air quality monitoring station, situated at BAZAN Group&amp;rsquo;s plant in Haifa.&lt;/p&gt;
 &lt;p&gt;A straightforward cleaning yields a dataset that looks like this:&lt;/p&gt;
@@ -884,7 +887,7 @@ g.axes[0,0].set_title(&amp;quot;Distribution of minimal and maximal temperatures
 g.axes[0,0].set_xlabel(&#39;Temperature [Celsius]&#39;);
 
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;Exploration_files/output_36_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://tom-beer.github.io/Exploration_files/output_36_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;To merge (fuse?) the datasets, we need to calculate an aggregate value for the pollutants for each day (because temperatures are measured only once a day). Averaging the measurements of each day is the simplest thing to do.&lt;/p&gt;
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_pol_day = df_aqm.groupby(df_aqm.index.date).mean()
 df_pol_day.index = pd.to_datetime(df_pol_day.index)
@@ -1003,9 +1006,9 @@ df_pol_temp.tail()
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;sns.jointplot(x=&#39;min temp&#39;, y=&#39;NOX&#39;, data=df_pol_temp, kind=&amp;quot;reg&amp;quot;, stat_func=corr_coef);
 warnings.filterwarnings(action=&#39;default&#39;)
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;Exploration_files/output_39_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://tom-beer.github.io/Exploration_files/output_39_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;With a significant correlation of -0.58, the measured NOx values can be explained to some degree by the temperatures. It would be interesting to see if other meteorological factors, like humidity and wind, can explain even more of the NOx fluctuations.&lt;/p&gt;
-&lt;h2 id=&#34;closing-remarks&#34;&gt;Closing remarks&lt;/h2&gt;
+&lt;h3 id=&#34;closing-remarks&#34;&gt;Closing remarks&lt;/h3&gt;
 &lt;p&gt;This notebook described a preliminary exploration of the air quality monitoring data in Haifa. It is by no means an exhaustive analysis, it is just a set of steps used to increase the understanding of the dataset. If you have any comment - an analysis that you think should be done, a peculiar result that should be examined or anything else - I would love to know!&lt;/p&gt;
 &lt;p&gt;This is not a conclusion, as it is only the start of the analysis. In the next chapter, I will evaluate the causal effect of Haifa&amp;rsquo;s new low emission zone using the synthetic control method. Stay tuned!&lt;/p&gt;
 </description>
