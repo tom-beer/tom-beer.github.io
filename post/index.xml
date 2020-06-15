@@ -5,12 +5,1011 @@
     <link>https://tom-beer.github.io/post/</link>
       <atom:link href="https://tom-beer.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     <description>Posts</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Thu, 02 Apr 2020 19:08:22 +0300</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 15 Jun 2020 09:25:50 +0300</lastBuildDate>
     <image>
       <url>https://tom-beer.github.io/images/icon_hu38ccfc29e57c26895d9d6767b9173c0e_7839_512x512_fill_lanczos_center_2.png</url>
       <title>Posts</title>
       <link>https://tom-beer.github.io/post/</link>
     </image>
+    
+    <item>
+      <title>Analysis of Air Pollution in Haifa</title>
+      <link>https://tom-beer.github.io/post/exploration/</link>
+      <pubDate>Mon, 15 Jun 2020 09:25:50 +0300</pubDate>
+      <guid>https://tom-beer.github.io/post/exploration/</guid>
+      <description>&lt;p&gt;As part of a project evaluating the effect of Haifa&amp;rsquo;s low emission zone (LEZ) using the synthetic control method (coming soon!), I ran a short exploration of the data. It&amp;rsquo;s always beneficial to have a thorough look at the data before starting to model it. I think it&amp;rsquo;s safe to say that any investment of time in exploratory data analysis will be returned at a later stage in terms of better modelling insights, less bugs and valid conclusions.&lt;/p&gt;
+&lt;p&gt;Disclaimer: I have no expertise in air quality analysis, in fact this is the first time I look at data collected from an air pollution monitoring system.&lt;/p&gt;
+&lt;p&gt;This post was generated from a Jupyter notebook, which can be downloaded from 
+&lt;a href=&#34;https://github.com/tom-beer/Air-Pollution&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;. The notebook goes through the following steps:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Dataset cleaning and tidying&lt;/li&gt;
+&lt;li&gt;Handling of missing values&lt;/li&gt;
+&lt;li&gt;Analyzing trends of time series (daily, weekly, annual etc)&lt;/li&gt;
+&lt;li&gt;Finding correlations between pairs of variables&lt;/li&gt;
+&lt;li&gt;Data fusion with meteorological dataset&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;At a later stage, these sections will be added:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Simple air pollution modelling&lt;/li&gt;
+&lt;li&gt;Validation of the inference conducted for the ministry regarding the effect of Haifa&amp;rsquo;s LEZ.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;dataset-sources&#34;&gt;Dataset sources&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Air quality monitoring data was downloaded from the website of Israel&amp;rsquo;s Ministry of Environmental Protection. The interface can be found 
+&lt;a href=&#34;https://www.svivaaqm.net/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;Temperature data was downloaded from Israel Meteorological Service&amp;rsquo;s website. The interface can be found 
+&lt;a href=&#34;https://ims.data.gov.il/ims/1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The raw data looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_aqm = pd.read_csv(&#39;Data/Haifa-Atzmaut.csv&#39;)
+df_aqm
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;/style&gt;&lt;/p&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;תחנה:עצמאות חיפה -&lt;/th&gt;
+      &lt;th&gt;SO2&lt;/th&gt;
+      &lt;th&gt;Benzene&lt;/th&gt;
+      &lt;th&gt;PM2.5&lt;/th&gt;
+      &lt;th&gt;PM10&lt;/th&gt;
+      &lt;th&gt;CO&lt;/th&gt;
+      &lt;th&gt;NO2&lt;/th&gt;
+      &lt;th&gt;NOX&lt;/th&gt;
+      &lt;th&gt;NO&lt;/th&gt;
+      &lt;th&gt;תאריך  \ שעה&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;ppb&lt;/td&gt;
+      &lt;td&gt;ppb&lt;/td&gt;
+      &lt;td&gt;µg/m³&lt;/td&gt;
+      &lt;td&gt;µg/m³&lt;/td&gt;
+      &lt;td&gt;ppm&lt;/td&gt;
+      &lt;td&gt;ppb&lt;/td&gt;
+      &lt;td&gt;ppb&lt;/td&gt;
+      &lt;td&gt;ppb&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;29.7&lt;/td&gt;
+      &lt;td&gt;44.4&lt;/td&gt;
+      &lt;td&gt;0.6&lt;/td&gt;
+      &lt;td&gt;41.2&lt;/td&gt;
+      &lt;td&gt;114.8&lt;/td&gt;
+      &lt;td&gt;73.8&lt;/td&gt;
+      &lt;td&gt;31/12/2011 24:00&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;30.6&lt;/td&gt;
+      &lt;td&gt;45.5&lt;/td&gt;
+      &lt;td&gt;0.6&lt;/td&gt;
+      &lt;td&gt;35.6&lt;/td&gt;
+      &lt;td&gt;81.1&lt;/td&gt;
+      &lt;td&gt;45.6&lt;/td&gt;
+      &lt;td&gt;01/01/2012 00:05&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;30.6&lt;/td&gt;
+      &lt;td&gt;45.5&lt;/td&gt;
+      &lt;td&gt;0.5&lt;/td&gt;
+      &lt;td&gt;40.7&lt;/td&gt;
+      &lt;td&gt;107.9&lt;/td&gt;
+      &lt;td&gt;67.0&lt;/td&gt;
+      &lt;td&gt;01/01/2012 00:10&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;30.2&lt;/td&gt;
+      &lt;td&gt;45.1&lt;/td&gt;
+      &lt;td&gt;0.5&lt;/td&gt;
+      &lt;td&gt;41.7&lt;/td&gt;
+      &lt;td&gt;127.9&lt;/td&gt;
+      &lt;td&gt;86.2&lt;/td&gt;
+      &lt;td&gt;01/01/2012 00:15&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;...&lt;/th&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;883289&lt;/th&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;23/04/2020 02:15&lt;/td&gt;
+      &lt;td&gt;31/03/2014 22:00&lt;/td&gt;
+      &lt;td&gt;02/03/2014 17:00&lt;/td&gt;
+      &lt;td&gt;07/02/2012 14:30&lt;/td&gt;
+      &lt;td&gt;06/01/2020 13:40&lt;/td&gt;
+      &lt;td&gt;18/01/2017 13:05&lt;/td&gt;
+      &lt;td&gt;22/01/2015 07:30&lt;/td&gt;
+      &lt;td&gt;22/01/2015 07:30&lt;/td&gt;
+      &lt;td&gt;תאריך מקסימלי&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;883290&lt;/th&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;1.7&lt;/td&gt;
+      &lt;td&gt;0.24&lt;/td&gt;
+      &lt;td&gt;19.8&lt;/td&gt;
+      &lt;td&gt;49.7&lt;/td&gt;
+      &lt;td&gt;0.4&lt;/td&gt;
+      &lt;td&gt;20.8&lt;/td&gt;
+      &lt;td&gt;42.6&lt;/td&gt;
+      &lt;td&gt;21.8&lt;/td&gt;
+      &lt;td&gt;Avg&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;883291&lt;/th&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;237295&lt;/td&gt;
+      &lt;td&gt;602180&lt;/td&gt;
+      &lt;td&gt;800202&lt;/td&gt;
+      &lt;td&gt;97432&lt;/td&gt;
+      &lt;td&gt;844796&lt;/td&gt;
+      &lt;td&gt;827176&lt;/td&gt;
+      &lt;td&gt;826981&lt;/td&gt;
+      &lt;td&gt;826945&lt;/td&gt;
+      &lt;td&gt;כמות ערכים&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;883292&lt;/th&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;27&lt;/td&gt;
+      &lt;td&gt;68&lt;/td&gt;
+      &lt;td&gt;91&lt;/td&gt;
+      &lt;td&gt;11&lt;/td&gt;
+      &lt;td&gt;96&lt;/td&gt;
+      &lt;td&gt;94&lt;/td&gt;
+      &lt;td&gt;94&lt;/td&gt;
+      &lt;td&gt;94&lt;/td&gt;
+      &lt;td&gt;נתון[%]&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;883293&lt;/th&gt;
+      &lt;td&gt;&lt;/td&gt;
+      &lt;td&gt;2.8&lt;/td&gt;
+      &lt;td&gt;0.3&lt;/td&gt;
+      &lt;td&gt;17.8&lt;/td&gt;
+      &lt;td&gt;50.0&lt;/td&gt;
+      &lt;td&gt;0.2&lt;/td&gt;
+      &lt;td&gt;16.3&lt;/td&gt;
+      &lt;td&gt;58.6&lt;/td&gt;
+      &lt;td&gt;46.0&lt;/td&gt;
+      &lt;td&gt;סטיית תקן&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;883294 rows × 10 columns&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3 id=&#34;dataset-cleaning&#34;&gt;Dataset Cleaning&lt;/h3&gt;
+&lt;p&gt;The following steps are needed to clean the dataset:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Delete the first column, which contains only the station&amp;rsquo;s name&lt;/li&gt;
+&lt;li&gt;Strip the column names of leading and trailing whitespaces&lt;/li&gt;
+&lt;li&gt;Translate the Hebrew date/time column&lt;/li&gt;
+&lt;li&gt;Replace the representation of midnight from 24:00 to 00:00 to comply with Python&amp;rsquo;s DateTime&lt;/li&gt;
+&lt;li&gt;Drop the first row, which contains the units of measurements for the variables&lt;/li&gt;
+&lt;li&gt;Drop the last 8 rows, which contain summary statistics&lt;/li&gt;
+&lt;li&gt;Numerify the measurements, setting missing values to NaN&lt;/li&gt;
+&lt;li&gt;Set the datetime variable as index&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;station_name = df_aqm.columns[0]
+df_aqm.drop(columns=[station_name], inplace=True)
+df_aqm.rename(columns={colname: colname.strip() for colname in df_aqm.columns}, inplace=True)
+df_aqm.rename(columns={df_aqm.columns[-1]: &#39;DateTime&#39;}, inplace=True)
+df_aqm[&#39;DateTime&#39;] = df_aqm[&#39;DateTime&#39;].apply(lambda x: x.strip().replace(&#39;24:00&#39;, &#39;00:00&#39;))
+pollutants = list(df_aqm)
+pollutants.remove(&#39;DateTime&#39;)
+units = {colname: df_aqm.loc[0, colname].strip() for colname in pollutants}
+df_aqm = df_aqm.iloc[1:-8]
+df_aqm[pollutants] = df_aqm[pollutants].apply(pd.to_numeric, errors=&#39;coerce&#39;)
+df_aqm[&#39;DateTime&#39;] = pd.to_datetime(df_aqm[&#39;DateTime&#39;],infer_datetime_format=True)
+df_aqm = df_aqm.set_index(&#39;DateTime&#39;)
+
+print(f&#39;The dataset spans {len(np.unique(df_aqm.index.date))} days,&#39; 
+      f&#39;from {df_aqm.index[0].date()} to {df_aqm.index[-1].date()}&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;The dataset spans 3068 days,from 2011-12-31 to 2020-05-24
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Let&amp;rsquo;s have a look at a 2-month slice of the cleaned dataset:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_aqm.loc[&amp;quot;2018-04&amp;quot;:&amp;quot;2018-05&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;/style&gt;&lt;/p&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;SO2&lt;/th&gt;
+      &lt;th&gt;Benzene&lt;/th&gt;
+      &lt;th&gt;PM2.5&lt;/th&gt;
+      &lt;th&gt;PM10&lt;/th&gt;
+      &lt;th&gt;CO&lt;/th&gt;
+      &lt;th&gt;NO2&lt;/th&gt;
+      &lt;th&gt;NOX&lt;/th&gt;
+      &lt;th&gt;NO&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;DateTime&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2018-04-01 00:05:00&lt;/th&gt;
+      &lt;td&gt;1.8&lt;/td&gt;
+      &lt;td&gt;0.18&lt;/td&gt;
+      &lt;td&gt;7.4&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.3&lt;/td&gt;
+      &lt;td&gt;22.2&lt;/td&gt;
+      &lt;td&gt;23.6&lt;/td&gt;
+      &lt;td&gt;1.4&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2018-04-01 00:10:00&lt;/th&gt;
+      &lt;td&gt;2.0&lt;/td&gt;
+      &lt;td&gt;0.18&lt;/td&gt;
+      &lt;td&gt;9.5&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.3&lt;/td&gt;
+      &lt;td&gt;26.3&lt;/td&gt;
+      &lt;td&gt;27.9&lt;/td&gt;
+      &lt;td&gt;1.5&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2018-04-01 00:15:00&lt;/th&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.18&lt;/td&gt;
+      &lt;td&gt;13.7&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.3&lt;/td&gt;
+      &lt;td&gt;24.6&lt;/td&gt;
+      &lt;td&gt;25.2&lt;/td&gt;
+      &lt;td&gt;0.5&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2018-04-01 00:20:00&lt;/th&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.18&lt;/td&gt;
+      &lt;td&gt;16.8&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.3&lt;/td&gt;
+      &lt;td&gt;25.0&lt;/td&gt;
+      &lt;td&gt;25.9&lt;/td&gt;
+      &lt;td&gt;0.9&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2018-04-01 00:25:00&lt;/th&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.18&lt;/td&gt;
+      &lt;td&gt;17.4&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.4&lt;/td&gt;
+      &lt;td&gt;24.2&lt;/td&gt;
+      &lt;td&gt;24.7&lt;/td&gt;
+      &lt;td&gt;0.6&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;...&lt;/th&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2018-05-31 23:40:00&lt;/th&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.08&lt;/td&gt;
+      &lt;td&gt;8.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.3&lt;/td&gt;
+      &lt;td&gt;7.2&lt;/td&gt;
+      &lt;td&gt;7.5&lt;/td&gt;
+      &lt;td&gt;0.5&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2018-05-31 23:45:00&lt;/th&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.08&lt;/td&gt;
+      &lt;td&gt;7.5&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.3&lt;/td&gt;
+      &lt;td&gt;6.7&lt;/td&gt;
+      &lt;td&gt;7.1&lt;/td&gt;
+      &lt;td&gt;0.2&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2018-05-31 23:50:00&lt;/th&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.08&lt;/td&gt;
+      &lt;td&gt;6.4&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.3&lt;/td&gt;
+      &lt;td&gt;10.2&lt;/td&gt;
+      &lt;td&gt;11.2&lt;/td&gt;
+      &lt;td&gt;1.2&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2018-05-31 23:55:00&lt;/th&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.08&lt;/td&gt;
+      &lt;td&gt;6.6&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.3&lt;/td&gt;
+      &lt;td&gt;9.1&lt;/td&gt;
+      &lt;td&gt;10.1&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2018-05-31 00:00:00&lt;/th&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.08&lt;/td&gt;
+      &lt;td&gt;9.8&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.3&lt;/td&gt;
+      &lt;td&gt;7.7&lt;/td&gt;
+      &lt;td&gt;7.4&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;17568 rows × 8 columns&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;Not bad! Nice and tidy.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Some notes about the data&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Measurements are recorded at 5-minute intervals. That&amp;rsquo;s a very high resolution, much more than needed to answer the research question. But it&amp;rsquo;ll be very helpful - it will allow for aggressive smoothing of the noisy measurements. In total, we have almost 1 million measurements of each pollutant.&lt;/li&gt;
+&lt;li&gt;From the slice above we can suspect that the measurement resolution for CO (Carbon Monoxide) might be small compared to its distribution. It&amp;rsquo;s easy to check:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_aqm[&#39;CO&#39;].value_counts(normalize=True).head(7)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;0.3    0.338305
+0.2    0.186482
+0.4    0.182812
+0.5    0.073091
+0.1    0.051982
+0.6    0.039140
+0.0    0.035468
+Name: CO, dtype: float64
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And indeed more than 70% of the CO measurements fall in one of 3 distinct values. This implies that the CO measurement is not accurate enough in capturing this pollutant&amp;rsquo;s distribution. We should keep that in mind when drawing inferences based on CO.&lt;/p&gt;
+&lt;p&gt;Moving on to a general overview of the data, let&amp;rsquo;s use the convenient &amp;lsquo;describe&amp;rsquo; method:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_aqm.describe()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;/style&gt;&lt;/p&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;SO2&lt;/th&gt;
+      &lt;th&gt;Benzene&lt;/th&gt;
+      &lt;th&gt;PM2.5&lt;/th&gt;
+      &lt;th&gt;PM10&lt;/th&gt;
+      &lt;th&gt;CO&lt;/th&gt;
+      &lt;th&gt;NO2&lt;/th&gt;
+      &lt;th&gt;NOX&lt;/th&gt;
+      &lt;th&gt;NO&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;count&lt;/th&gt;
+      &lt;td&gt;237295.000000&lt;/td&gt;
+      &lt;td&gt;602180.000000&lt;/td&gt;
+      &lt;td&gt;800202.000000&lt;/td&gt;
+      &lt;td&gt;97432.000000&lt;/td&gt;
+      &lt;td&gt;844796.000000&lt;/td&gt;
+      &lt;td&gt;827176.000000&lt;/td&gt;
+      &lt;td&gt;826981.000000&lt;/td&gt;
+      &lt;td&gt;826945.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;mean&lt;/th&gt;
+      &lt;td&gt;1.718825&lt;/td&gt;
+      &lt;td&gt;0.242009&lt;/td&gt;
+      &lt;td&gt;19.774215&lt;/td&gt;
+      &lt;td&gt;49.704957&lt;/td&gt;
+      &lt;td&gt;0.366657&lt;/td&gt;
+      &lt;td&gt;20.821325&lt;/td&gt;
+      &lt;td&gt;42.579953&lt;/td&gt;
+      &lt;td&gt;21.816400&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;std&lt;/th&gt;
+      &lt;td&gt;2.763984&lt;/td&gt;
+      &lt;td&gt;0.300786&lt;/td&gt;
+      &lt;td&gt;17.774355&lt;/td&gt;
+      &lt;td&gt;49.961126&lt;/td&gt;
+      &lt;td&gt;0.249257&lt;/td&gt;
+      &lt;td&gt;16.310098&lt;/td&gt;
+      &lt;td&gt;58.644492&lt;/td&gt;
+      &lt;td&gt;46.070798&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;min&lt;/th&gt;
+      &lt;td&gt;-0.800000&lt;/td&gt;
+      &lt;td&gt;-0.010000&lt;/td&gt;
+      &lt;td&gt;-29.500000&lt;/td&gt;
+      &lt;td&gt;-10.100000&lt;/td&gt;
+      &lt;td&gt;-0.400000&lt;/td&gt;
+      &lt;td&gt;-4.800000&lt;/td&gt;
+      &lt;td&gt;-4.600000&lt;/td&gt;
+      &lt;td&gt;-5.000000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;25%&lt;/th&gt;
+      &lt;td&gt;0.100000&lt;/td&gt;
+      &lt;td&gt;0.060000&lt;/td&gt;
+      &lt;td&gt;10.800000&lt;/td&gt;
+      &lt;td&gt;24.000000&lt;/td&gt;
+      &lt;td&gt;0.200000&lt;/td&gt;
+      &lt;td&gt;7.700000&lt;/td&gt;
+      &lt;td&gt;8.500000&lt;/td&gt;
+      &lt;td&gt;0.300000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;50%&lt;/th&gt;
+      &lt;td&gt;0.800000&lt;/td&gt;
+      &lt;td&gt;0.150000&lt;/td&gt;
+      &lt;td&gt;17.200000&lt;/td&gt;
+      &lt;td&gt;37.500000&lt;/td&gt;
+      &lt;td&gt;0.300000&lt;/td&gt;
+      &lt;td&gt;15.400000&lt;/td&gt;
+      &lt;td&gt;19.300000&lt;/td&gt;
+      &lt;td&gt;3.300000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;75%&lt;/th&gt;
+      &lt;td&gt;2.400000&lt;/td&gt;
+      &lt;td&gt;0.320000&lt;/td&gt;
+      &lt;td&gt;25.400000&lt;/td&gt;
+      &lt;td&gt;59.400000&lt;/td&gt;
+      &lt;td&gt;0.400000&lt;/td&gt;
+      &lt;td&gt;31.900000&lt;/td&gt;
+      &lt;td&gt;51.300000&lt;/td&gt;
+      &lt;td&gt;18.400000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;max&lt;/th&gt;
+      &lt;td&gt;136.200000&lt;/td&gt;
+      &lt;td&gt;12.700000&lt;/td&gt;
+      &lt;td&gt;562.000000&lt;/td&gt;
+      &lt;td&gt;810.900000&lt;/td&gt;
+      &lt;td&gt;23.400000&lt;/td&gt;
+      &lt;td&gt;262.400000&lt;/td&gt;
+      &lt;td&gt;865.500000&lt;/td&gt;
+      &lt;td&gt;763.800000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;p&gt;We can immediately notice negative measurements for all pollutants. This is not a good sign, because while this can be easily addressed and fixed, it increases our suspicion of more serious problems in the dataset that would be difficult to identify.&lt;/p&gt;
+&lt;p&gt;But that will be addressed later. Now we have to solve the issue of negative measurements. Let&amp;rsquo;s first understand the extent of the problem:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;percent_negative = 100*(df_aqm[pollutants] &amp;lt; 0).mean(axis=0).values
+print(f&#39;{pollutants[percent_negative.argmax()]} has {percent_negative.max():.1f}% negative values&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;NO has 8.8% negative values
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That&amp;rsquo;s quite bad. Two of the simplest ways to fix this issue are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Clip the negative values to 0&lt;/li&gt;
+&lt;li&gt;Replace them with NaNs&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;However, these two approaches may or may not be the best thing to do, depending on:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The mechanism that has caused this issue&lt;/li&gt;
+&lt;li&gt;The quality of data required to answer the research question&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Since I don&amp;rsquo;t have a substantiated answer to any of these questions, I tried to find out what domain practitioners recommend on doing. 
+&lt;a href=&#34;https://www.researchgate.net/post/How_can_I_deal_with_negative_and_zero_concentrations_of_PM25_PM10_and_gas_data&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Here&lt;/a&gt; is a thread with some opinions and insights on the matter. The authors propose to differentiate between two situations, and act accordingly:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;If the datapoints exhibit sudden short drops below 0, this probably indicates an instrument malfunction. In this case, it is advised to replace the invalid value with an average of some neighborhood.&lt;/li&gt;
+&lt;li&gt;If consecutive values below 0 are recorded for long times compared to the instrument&amp;rsquo;s integration time, this is probably rooted in the true air conditions. In this case, negative values imply that the real value was below the instrument&amp;rsquo;s detection limit. The suggested approach would be to replace the negative values with the known detection limit, or 0 if it isn&amp;rsquo;t known (like in our case). More justifications for this approach can be found in 
+&lt;a href=&#34;https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/98JD01212&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Polissar et al, 1998&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If we want to follow these guidelines, we need to decide for each negative measurement if it the former case or the latter. This will be coded at a later stage.&lt;/p&gt;
+&lt;h3 id=&#34;checking-for-systematic-data-collection-flaws&#34;&gt;Checking for systematic data collection flaws&lt;/h3&gt;
+&lt;p&gt;It is important to make sure that our dataset does not have any systematic flaws in the data collection process.
+For example, later we would like to demonstrate the fluctuations of pollutants as function of the weekday.
+In this case, if some days are recorded significantly less often than other days, any conclusion we would like to state as for the weekday trend might be invalidated.&lt;/p&gt;
+&lt;p&gt;An easy way to check this is to print the value counts of the weekdays:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_aqm[&#39;Weekday Name&#39;] = df_aqm.index.day_name()
+df_aqm[&#39;Weekday Name&#39;].value_counts()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;Sunday       126420
+Saturday     126145
+Friday       126144
+Monday       126144
+Wednesday    126144
+Thursday     126144
+Tuesday      126144
+Name: Weekday Name, dtype: int64
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We see that the dataset is pretty much balanced in terms of weekday logging, and that is reassuring.
+However, it could also be that the logging system simply adds an entry for every 5-minute interval, while the measurement instruments malfunction with some systematic (i.e not at random) pattern. A complete examination would be:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_aqm[pollutants].isna().groupby(df_aqm[&#39;Weekday Name&#39;]).mean()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;/style&gt;&lt;/p&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;SO2&lt;/th&gt;
+      &lt;th&gt;Benzene&lt;/th&gt;
+      &lt;th&gt;PM2.5&lt;/th&gt;
+      &lt;th&gt;PM10&lt;/th&gt;
+      &lt;th&gt;CO&lt;/th&gt;
+      &lt;th&gt;NO2&lt;/th&gt;
+      &lt;th&gt;NOX&lt;/th&gt;
+      &lt;th&gt;NO&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Weekday Name&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Friday&lt;/th&gt;
+      &lt;td&gt;0.731030&lt;/td&gt;
+      &lt;td&gt;0.271008&lt;/td&gt;
+      &lt;td&gt;0.100235&lt;/td&gt;
+      &lt;td&gt;0.892718&lt;/td&gt;
+      &lt;td&gt;0.040160&lt;/td&gt;
+      &lt;td&gt;0.061295&lt;/td&gt;
+      &lt;td&gt;0.061430&lt;/td&gt;
+      &lt;td&gt;0.061430&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Monday&lt;/th&gt;
+      &lt;td&gt;0.731204&lt;/td&gt;
+      &lt;td&gt;0.394097&lt;/td&gt;
+      &lt;td&gt;0.094646&lt;/td&gt;
+      &lt;td&gt;0.887097&lt;/td&gt;
+      &lt;td&gt;0.046114&lt;/td&gt;
+      &lt;td&gt;0.067835&lt;/td&gt;
+      &lt;td&gt;0.068121&lt;/td&gt;
+      &lt;td&gt;0.068398&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Saturday&lt;/th&gt;
+      &lt;td&gt;0.730992&lt;/td&gt;
+      &lt;td&gt;0.344128&lt;/td&gt;
+      &lt;td&gt;0.100820&lt;/td&gt;
+      &lt;td&gt;0.894621&lt;/td&gt;
+      &lt;td&gt;0.043846&lt;/td&gt;
+      &lt;td&gt;0.064632&lt;/td&gt;
+      &lt;td&gt;0.064767&lt;/td&gt;
+      &lt;td&gt;0.064767&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Sunday&lt;/th&gt;
+      &lt;td&gt;0.734813&lt;/td&gt;
+      &lt;td&gt;0.313724&lt;/td&gt;
+      &lt;td&gt;0.100791&lt;/td&gt;
+      &lt;td&gt;0.884710&lt;/td&gt;
+      &lt;td&gt;0.046757&lt;/td&gt;
+      &lt;td&gt;0.060141&lt;/td&gt;
+      &lt;td&gt;0.060354&lt;/td&gt;
+      &lt;td&gt;0.060354&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Thursday&lt;/th&gt;
+      &lt;td&gt;0.728350&lt;/td&gt;
+      &lt;td&gt;0.297026&lt;/td&gt;
+      &lt;td&gt;0.093805&lt;/td&gt;
+      &lt;td&gt;0.892662&lt;/td&gt;
+      &lt;td&gt;0.043442&lt;/td&gt;
+      &lt;td&gt;0.062254&lt;/td&gt;
+      &lt;td&gt;0.062571&lt;/td&gt;
+      &lt;td&gt;0.062579&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Tuesday&lt;/th&gt;
+      &lt;td&gt;0.733376&lt;/td&gt;
+      &lt;td&gt;0.305429&lt;/td&gt;
+      &lt;td&gt;0.084047&lt;/td&gt;
+      &lt;td&gt;0.886312&lt;/td&gt;
+      &lt;td&gt;0.043363&lt;/td&gt;
+      &lt;td&gt;0.069159&lt;/td&gt;
+      &lt;td&gt;0.069413&lt;/td&gt;
+      &lt;td&gt;0.069413&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Wednesday&lt;/th&gt;
+      &lt;td&gt;0.729674&lt;/td&gt;
+      &lt;td&gt;0.302345&lt;/td&gt;
+      &lt;td&gt;0.084071&lt;/td&gt;
+      &lt;td&gt;0.889745&lt;/td&gt;
+      &lt;td&gt;0.041334&lt;/td&gt;
+      &lt;td&gt;0.059353&lt;/td&gt;
+      &lt;td&gt;0.059559&lt;/td&gt;
+      &lt;td&gt;0.059559&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;p&gt;We see that the fraction of missing data changes significantly from one pollutant to another. In addition, for each pollutant, the fraction of missing values changes per weekday, but for now it&amp;rsquo;s hard to say if these differences are consequential. Meanwhile, it&amp;rsquo;s good to keep this table in mind, and we might return to it depending on the analysis and inference that we would like to conduct.&lt;/p&gt;
+&lt;p&gt;So we can conclude this step with the reassurance that the data does not exhibit major systematic data collection flaws, and we can move on in to the analysis. Let&amp;rsquo;s plot the data in its most raw form - just a scatterplot of every datapoint:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;axes=df_aqm[pollutants].plot(marker=&#39;.&#39;, alpha=0.5, linestyle=&#39;None&#39;, figsize=(11, 11), subplots=True, colormap=&#39;Dark2&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Exploration_files/output_19_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;We can notice a few things from this plot:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;PM10 and SO2 are not continuously monitored along the 8 year period. Plots and analyses in the following will not ignore them, as we can still draw some conclusions using these limited measurements&lt;/li&gt;
+&lt;li&gt;We can see the first hint of a seasonal trend: it seems like NOx and NO follow an annual trend. Because of the scatterplot&amp;rsquo;s density it could also be that only a few outliers paint a picture that looks like an annual trend, while in reality they do not contribute a significant amount to the total trend. Therefore a more detailed analysis is required to validate this claim&lt;/li&gt;
+&lt;li&gt;It seems like NO2 and NOx are identical (or almost identical measurements). Reading about 
+&lt;a href=&#34;https://en.wikipedia.org/wiki/NOx&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;NOx&lt;/a&gt; it seems rather amusing, as NOx is defined as the sum the nitrogen oxides NO and NO2. But it is the visualization that is misleading, and a closer look reveals that NOx is always higher than NO2.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Let&amp;rsquo;s see if on average there is a real annual trend for some substances:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;log_interval = 5  # minutes
+samples_per_week = int(60 / log_interval * 24 * 7)
+window = samples_per_week*4
+overlap = int(2*samples_per_week)
+df_aqm.rolling(
+    window=window, center=False, min_periods=samples_per_week).mean()[samples_per_week*2::overlap].plot(
+    marker=&#39;.&#39;, alpha=0.5, linestyle=&#39;None&#39;, figsize=(11, 11), subplots=True, colormap=&#39;Dark2&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Exploration_files/output_21_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;This plot shows rolling averages of the measurements, with windows of 4 weeks and an overlap of 2 weeks. A similar result could be obtained using a simple groupby with a monthly frequency:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;df_aqm.groupby(pd.Grouper(freq=&#39;M&#39;)).mean()&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;But the overlapping windows add a degree of smoothing which is (arguably) preferable in this case.&lt;/p&gt;
+&lt;p&gt;If you are disappointed too with pandas&amp;rsquo; lack of an overlap parameter in the rolling function, you can contribute to the discussion 
+&lt;a href=&#34;https://github.com/pandas-dev/pandas/issues/15354&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Anyway, enough with the ranting. The above plot shows that all nitrogen oxide measurements (and also benzene to a lesser extent) follow a clear annual trend peaking at winter. It is still not clear what&amp;rsquo;s the cause of this modulation, and we will revisit it later in the analysis.&lt;/p&gt;
+&lt;p&gt;The same trends could be demonstrated using a different visualization, plotting the 8 year daily averages of every pollutants.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_aqm.groupby(df_aqm.index.dayofyear).mean().plot(marker=&#39;.&#39;, alpha=0.5, linestyle=&#39;None&#39;, figsize=(11, 11), subplots=True, colormap=&#39;Dark2&#39;);
+plt.xlabel(&#39;Day of the Year&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Exploration_files/output_23_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;The annual trend of NO, NO2, NOx and benzene is validated through this plot. In addition, we can notice a peculiar drop in CO values around day 240. A closer look reveals that this drop is at day 243. This day is August 31st, the last day of summer vacation for 1.5 million kids. Coincidence? I don&amp;rsquo;t know. What do you think?&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s move now to a weekly analysis:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;ax = sns.boxplot(data=df_aqm, x=&#39;Weekday Name&#39;, y=&#39;NOX&#39;, 
+                 order=[&#39;Sunday&#39;, &#39;Monday&#39;, &#39;Tuesday&#39;, &#39;Wednesday&#39;, &#39;Thursday&#39;, &#39;Friday&#39;, &#39;Saturday&#39;], 
+                 palette=sns.cubehelix_palette(7, start=.5, rot=-.75, dark=0.3, reverse=True)).set_ylim([0,70]);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Exploration_files/output_25_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;For NOx, there is a clear weekly trend in the amount of air pollution measured. Note that the outliers have been cropped out of the plot. For other pollutants, the trend is not as impressive:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;ax = sns.boxplot(data=df_aqm, x=&#39;Weekday Name&#39;, y=&#39;CO&#39;, 
+                 order=[&#39;Sunday&#39;, &#39;Monday&#39;, &#39;Tuesday&#39;, &#39;Wednesday&#39;, &#39;Thursday&#39;, &#39;Friday&#39;, &#39;Saturday&#39;], 
+                 palette=sns.cubehelix_palette(7, start=.5, rot=-.75, dark=0.3, reverse=True)).set_ylim([0,1]);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Exploration_files/output_27_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;And we also see the discrete nature of the CO measurements, as noted earlier. Another way to look at the weekly flactations would be to plot the raw measurements for a specific period of time:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_sub = df_aqm.loc[&#39;2019-07&#39;:&#39;2019-09&#39;] 
+fig, ax = plt.subplots(figsize=(20,5))
+ax.plot(df_sub.groupby(df_sub.index.date).median()[&#39;NOX&#39;], marker=&#39;o&#39;, linestyle=&#39;-&#39;)
+ax.set_ylabel(&#39;NOx [ppb]&#39;)
+ax.set_title(&#39;&#39;)
+ax.xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.SATURDAY))
+ax.xaxis.set_major_formatter(mdates.DateFormatter(&#39;%b %d&#39;));
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Exploration_files/output_29_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;For this 3-month period, the lowest measured values were always on Saturdays, agreeing with the boxplot above.&lt;/p&gt;
+&lt;p&gt;The third and last seasonal trend to be analyzed is the dependence on the hour of the day.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_aqm.groupby(df_aqm.index.time).mean().plot(marker=&#39;.&#39;, alpha=0.5, linestyle=&#39;None&#39;, figsize=(11, 11), subplots=True, colormap=&#39;Dark2&#39;);
+plt.xticks([&amp;quot;08:00&amp;quot;,&amp;quot;12:00&amp;quot;, &amp;quot;16:00&amp;quot;, &amp;quot;20:00&amp;quot;, &amp;quot;00:00&amp;quot;, &amp;quot;04:00&amp;quot;]);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Exploration_files/output_31_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Some notes about this plot:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Most pollutants peak in the morning. Some right at the rush hour (CO, NO, NO2, NOX, Benzene) and some a bit later (SO2, PM10)&lt;/li&gt;
+&lt;li&gt;It doesn&amp;rsquo;t seem like PM2.5 adheres to any logical pattern.&lt;/li&gt;
+&lt;li&gt;CO peaks around midnight. It seems as it has a slow buildup process, followed by a slow decreasing phase.&lt;/li&gt;
+&lt;li&gt;If nitrogen oxides are caused mainly by transportation, then the rush hour attribution above could make sense. In this case, we could also attribute the slow increase and plateau in the afternoon/evening to the fact (or assumption?) that commute back home is spread on longer hours, compared to the narrow rush hour.&lt;/li&gt;
+&lt;li&gt;I&amp;rsquo;m no expert on the sources of each pollutant, be it transportation, industry, the port or natural factors. So I don&amp;rsquo;t know if any of these hypotheses make any sort of sense.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;air-pollution-and-temperatures&#34;&gt;Air pollution and temperatures&lt;/h2&gt;
+&lt;p&gt;The above trends show a clear correlation between the season/month and the average measured pollutants (at least for nitrogen oxides and benzene). But what is the cause of this modulation - is it the time itself? Or maybe it is the temperature? There could be many potential causes, and estimating each of these effects is a difficult problem, according to the identification strategies of causal inference. Instead, we can choose to stay in the realm of mere correlations, and while they do not imply causation, we could speculate what is a reasonable claim and what is not.&lt;/p&gt;
+&lt;p&gt;A simple examination would be to evaluate how much of this modulation is governed by the change in temperature (disregarding the day of the year). To this end, I downloaded a second dataset, this time from Israeli Meteorological Service. It includes daily measurements (low and high temperatures) from the meteorological station closest to the air quality monitoring station, situated at BAZAN Group&amp;rsquo;s plant in Haifa.&lt;/p&gt;
+&lt;p&gt;A straightforward cleaning yields a dataset that looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_temp = pd.read_csv(&#39;Data/ims_data.csv&#39;, sep=&amp;quot;,&amp;quot;, encoding=&amp;quot;ISO-8859-8&amp;quot;)
+# translate df from Hebrew
+df_temp = df_temp.rename(columns={&#39;משתנה&#39;: &#39;variable&#39;, &#39;תאריך&#39;: &#39;DateTime&#39;, &#39;חיפה בתי זיקוק                                    (600)&#39;: &#39;value&#39;})
+df_temp.loc[df_temp[&#39;variable&#39;] == &#39;טמפרטורת מינימום(C°)&#39;, &#39;variable&#39;] = &#39;min temp&#39;
+df_temp.loc[df_temp[&#39;variable&#39;] == &#39;טמפרטורת מקסימום(C°)&#39;, &#39;variable&#39;] = &#39;max temp&#39;
+df_temp.loc[df_temp[&#39;variable&#39;] == &#39;טמפרטורת מינימום ליד הקרקע(C°)&#39;, &#39;variable&#39;] = &#39;ground temp&#39;
+
+# Delete the record &#39;ground temp&#39; (first make sure it&#39;s empty)
+assert(df_temp.loc[df_temp[&#39;variable&#39;] == &#39;ground temp&#39;,&#39;value&#39;].values == &#39;-&#39;).all()
+df_temp = df_temp.drop(df_temp[df_temp[&#39;variable&#39;] == &#39;ground temp&#39;].index)
+
+# Convert to datetime
+df_temp[&#39;DateTime&#39;] = pd.to_datetime(df_temp[&#39;DateTime&#39;],infer_datetime_format=True)
+
+df_temp[&#39;value&#39;] = df_temp[&#39;value&#39;].apply(pd.to_numeric, errors=&#39;coerce&#39;)
+
+df_temp.tail()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;/style&gt;&lt;/p&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;variable&lt;/th&gt;
+      &lt;th&gt;DateTime&lt;/th&gt;
+      &lt;th&gt;value&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;8638&lt;/th&gt;
+      &lt;td&gt;min temp&lt;/td&gt;
+      &lt;td&gt;2020-04-27&lt;/td&gt;
+      &lt;td&gt;11.6&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;8640&lt;/th&gt;
+      &lt;td&gt;max temp&lt;/td&gt;
+      &lt;td&gt;2020-04-28&lt;/td&gt;
+      &lt;td&gt;23.2&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;8641&lt;/th&gt;
+      &lt;td&gt;min temp&lt;/td&gt;
+      &lt;td&gt;2020-04-28&lt;/td&gt;
+      &lt;td&gt;11.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;8643&lt;/th&gt;
+      &lt;td&gt;max temp&lt;/td&gt;
+      &lt;td&gt;2020-04-29&lt;/td&gt;
+      &lt;td&gt;22.9&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;8644&lt;/th&gt;
+      &lt;td&gt;min temp&lt;/td&gt;
+      &lt;td&gt;2020-04-29&lt;/td&gt;
+      &lt;td&gt;17.1&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;p&gt;Let&amp;rsquo;s plot a histogram of the daily lows and highs, just to see that the dataset makes sense (it does):&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;g = sns.FacetGrid(df_temp, hue=&#39;variable&#39;, height=6)
+g.map(sns.distplot, &#39;value&#39;, bins=30, hist=True, kde=False, hist_kws={&amp;quot;linewidth&amp;quot;: 3, &amp;quot;alpha&amp;quot;: 0.7})
+g.add_legend(title=&#39; &#39;)
+g.axes[0,0].set_title(&amp;quot;Distribution of minimal and maximal temperatures&amp;quot;)
+g.axes[0,0].set_xlabel(&#39;Temperature [Celsius]&#39;);
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Exploration_files/output_36_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;To merge (fuse?) the datasets, we need to calculate an aggregate value for the pollutants for each day (because temperatures are measured only once a day). Averaging the measurements of each day is the simplest thing to do.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_pol_day = df_aqm.groupby(df_aqm.index.date).mean()
+df_pol_day.index = pd.to_datetime(df_pol_day.index)
+
+df_max = df_temp.loc[df_temp[&#39;variable&#39;] == &#39;max temp&#39;, [&#39;DateTime&#39;, &#39;value&#39;]]
+df_max.rename(columns={&#39;value&#39;: &#39;max temp&#39;}, inplace=True)
+df_max.set_index(&#39;DateTime&#39;, inplace=True, drop=True)
+
+df_min = df_temp.loc[df_temp[&#39;variable&#39;] == &#39;min temp&#39;, [&#39;DateTime&#39;, &#39;value&#39;]]
+df_min.rename(columns={&#39;value&#39;: &#39;min temp&#39;}, inplace=True)
+df_min.set_index(&#39;DateTime&#39;, inplace=True, drop=True)
+
+df_pol_temp = df_pol_day.merge(right=df_max, how=&#39;inner&#39;, left_index=True, right_index=True)
+df_pol_temp = df_pol_temp.merge(right=df_min, how=&#39;inner&#39;, left_index=True, right_index=True)
+df_pol_temp.tail()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;/style&gt;&lt;/p&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;SO2&lt;/th&gt;
+      &lt;th&gt;Benzene&lt;/th&gt;
+      &lt;th&gt;PM2.5&lt;/th&gt;
+      &lt;th&gt;PM10&lt;/th&gt;
+      &lt;th&gt;CO&lt;/th&gt;
+      &lt;th&gt;NO2&lt;/th&gt;
+      &lt;th&gt;NOX&lt;/th&gt;
+      &lt;th&gt;NO&lt;/th&gt;
+      &lt;th&gt;max temp&lt;/th&gt;
+      &lt;th&gt;min temp&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2020-04-25&lt;/th&gt;
+      &lt;td&gt;0.031802&lt;/td&gt;
+      &lt;td&gt;0.049213&lt;/td&gt;
+      &lt;td&gt;10.824653&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.279152&lt;/td&gt;
+      &lt;td&gt;1.761702&lt;/td&gt;
+      &lt;td&gt;1.509220&lt;/td&gt;
+      &lt;td&gt;0.010284&lt;/td&gt;
+      &lt;td&gt;22.3&lt;/td&gt;
+      &lt;td&gt;17.1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2020-04-26&lt;/th&gt;
+      &lt;td&gt;0.089753&lt;/td&gt;
+      &lt;td&gt;0.036250&lt;/td&gt;
+      &lt;td&gt;9.450694&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.295406&lt;/td&gt;
+      &lt;td&gt;6.074823&lt;/td&gt;
+      &lt;td&gt;7.617376&lt;/td&gt;
+      &lt;td&gt;1.686170&lt;/td&gt;
+      &lt;td&gt;23.0&lt;/td&gt;
+      &lt;td&gt;16.1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2020-04-27&lt;/th&gt;
+      &lt;td&gt;0.217314&lt;/td&gt;
+      &lt;td&gt;0.079306&lt;/td&gt;
+      &lt;td&gt;12.359028&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.310247&lt;/td&gt;
+      &lt;td&gt;18.504255&lt;/td&gt;
+      &lt;td&gt;28.706383&lt;/td&gt;
+      &lt;td&gt;10.386525&lt;/td&gt;
+      &lt;td&gt;23.0&lt;/td&gt;
+      &lt;td&gt;11.6&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2020-04-28&lt;/th&gt;
+      &lt;td&gt;0.595760&lt;/td&gt;
+      &lt;td&gt;0.091632&lt;/td&gt;
+      &lt;td&gt;13.841319&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.332155&lt;/td&gt;
+      &lt;td&gt;17.207801&lt;/td&gt;
+      &lt;td&gt;26.422340&lt;/td&gt;
+      &lt;td&gt;9.412057&lt;/td&gt;
+      &lt;td&gt;23.2&lt;/td&gt;
+      &lt;td&gt;11.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2020-04-29&lt;/th&gt;
+      &lt;td&gt;0.102827&lt;/td&gt;
+      &lt;td&gt;0.020035&lt;/td&gt;
+      &lt;td&gt;10.708333&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.260777&lt;/td&gt;
+      &lt;td&gt;1.787943&lt;/td&gt;
+      &lt;td&gt;1.271986&lt;/td&gt;
+      &lt;td&gt;0.000000&lt;/td&gt;
+      &lt;td&gt;22.9&lt;/td&gt;
+      &lt;td&gt;17.1&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;sns.jointplot(x=&#39;min temp&#39;, y=&#39;NOX&#39;, data=df_pol_temp, kind=&amp;quot;reg&amp;quot;, stat_func=corr_coef);
+warnings.filterwarnings(action=&#39;default&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Exploration_files/output_39_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;With a significant correlation of -0.58, the measured NOx values can be explained to some degree by the temperatures. It would be interesting to see if other meteorological factors, like humidity and wind, can explain even more of the NOx fluctuations.&lt;/p&gt;
+&lt;h2 id=&#34;closing-remarks&#34;&gt;Closing remarks&lt;/h2&gt;
+&lt;p&gt;This notebook described a preliminary exploration of the air quality monitoring data in Haifa. It is by no means an exhaustive analysis, it is just a set of steps used to increase the understanding of the dataset. If you have any comment - an analysis that you think should be done, a peculiar result that should be examined or anything else - I would love to know!&lt;/p&gt;
+&lt;p&gt;This is not a conclusion, as it is only the start of the analysis. In the next chapter, I will evaluate the causal effect of Haifa&amp;rsquo;s new low emission zone using the synthetic control method. Stay tuned!&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Debiasing Doodle Polls</title>
