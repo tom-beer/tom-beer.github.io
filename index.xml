@@ -5,7 +5,7 @@
     <link>https://tom-beer.github.io/</link>
       <atom:link href="https://tom-beer.github.io/index.xml" rel="self" type="application/rss+xml" />
     <description>Tom Beer</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 15 Jun 2020 09:25:50 +0300</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Wed, 08 Jul 2020 23:14:30 +0300</lastBuildDate>
     <image>
       <url>https://tom-beer.github.io/images/icon_hu38ccfc29e57c26895d9d6767b9173c0e_7839_512x512_fill_lanczos_center_2.png</url>
       <title>Tom Beer</title>
@@ -13,7 +13,491 @@
     </image>
     
     <item>
-      <title>Analysis of Air Pollution in Haifa</title>
+      <title>The Synthetic Control Method</title>
+      <link>https://tom-beer.github.io/post/synthetic-control/</link>
+      <pubDate>Wed, 08 Jul 2020 23:14:30 +0300</pubDate>
+      <guid>https://tom-beer.github.io/post/synthetic-control/</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;This post was generated from a Jupyter notebook; it can be found &lt;a href=&#39;https://github.com/tom-beer/Synthetic-Control-Examples&#39;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;motivation&#34;&gt;Motivation&lt;/h3&gt;
+&lt;p&gt;Suppose we want to estimate the causal effect of:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;An anti smoking taxation program in California on cigarette consumption&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;or&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The German reunification on West Germany’s economy&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;or&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Right to carry laws on violent crimes in Texas&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;or&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Uber and Lyft on traffic congestion in Paris&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;What would be a sensible approach to answer these questions? For practitioners coming from domains like healthcare, advertisement or collaborative filtering, these questions do not seem to fit in their everyday way of thinking. The reason is that for these questions, we are interested in the effect of an intervention for a single unit, while we do not have any data about this intervention for other units.&lt;/p&gt;
+&lt;p&gt;Take the German reunification as an example - it is only Germany that was reunified, and the task is to infer the causal effect of that historic event. As for the other examples - sure, California was not the first to implement an anti-smoking program, and Uber is active in many cities over the globe apart from Paris. But the task considered here is to use only the intervention data for the unit in question.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;the-qualitative-approach&#34;&gt;The qualitative approach&lt;/h3&gt;
+&lt;p&gt;It seems insensible to make inferences on a single unit - what credibility could we attain? What would be the statistical properties of the estimator?&lt;/p&gt;
+&lt;p&gt;But for decades, qualitative analyses that seem unsensible were carried out by economists and social scientists. They would meticulously find relevant controls for the relevant treated unit, relying on informal statements of affinity between the units. Then, with a chosen control unit, identification schemes like difference-in-differences would be applied.&lt;/p&gt;
+&lt;p&gt;This approach has some merit - the resulting estimator is interpretable, transparent and simple. It is easy to communicate it and argue about the choice of control units. Yet it&amp;rsquo;s clear that it is not the optimal approach, at least for practitioners of the quantitative / statistical learning schools. So the question is - can we do better? Can we devise a data-driven approach for causal effect estimation of aggregate interventions? Can we phrase a clear objective for the estimator?&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;synthetic-controls&#34;&gt;Synthetic Controls&lt;/h3&gt;
+&lt;p&gt;Introduced in 2003 and formalized in 2010 by Alberto Abadie and colleagues, the synthetic control aims to bridge between the traditional qualitative approaches of the social sciences and the modern data driven approaches. It strikes a balance between the two by offering a clear objective function to optimize while constraining the model to remain transparent, interpretable and simple. It is applicable to almost any domain, and became very popular thanks to its lenient assumptions. Esteemed economists Susan Athey and Guido Imbens have called it &amp;ldquo;arguably the most important innovation in the policy evaluation literature in the last 15 years&amp;rdquo;. Sounds interesting? Let&amp;rsquo;s dive in.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;the-main-idea&#34;&gt;The main idea&lt;/h3&gt;
+&lt;p&gt;The qualitative approach calls for a manual selection of control units from a pool of potential control units. The main idea of the synthetic control method is to forgo any kind of manual control selection. Instead, the method makes use of &lt;strong&gt;all&lt;/strong&gt; the control units in a data-driven approach. The controls are weighted based on their similarity to the treated unit, yielding the synthetic control as a weighed combination of the original units.&lt;/p&gt;
+&lt;details&gt;
+  &lt;summary&gt;&lt;b&gt;Potential outcomes - click here for details&lt;/b&gt;&lt;/summary&gt;
+  We can formalize the main idea above in the language of potential outcomes:
+&lt;ul&gt;
+&lt;li&gt;For the control units, we observe the potential outcome under no-intervention&lt;/li&gt;
+&lt;li&gt;For the treated unit, we observe its potential outcome under no-intervention in the pre-intervention period, and its potential outcome under the intervention in the post-intervention period&lt;/li&gt;
+&lt;li&gt;To calculate the causal effect, we need the treated unit&amp;rsquo;s potential outcome under no-intervention in the post-intervention period&lt;/li&gt;
+&lt;li&gt;The synthetic control emulates this potential outcome. It attempts to answer the question of &amp;ldquo;What would have been the outcome for the treated unit, without the intervention?&amp;rdquo;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/details&gt;
+&lt;p&gt;We see that the task of causal effect estimation boils down to finding the optimal weighting of the control units.
+And how shall one find the optimal weights? This is the point where the road forks - there are many suggestions for phrasing of the optimization problem, each with its own pros and cons. The next section will describe one possibility, which is the originally proposed apparoch by Abadie et al; A discussion of its limitations in face of more contemporary approaches will follow. But first - some (minimal) notation.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;the-setting&#34;&gt;The setting&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;We have data for $T$ time periods, $T_0$ of them are pre-intervention and $T_1$ belong to the post-intervention period&lt;/li&gt;
+&lt;li&gt;We have $J$ control units, $j\in{1,..,n}$, and one treated unit ($j=0$)&lt;/li&gt;
+&lt;li&gt;The measured outcomes for each unit and time period is $Y_{jt} \in \mathbb{R}^{T \times J+1}$&lt;/li&gt;
+&lt;li&gt;The synthetic control is defined as $\sum_{j=1}^{J} Y_{jt} \cdot W_j$&lt;/li&gt;
+&lt;li&gt;The causal effect estimate is thus $\tau_t = Y_{0t} - \sum_{j=1}^{J} Y_{jt} \cdot W_j$&lt;/li&gt;
+&lt;li&gt;In addition, for some methods we require a set of $K$ outcome predictors for each unit: $X_{kj}\in \mathbb{R}^{K \times J+1}$. These may be lagged outcomes (pre-intervention) or other auxiliary features (or both)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;adhs-synthetic-control&#34;&gt;ADH&amp;rsquo;s synthetic control&lt;/h3&gt;
+&lt;p&gt;Proposed by Abadie, Diamond and Hainmueller (hence the name) in 
+&lt;a href=&#34;https://www.tandfonline.com/doi/abs/10.1198/jasa.2009.ap08746&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;this paper&lt;/a&gt;, this is the seminal proposal for policy evaluation using synthetic controls. Apart from introducing the main idea above, they present the following objective function:&lt;/p&gt;
+&lt;p&gt;$$W^* \in argmin_{W \in {\Delta}^{J}} \lVert \mathbf{X_0-X_{\neg0} \cdot W} \rVert  $$&lt;/p&gt;
+&lt;p&gt;Some remarks:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;The similarity between the controls and the treated units is measured with respect to the features $X$, while the synthetic control is constructed using the outcomes $Y$. It might seem more sensible to perform the matching with respect the outcome from the start. After all, we are interested in a good pre-treatment fit for the outcome, and the best fit would be obtained using the outcome and not a proxy for it. Indeed, recent works claim that &amp;ldquo;&lt;em&gt;covariates are of less relevance in applications; outcomes tend to be substantially more important than covariates in terms of predictive power&lt;/em&gt;&amp;rdquo; (
+&lt;a href=&#34;https://arxiv.org/abs/1607.00699&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;see here&lt;/a&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The weights are constrained to lie in the J-simplex, i.e. they should be non-negative and sum to one. The authors impose this constraint to avoid extrapolation and increase the method&amp;rsquo;s transparency. But like the previous point, here too recent studies recommend to remove this constraint, stating that it is not obvious that restricting the weights this way is optimal (
+&lt;a href=&#34;https://arxiv.org/abs/1607.00699&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;see here&lt;/a&gt;). From a different angle, this constraint could be seen as weight regularization, for example 
+&lt;a href=&#34;https://arxiv.org/pdf/1803.00096.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;this work&lt;/a&gt; shows an equivalence between the simplex constraint and LASSO regularization with a fixed coefficient. The question that arises is - why use a fixed-strength regularization, instead of using LASSO with cross-validation?&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;These are valid and thoughtful concerns. I think it would be best to take the main idea of the synthetic control method, but to experiment with the implementation details for each use case.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;an-example-use-case&#34;&gt;An example use case&lt;/h2&gt;
+&lt;h3 id=&#34;estimating-the-effect-of-californias-tobacco-control-program&#34;&gt;Estimating the effect of California’s tobacco control program&lt;/h3&gt;
+&lt;p&gt;This section will demonstrate the described method on a specific use case. The case of California&amp;rsquo;s tobacco control program was one of the first applications of the synthetic control method, and it was introduced in 
+&lt;a href=&#34;https://www.tandfonline.com/doi/abs/10.1198/jasa.2009.ap08746&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;this paper&lt;/a&gt;. I will recover all steps: data processing, feature extraction, synthetic control construction and causal effect estimation - exactly as shown in the paper and described above (no modifications at all to the original method). If something wasn&amp;rsquo;t clear above - hopefully this example will clarify things up.&lt;/p&gt;
+&lt;h5 id=&#34;the-research-question&#34;&gt;The research question&lt;/h5&gt;
+&lt;p&gt;In 1988 California implemented a large scale tobacco control program, called proposition 99, that increased  California’s cigarette excise tax by 25 cents per pack, earmarked the tax revenues to health and anti-smoking education budgets, funded anti-smoking media campaigns, and spurred local clean indoor-air ordinances throughout the state. The question we are interested here it to evaluate the policy&amp;rsquo;s effect in terms of per-capita cigarette consumption. The potential controls in this case are all US states (that&amp;rsquo;s an 
+&lt;a href=&#34;https://en.wikipedia.org/wiki/RAS_syndrome&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RAS&lt;/a&gt;).&lt;/p&gt;
+&lt;h5 id=&#34;data&#34;&gt;Data&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;The main outcome is annual per-capita cigarette consumption. The data for this can be found 
+&lt;a href=&#34;https://github.com/johnson-shuffle/mixtape/tree/master/data&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;In addition to the main outcome, we will utilize some features that correlate with it (GDP, ages, beer consumption etc). This data is taken from 
+&lt;a href=&#34;https://github.com/jehangiramjad/tslib/tree/master/tests/testdata&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_outcome_raw = pd.read_csv(&#39;prop99.csv&#39;)
+df_outcome_raw = df_outcome_raw[df_outcome_raw[&#39;SubMeasureDesc&#39;] == &#39;Cigarette Consumption (Pack Sales Per Capita)&#39;]
+df_outcome = pd.DataFrame(df_outcome_raw.pivot_table(values=&#39;Data_Value&#39;, index=&#39;LocationDesc&#39;, columns=[&#39;Year&#39;]).to_records())
+
+rda_predictors = pyreadr.read_r(&#39;smoking.rda&#39;)
+df_predictors = pd.DataFrame(list(rda_predictors.values())[0])
+print(f&#39;The original dataset contains {df_outcome.LocationDesc.unique().shape[0]} states&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;The original dataset contains 51 states
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As part of the method&amp;rsquo;s assumptions and requirements, it is important to exclude from the donor pool (this is how the collection of control units is traditionally called) any unit that may not be a true control - i.e. any unit that has implemented a similar intervention. In our case, some states also introduced anti-smoking programs or substantially increased the tax for cigarettes:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;bad_states = [&#39;Massachusetts&#39;, &#39;Arizona&#39;, &#39;Oregon&#39;, &#39;Florida&#39;, &#39;Alaska&#39;, &#39;Hawaii&#39;, &#39;Maryland&#39;, 
+              &#39;Michigan&#39;, &#39;New Jersey&#39;, &#39;New York&#39;, &#39;Washington&#39;, &#39;District of Columbia&#39;]
+
+df_outcome.drop(df_outcome[df_outcome[&#39;LocationDesc&#39;].isin(bad_states)].index, inplace=True)
+ca_id = df_outcome[df_outcome[&#39;LocationDesc&#39;] == &#39;California&#39;].index.item()
+df_outcome = df_outcome.reset_index()
+df_outcome = df_outcome.rename(columns={&#39;index&#39;: &#39;org_index&#39;})
+print(f&#39;After filtering out some states, we are left with {df_outcome.LocationDesc.unique().shape[0]} states (including California):&#39;)
+df_outcome.head()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;After filtering out some states, we are left with 39 states (including California):
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;/style&gt;&lt;/p&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;org_index&lt;/th&gt;
+      &lt;th&gt;LocationDesc&lt;/th&gt;
+      &lt;th&gt;1970&lt;/th&gt;
+      &lt;th&gt;1971&lt;/th&gt;
+      &lt;th&gt;1972&lt;/th&gt;
+      &lt;th&gt;1973&lt;/th&gt;
+      &lt;th&gt;1974&lt;/th&gt;
+      &lt;th&gt;1975&lt;/th&gt;
+      &lt;th&gt;1976&lt;/th&gt;
+      &lt;th&gt;1977&lt;/th&gt;
+      &lt;th&gt;...&lt;/th&gt;
+      &lt;th&gt;2005&lt;/th&gt;
+      &lt;th&gt;2006&lt;/th&gt;
+      &lt;th&gt;2007&lt;/th&gt;
+      &lt;th&gt;2008&lt;/th&gt;
+      &lt;th&gt;2009&lt;/th&gt;
+      &lt;th&gt;2010&lt;/th&gt;
+      &lt;th&gt;2011&lt;/th&gt;
+      &lt;th&gt;2012&lt;/th&gt;
+      &lt;th&gt;2013&lt;/th&gt;
+      &lt;th&gt;2014&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;Alabama&lt;/td&gt;
+      &lt;td&gt;89.8&lt;/td&gt;
+      &lt;td&gt;95.4&lt;/td&gt;
+      &lt;td&gt;101.1&lt;/td&gt;
+      &lt;td&gt;102.9&lt;/td&gt;
+      &lt;td&gt;108.2&lt;/td&gt;
+      &lt;td&gt;111.7&lt;/td&gt;
+      &lt;td&gt;116.2&lt;/td&gt;
+      &lt;td&gt;117.1&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;82.4&lt;/td&gt;
+      &lt;td&gt;83.3&lt;/td&gt;
+      &lt;td&gt;80.2&lt;/td&gt;
+      &lt;td&gt;78.0&lt;/td&gt;
+      &lt;td&gt;75.6&lt;/td&gt;
+      &lt;td&gt;71.5&lt;/td&gt;
+      &lt;td&gt;68.4&lt;/td&gt;
+      &lt;td&gt;67.2&lt;/td&gt;
+      &lt;td&gt;64.6&lt;/td&gt;
+      &lt;td&gt;61.7&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;Arkansas&lt;/td&gt;
+      &lt;td&gt;100.3&lt;/td&gt;
+      &lt;td&gt;104.1&lt;/td&gt;
+      &lt;td&gt;103.9&lt;/td&gt;
+      &lt;td&gt;108.0&lt;/td&gt;
+      &lt;td&gt;109.7&lt;/td&gt;
+      &lt;td&gt;114.8&lt;/td&gt;
+      &lt;td&gt;119.1&lt;/td&gt;
+      &lt;td&gt;122.6&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;82.1&lt;/td&gt;
+      &lt;td&gt;81.4&lt;/td&gt;
+      &lt;td&gt;78.4&lt;/td&gt;
+      &lt;td&gt;77.0&lt;/td&gt;
+      &lt;td&gt;72.6&lt;/td&gt;
+      &lt;td&gt;63.2&lt;/td&gt;
+      &lt;td&gt;61.1&lt;/td&gt;
+      &lt;td&gt;60.5&lt;/td&gt;
+      &lt;td&gt;57.5&lt;/td&gt;
+      &lt;td&gt;54.4&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;California&lt;/td&gt;
+      &lt;td&gt;123.0&lt;/td&gt;
+      &lt;td&gt;121.0&lt;/td&gt;
+      &lt;td&gt;123.5&lt;/td&gt;
+      &lt;td&gt;124.4&lt;/td&gt;
+      &lt;td&gt;126.7&lt;/td&gt;
+      &lt;td&gt;127.1&lt;/td&gt;
+      &lt;td&gt;128.0&lt;/td&gt;
+      &lt;td&gt;126.4&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;33.1&lt;/td&gt;
+      &lt;td&gt;32.9&lt;/td&gt;
+      &lt;td&gt;31.8&lt;/td&gt;
+      &lt;td&gt;30.3&lt;/td&gt;
+      &lt;td&gt;28.8&lt;/td&gt;
+      &lt;td&gt;26.3&lt;/td&gt;
+      &lt;td&gt;26.0&lt;/td&gt;
+      &lt;td&gt;25.2&lt;/td&gt;
+      &lt;td&gt;23.9&lt;/td&gt;
+      &lt;td&gt;22.7&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;5&lt;/td&gt;
+      &lt;td&gt;Colorado&lt;/td&gt;
+      &lt;td&gt;124.8&lt;/td&gt;
+      &lt;td&gt;125.5&lt;/td&gt;
+      &lt;td&gt;134.3&lt;/td&gt;
+      &lt;td&gt;137.9&lt;/td&gt;
+      &lt;td&gt;132.8&lt;/td&gt;
+      &lt;td&gt;131.0&lt;/td&gt;
+      &lt;td&gt;134.2&lt;/td&gt;
+      &lt;td&gt;132.0&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;57.9&lt;/td&gt;
+      &lt;td&gt;53.1&lt;/td&gt;
+      &lt;td&gt;51.1&lt;/td&gt;
+      &lt;td&gt;48.4&lt;/td&gt;
+      &lt;td&gt;46.0&lt;/td&gt;
+      &lt;td&gt;41.4&lt;/td&gt;
+      &lt;td&gt;40.6&lt;/td&gt;
+      &lt;td&gt;40.6&lt;/td&gt;
+      &lt;td&gt;38.3&lt;/td&gt;
+      &lt;td&gt;36.7&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;Connecticut&lt;/td&gt;
+      &lt;td&gt;120.0&lt;/td&gt;
+      &lt;td&gt;117.6&lt;/td&gt;
+      &lt;td&gt;110.8&lt;/td&gt;
+      &lt;td&gt;109.3&lt;/td&gt;
+      &lt;td&gt;112.4&lt;/td&gt;
+      &lt;td&gt;110.2&lt;/td&gt;
+      &lt;td&gt;113.4&lt;/td&gt;
+      &lt;td&gt;117.3&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;49.9&lt;/td&gt;
+      &lt;td&gt;50.9&lt;/td&gt;
+      &lt;td&gt;50.5&lt;/td&gt;
+      &lt;td&gt;47.4&lt;/td&gt;
+      &lt;td&gt;45.9&lt;/td&gt;
+      &lt;td&gt;40.8&lt;/td&gt;
+      &lt;td&gt;36.3&lt;/td&gt;
+      &lt;td&gt;33.5&lt;/td&gt;
+      &lt;td&gt;31.4&lt;/td&gt;
+      &lt;td&gt;30.1&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;5 rows × 47 columns&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;Let&amp;rsquo;s construct the matrices defined above:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_outcome_ca = df_outcome.loc[df_outcome[&#39;LocationDesc&#39;] == &#39;California&#39;, :]
+df_outcome_control = df_outcome.loc[df_outcome[&#39;LocationDesc&#39;] != &#39;California&#39;, :]
+
+ca_outcomes_pre = df_outcome_ca.loc[:,[str(i) for i in list(range(START_TIME, INTERVENTION_TIME))]].values.reshape(-1,1)
+control_outcomes_pre = df_outcome_control.loc[:,[str(i) for i in list(range(START_TIME, INTERVENTION_TIME))]].values.transpose()
+
+ca_outcomes_post = df_outcome_ca.loc[:,[str(i) for i in list(range(INTERVENTION_TIME, STOP_TIME))]].values.reshape(-1,1)
+control_outcomes_post = df_outcome_control.loc[:,[str(i) for i in list(range(INTERVENTION_TIME, STOP_TIME))]].values.transpose()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If we plot the outcomes for California vs. an average of all US states, we see that the &amp;lsquo;average control state&amp;rsquo; is not like California in the pre-intervention period, violating the parallel trends assumption required to draw inferences. Therefore we will find an optimal weighting that would attain a good fit to California in the pre-intervention period.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;mean_outcomes = np.vstack([control_outcomes_pre, control_outcomes_post]).mean(axis=1)
+CA_outcomes = np.vstack([ca_outcomes_pre, ca_outcomes_post]).flatten()
+fig = plt.figure(figsize=(7.5,4.5))
+plt.plot(range(START_TIME,STOP_TIME),mean_outcomes, &#39;r--&#39;, label=&amp;quot;rest of the U.S.&amp;quot;);
+plt.plot(range(START_TIME,STOP_TIME),CA_outcomes, &#39;b-&#39;, label=&amp;quot;California&amp;quot;);
+
+plt.ylabel(&#39;per-capita cigarette sales (in packs)&#39;)
+plt.xlabel(&#39;year&#39;)
+plt.legend(loc=&#39;upper right&#39;)
+plt.title(&amp;quot;Figure 1: Trends in per-capita cigarette sales: California vs. the rest of the United States&amp;quot;)
+plt.axvline(INTERVENTION_TIME)
+plt.text(x=INTERVENTION_TIME+0.2, y=30, s=&#39;Passage of Proposition 99&#39;)
+plt.xlim([START_TIME, STOP_TIME-1])
+plt.ylim([0, 150])
+plt.grid()
+plt.show()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://tom-beer.github.io/intro_files/output_8_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Now let&amp;rsquo;s extract the covariates used in the paper.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Note that some of the boilerplate code has been rendered out of the html file, but it can be found in the original notebook 
+&lt;a href=&#34;&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;control_predictors = []
+for state in df_outcome[&#39;LocationDesc&#39;].unique():
+    state_predictor_vec = extract_predictor_vec(state)
+    if state == &#39;California&#39;:
+        ca_predictors = state_predictor_vec
+    else:
+        control_predictors += [state_predictor_vec]
+
+control_predictors = np.hstack(control_predictors)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;construction-of-synthetic-control&#34;&gt;Construction of synthetic control&lt;/h4&gt;
+&lt;p&gt;And here is how we optimize the objective function.&lt;/p&gt;
+&lt;p&gt;Note that in the original paper, the authors suggested to add feature importance weights $V$ to be tuned simultaneously with the control weights $W$. I am not convinced that these are required, especially if all features are scaled properly. But in order to reproduce the same results as in the paper, these importance weights are tuned here too. Without them, the optimization would have been a single line of least squares..&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def w_mse(w, v, x0, x1): return mean_squared_error(x1, x0.dot(w), sample_weight=v)
+
+def w_constraint(w, v, x0, x1): return np.sum(w) - 1
+
+def v_constraint(V, W, X0, X1, Z0, Z1): return np.sum(V) - 1
+
+def fun_w(w, v, x0, x1): return fmin_slsqp(w_mse, w, bounds=[(0.0, 1.0)]*len(w), f_eqcons=w_constraint, 
+                                           args=(v, x0, x1), disp=False, full_output=True)[0]
+
+def fun_v(v, w, x0, x1, z0, z1): return mean_squared_error(z1, z0.dot(fun_w(w, v, x0, x1)))
+
+def solve_synthetic_control(X0, X1, Z0, Z1, Y0):
+    k,j = X0.shape
+    V0 = 1/k*np.ones(k)
+    W0 = 1/j*np.zeros(j).transpose()
+    V = fmin_slsqp(fun_v, V0, args=(W0, X0, X1, Z0, Z1), bounds=[(0.0, 1.0)]*len(V0), disp=True, f_eqcons=v_constraint, acc=1e-6)
+    W = fun_w(W0, V, X0, X1)
+    return V, W
+
+V, W = solve_synthetic_control(control_predictors, ca_predictors, control_outcomes_pre, ca_outcomes_pre, control_outcomes_post)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;Optimization terminated successfully    (Exit mode 0)
+            Current function value: 23.45850495358178
+            Iterations: 5
+            Function evaluations: 8
+            Gradient evaluations: 1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The optimization terminated successfully, but we need to examine the obtained fit with respect to the features. The values for the &amp;lsquo;average state&amp;rsquo; are shown for reference.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;mean_predictors = X0.mean(axis=1)
+print(&amp;quot;Table 1: Cigarette sales predictor means \n&amp;quot;)
+display(pd.DataFrame(np.hstack([X1, X0.dot(W).reshape(-1,1), mean_predictors.reshape(-1,1)]), 
+             columns=[&#39;Real California&#39;, &#39;Synthetic California&#39;, &#39;Average of 38 Controls&#39;]))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;Table 1: Cigarette sales predictor means 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;/style&gt;&lt;/p&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Real California&lt;/th&gt;
+      &lt;th&gt;Synthetic California&lt;/th&gt;
+      &lt;th&gt;Average of 38 Controls&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;10.076559&lt;/td&gt;
+      &lt;td&gt;10.076559&lt;/td&gt;
+      &lt;td&gt;10.076559&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;17.353238&lt;/td&gt;
+      &lt;td&gt;17.353238&lt;/td&gt;
+      &lt;td&gt;17.353238&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;89.422223&lt;/td&gt;
+      &lt;td&gt;89.422223&lt;/td&gt;
+      &lt;td&gt;89.422223&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;24.280000&lt;/td&gt;
+      &lt;td&gt;24.280000&lt;/td&gt;
+      &lt;td&gt;24.280000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;90.100000&lt;/td&gt;
+      &lt;td&gt;90.099950&lt;/td&gt;
+      &lt;td&gt;113.823684&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;5&lt;/th&gt;
+      &lt;td&gt;120.200000&lt;/td&gt;
+      &lt;td&gt;120.200020&lt;/td&gt;
+      &lt;td&gt;138.089474&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;6&lt;/th&gt;
+      &lt;td&gt;127.100000&lt;/td&gt;
+      &lt;td&gt;127.100214&lt;/td&gt;
+      &lt;td&gt;136.931579&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;p&gt;Seems perfect.&lt;/p&gt;
+&lt;p&gt;We can inspect which of the states contributed most to the synthetic control construction. These states are interpreted to be similar to California. And because of the simplex constraint, the solution is sparse - there are just a few states with non-negative weights.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;largest_weights = list(df_outcome[&#39;LocationDesc&#39;].values[1+np.flip(W.argsort())][:5])
+print(&#39;, &#39;.join(largest_weights))
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;Utah, North Carolina, North Dakota, Montana, New Hampshire
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now Let&amp;rsquo;s construct and examine the obtained synthetic control:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;SC_outcomes = np.vstack([Z0, Y0]).dot(W)
+CA_outcomes = np.vstack([Z1, Y1]).flatten()
+fig = plt.figure(figsize=(7.5,4.5)) 
+
+plt.plot(range(START_TIME,STOP_TIME),SC_outcomes, &#39;r--&#39;, label=&amp;quot;Synthetic California&amp;quot;);
+plt.plot(range(START_TIME,STOP_TIME),CA_outcomes, &#39;b-&#39;, label=&amp;quot;California&amp;quot;);
+
+plt.ylabel(&#39;per-capita cigarette sales (in packs)&#39;)
+plt.xlabel(&#39;year&#39;)
+plt.legend(loc=&#39;upper right&#39;)
+plt.title(&amp;quot;Figure 2: Trends in per-capita cigarette sales: California vs. synthetic California&amp;quot;)
+plt.axvline(INTERVENTION_TIME)
+plt.text(x=INTERVENTION_TIME+0.2, y=30, s=&#39;Passage of Proposition 99&#39;)
+plt.xlim([START_TIME, STOP_TIME-1])
+plt.ylim([0, 140])
+plt.grid()
+plt.show()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://tom-beer.github.io/intro_files/output_18_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;The pre-intervention fit is reasonable, so we can move on with confidence to calculate the causal effect. This is as simple as subtracting the two lines:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;Gap_outcome = np.vstack([Z0, Y0]).dot(W) - np.vstack([Z1, Y1]).flatten()
+fig = plt.figure(figsize=(7.5,4.5)) 
+
+plt.plot(range(START_TIME,STOP_TIME),Gap_outcome, &#39;r--&#39;);
+plt.ylabel(&#39;gap in per-capita cigarette sales (in packs)&#39;)
+plt.xlabel(&#39;year&#39;)
+plt.title(&amp;quot;Figure 3: Per-capita cigarette sales gap between California and synthetic California&amp;quot;)
+plt.axhline(0)
+plt.axvline(INTERVENTION_TIME)
+plt.text(x=INTERVENTION_TIME-9.5, y=30, s=&#39;Passage of Proposition 99&#39;)
+plt.xlim([START_TIME, STOP_TIME-1])
+plt.ylim([35, -35])
+plt.grid()
+plt.show()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://tom-beer.github.io/intro_files/output_20_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;With this plot, we can carefully conclude that the implementation of proposition 99 has caused a per-capita reduction of around 26 packs of cigarettes each year. Not bad!&lt;/p&gt;
+&lt;h4 id=&#34;summary&#34;&gt;Summary&lt;/h4&gt;
+&lt;p&gt;This post introduced the synthetic control method for policy evaluation and demonstrated its use on a famous example. I think this is a very interesting and fun topic that does not receive the attention it deserves. It is widely applicable and requires minimal and reasonable assumptions. The next post will go through another example that has not been addressed yet - what is the effect of Haifa&amp;rsquo;s newly introduced low emission zone (LEZ)? Stay tuned!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Air Pollution in Haifa</title>
       <link>https://tom-beer.github.io/post/air-pollution-haifa/</link>
       <pubDate>Mon, 15 Jun 2020 09:25:50 +0300</pubDate>
       <guid>https://tom-beer.github.io/post/air-pollution-haifa/</guid>
