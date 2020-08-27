@@ -3,17 +3,67 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://tom-beer.github.io/publication-type/0/</loc>
+    <lastmod>2020-08-26T21:54:37+03:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://tom-beer.github.io/authors/</loc>
+    <lastmod>2020-08-26T21:54:37+03:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://tom-beer.github.io/author/bar-eini-porat/</loc>
+    <lastmod>2020-08-26T21:54:37+03:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://tom-beer.github.io/author/danny-eytan/</loc>
+    <lastmod>2020-08-26T21:54:37+03:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://tom-beer.github.io/publication_types/</loc>
+    <lastmod>2020-08-26T21:54:37+03:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://tom-beer.github.io/publication/</loc>
+    <lastmod>2020-08-26T21:54:37+03:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://tom-beer.github.io/author/sebastian-goodfellow/</loc>
+    <lastmod>2020-08-26T21:54:37+03:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://tom-beer.github.io/author/tom-beer/</loc>
+    <lastmod>2020-08-26T21:54:37+03:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://tom-beer.github.io/</loc>
+    <lastmod>2020-08-26T21:54:37+03:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://tom-beer.github.io/author/uri-shalit/</loc>
+    <lastmod>2020-08-26T21:54:37+03:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://tom-beer.github.io/publication/discovery/</loc>
+    <lastmod>2020-08-26T21:54:37+03:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://tom-beer.github.io/post/deep-scientific-discovery/</loc>
     <lastmod>2020-07-21T20:13:42+03:00</lastmod>
   </url>
   
   <url>
     <loc>https://tom-beer.github.io/post/</loc>
-    <lastmod>2020-07-21T20:13:42+03:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://tom-beer.github.io/</loc>
     <lastmod>2020-07-21T20:13:42+03:00</lastmod>
   </url>
   
@@ -33,19 +83,7 @@
   </url>
   
   <url>
-    <loc>https://tom-beer.github.io/authors/</loc>
-  </url>
-  
-  <url>
     <loc>https://tom-beer.github.io/categories/</loc>
-  </url>
-  
-  <url>
-    <loc>https://tom-beer.github.io/publication_types/</loc>
-  </url>
-  
-  <url>
-    <loc>https://tom-beer.github.io/publication/</loc>
   </url>
   
   <url>
