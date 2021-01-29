@@ -1340,7 +1340,7 @@ df_aqm.rolling(
 &lt;p&gt;This plot shows rolling averages of the measurements, with windows of 4 weeks and an overlap of 2 weeks. A similar result could be obtained using a simple groupby with a monthly frequency:&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;df_aqm.groupby(pd.Grouper(freq=&#39;M&#39;)).mean()&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;But the overlapping windows add a degree of smoothing which is (arguably) preferable in this case.&lt;/p&gt;
-&lt;p&gt;If you are disappointed too with pandas&amp;rsquo; lack of an overlap parameter in the rolling function, you can contribute to the discussion 
+&lt;p&gt;If you are disappointed too with pandas&#39; lack of an overlap parameter in the rolling function, you can contribute to the discussion 
 &lt;a href=&#34;https://github.com/pandas-dev/pandas/issues/15354&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Anyway, enough with the ranting. The above plot shows that all nitrogen oxide measurements (and also benzene to a lesser extent) follow a clear annual trend peaking at winter. It is still not clear what&amp;rsquo;s the cause of this modulation, and we will revisit it later in the analysis.&lt;/p&gt;
 &lt;p&gt;The same trends could be demonstrated using a different visualization, plotting the 8 year daily averages of every pollutants.&lt;/p&gt;
