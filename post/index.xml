@@ -5,12 +5,123 @@
     <link>https://tom-beer.github.io/post/</link>
       <atom:link href="https://tom-beer.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     <description>Posts</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Tue, 23 Feb 2021 20:13:42 +0300</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Wed, 19 May 2021 10:13:42 +0300</lastBuildDate>
     <image>
       <url>https://tom-beer.github.io/images/icon_huce93ec8a6fd7e12c2beec32639fe78a0_7050_512x512_fill_lanczos_center_2.png</url>
       <title>Posts</title>
       <link>https://tom-beer.github.io/post/</link>
     </image>
+    
+    <item>
+      <title>Responsible Automation by Learning to Reject</title>
+      <link>https://tom-beer.github.io/post/reject/</link>
+      <pubDate>Wed, 19 May 2021 10:13:42 +0300</pubDate>
+      <guid>https://tom-beer.github.io/post/reject/</guid>
+      <description>&lt;p&gt;This post introduces the framework of rejection learning with applications to algorithmic automation problems.&lt;/p&gt;
+&lt;h2 id=&#34;responsible-prediction&#34;&gt;Responsible Prediction&lt;/h2&gt;
+&lt;p&gt;In high stakes domains like healthcare, machine learning systems must exhibit some sort of accountability and sensibility for them to be safely deployed. While it is still a difficult and ill-defined task, there are many approaches to making prediction models behave responsibly. For example, we can manipulate the raw model outputs, to make sure that it alligns with a predefined set of rules. Another example is to defer the decision to a simpler model, like a medical protocol.&lt;/p&gt;
+&lt;p&gt;Using a rejection mechanism is one aspect often neglected in the design of prediction models. When a model has the ability to 
+&lt;a href=&#34;https://www.nature.com/articles/s41746-020-00367-3&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;abstain&lt;/a&gt; from making a prediction, the resulting system is expected to be a lot more sensible. In healthcare, this would mean models that are safer, better performing, and trusted by  physicians.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;automation-neq-prediction&#34;&gt;Automation $\neq$ Prediction&lt;/h2&gt;
+&lt;p&gt;The main motivation for rejection learning is algorithmic automation. Many actionable prediction tasks are actually automation problems – we want to replace human effort with algorithms.&lt;/p&gt;
+&lt;p&gt;We tend to equate prediction and automation, but by doing that we miss out on challenges and opportunities that arise from the differences between the two problems:&lt;/p&gt;
+&lt;p&gt;Since automation builds upon the stable ground of humans performing a task, in most applications there&amp;rsquo;s no requirement that all instances be automated by the algorithm. Unlike prediction problems that do not build upon humans performing a task, here applying automation to any fraction of the population has a significant potential for impact. Thus algorithmic automation is more than just the replacement of human effort - it also includes the meta decision of which instances to automate. A great overview of this topic is available 
+&lt;a href=&#34;https://arxiv.org/abs/1903.12220&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;classification-with-rejection&#34;&gt;Classification with Rejection&lt;/h2&gt;
+&lt;p&gt;In rejection learning, we extend the multiclass output space $\mathcal{Y}= \{ 1,\ldots,K\}$ to include $\circledR$ which denotes rejection. In ordinary classification we use the usual zero-one loss $\ell_{01}(f(\boldsymbol{x}), y)=\mathbb{1}_{[f(\boldsymbol{x}) \neq y]}$, and in rejection learning we use an extension of it &amp;ndash; the zero-one-c loss:&lt;/p&gt;
+&lt;p&gt;$$
+\ell_{01c}(f(\boldsymbol{x}), y) = \begin{cases}
+c &amp;amp; f(\boldsymbol{x}) = \circledR \ \newline
+\ell_{01}(f(\boldsymbol{x}), y) &amp;amp; \text{otherwise}
+\end{cases}
+$$&lt;/p&gt;
+&lt;p&gt;This loss funcion means that we pay a cost of $c$ if we choose to reject the instance, and otherwise pay a cost of $1$ for a missclassification.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;optimal-classifier&#34;&gt;Optimal Classifier&lt;/h2&gt;
+&lt;p&gt;The optimal solution for a function minimizing the expected risk w.r.t $\ell_{01c}$ was formulated backn in the 1950s by 
+&lt;a href=&#34;https://ieeexplore.ieee.org/document/5222035&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Chow&lt;/a&gt;:
+$$
+f^*(x) = \begin{cases}
+\circledR &amp;amp; \text{max}_y \text{ }P(y|x) \le 1-c \ \newline
+\text{argmax}_y \text{ }P(y|x) &amp;amp; \text{otherwise}
+\end{cases}
+$$&lt;/p&gt;
+&lt;p&gt;This classification rule dicatates that we should reject an instance if the posterior probabilities for all $K$ classes are smaller than $1-c$.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;determining-the-rejection-cost-c&#34;&gt;Determining the rejection cost $c$&lt;/h2&gt;
+&lt;p&gt;The cost of rejection is a hyperparameter we need to set before learning a classification rule. A larger cost means that more instances are rejected, so it should be set by considering a tradeoff between the coverage rate (the fraction of accepted cases) and cost of missclassification.&lt;/p&gt;
+&lt;p&gt;A discussion on this tradeoff follows towards the end of the post, but a rule of thumb applicable for any task is this: $c$ should be smaller than the cost induced by a random guess (otherwise we would obtain an unhelpful, trivial classifier). Assuming the classes are balanced, this rule of thumb implies that:&lt;/p&gt;
+&lt;p&gt;$$
+c \in \bigg(0, \frac{K-1}{K}\bigg),
+$$&lt;/p&gt;
+&lt;p&gt;and in the general case of imbalanced data, $c$ should be smaller than one minus the smallest class size.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;two-approaches&#34;&gt;Two approaches&lt;/h2&gt;
+&lt;p&gt;How can we learn a classification with rejection rule? The literature describes two possible approaches.&lt;/p&gt;
+&lt;p&gt;First is the &lt;strong&gt;confidence approach&lt;/strong&gt;. Chow’s optimal rule suggests that classification with rejection is solved if we know the posterior distributions of the classes given the data. Hence the confidence approach is a straightforward solution: train a classifier and use the output of the classifier as a confidence score, drawing inferences by substituting the confidence scores in Chow&amp;rsquo;s rule. The main drawback here is that reliabely estimating class-posterior probabilities is difficult (to say the least). For example, neural networks are notoriously known for their overconfident scores.&lt;/p&gt;
+&lt;p&gt;Second is the &lt;strong&gt;classifier-rejector&lt;/strong&gt; approach. If we take another look at Chow&amp;rsquo;s rule, we can rewrite it as two functions:&lt;/p&gt;
+&lt;p&gt;$$
+r^*(x) = \text{max}_y \text{ }P(y|x) - (1-c)
+$$&lt;/p&gt;
+&lt;p&gt;$$
+h^*(x) = \text{argmax}_y \text{ }P(y|x)
+$$&lt;/p&gt;
+&lt;p&gt;where $h(x)$ is an ordinary classifier and $r(x)$ is a rejector, rejecting instances if it&amp;rsquo;s value is negative. This formulation suggests that a classification rule could be obtained by learning two independent functions. Apart from a neat logical separation, this approach is more flexible compared to the confidence approach. For example, different hypotheses spaces could be used to model the classifier and rejector. A simple illustration for the increased flexibility of the classifier-rejector approach was brought in 
+&lt;a href=&#34;https://cs.nyu.edu/~mohri/pub/rej.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;this paper&lt;/a&gt; &amp;ndash; for the case of linear models, only decoupling between the classifier and rejector can solve this data:&lt;/p&gt;
+&lt;img src=&#34;flexibility2.png&#34; width=550 height=550 align=&#34;middle&#34;&gt;
+&lt;p&gt;Many heuristics fit in this approach – for example, we can use an outlier detection algorithm to reject some instances, and learn a classifier independently.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;theoretical-guarantees&#34;&gt;Theoretical Guarantees&lt;/h2&gt;
+&lt;p&gt;Over the years, many solutions of both approaches have been proposed for the problem of learning with rejection. Unfortunately, none of them were able to show theoretical justifications for the muliclass case &amp;ndash; only for binary classification.&lt;/p&gt;
+&lt;p&gt;The reason for this is that it is hard to satisfy calibration for the learned classifier, which is required in order to say something about the classifier&amp;rsquo;s behaviour. This point is discussed in detail 
+&lt;a href=&#34;https://arxiv.org/abs/1901.10655&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;cost-sensitive-learning&#34;&gt;Cost sensitive learning&lt;/h2&gt;
+&lt;p&gt;A notable exception in the multiclass case is 
+&lt;a href=&#34;https://arxiv.org/abs/2010.11748&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;this work&lt;/a&gt;, which managed to propose a theroetically sound solution for this problem. The authors use the framework of cost sensitive learning to derive a learning rule. Cost sensitive learning allows to assign weights to the different missclassification errors. For the binary case, a cost sensitive loss function would look like this:&lt;/p&gt;
+&lt;p&gt;$$
+l_{01}^\alpha(f(x), y)=\alpha \cdot \mathbb{1}_{[f(x) \neq y=-1]} + (1-\alpha) \cdot \mathbb{1}_{[f(x)=y=+1]}
+$$&lt;/p&gt;
+&lt;p&gt;And the optimal classification rule for with respect to this loss is:&lt;/p&gt;
+&lt;p&gt;$$
+f_\alpha^*(x) = \begin{cases}
++1 &amp;amp; P(y=+1|x) \gt \alpha \ \newline
+-1 &amp;amp; \text{otherwise}
+\end{cases}
+$$&lt;/p&gt;
+&lt;p&gt;A key observation in this work is that the problem of learning with rejection could be reduced to an instance of cost sensitive learning using the following rule:&lt;/p&gt;
+&lt;p&gt;$$
+f^*(x) = \begin{cases}
++1 &amp;amp;  f_{1-c}^*(x)  = +1 \ \newline
+-1 &amp;amp;  f_{c}^*(x)  = -1 \ \newline
+\circledR &amp;amp; \text{otherwise}
+\end{cases}
+$$&lt;/p&gt;
+&lt;p&gt;Where we replace the $\alpha$ parameter of cost senstive learning with $c$ and $1-c$ of the rejection framework.&lt;/p&gt;
+&lt;p&gt;Similarily, to extend this rule to the more interesting case of multiclass classification, we can use this reduction:&lt;/p&gt;
+&lt;p&gt;$$
+f^*(x) = \begin{cases}
+\circledR &amp;amp; \max_y  f_{1-c}^{*,y}(x) = -1 \ \newline
+\text{argmax}_y  f_{1-c}^{*,y}(x) &amp;amp; \text{otherwise}
+\end{cases}
+$$&lt;/p&gt;
+&lt;p&gt;Where the classifiers $f^{*,y}(x)$ denote a one-versus-rest classification for the class $y$.
+This rule is equivalent to Chow&amp;rsquo;s rule, thus this reduction implies that we can learn a cost sensitive classifier to solve the rejection learning problem. Further details, including learning and inference rules are brought in this work, but they will not be covered here.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;accuracy-rejection-curves&#34;&gt;Accuracy-rejection curves&lt;/h2&gt;
+&lt;p&gt;Just like ordinary classification where we have to strike a tradeoff between the different errors, or optimize a predefined balance between them (e.g. F1 score or AUROC), in rejection learning we need to decide about the balance between some measure of performance (e.g. accuracy) and the coverage rate. The higher the required performance, the lower the achievable coverage rate.&lt;/p&gt;
+&lt;p&gt;Accuracy-rejection curves, introduced 
+&lt;a href=&#34;http://proceedings.mlr.press/v8/nadeem10a.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;, are a convenient visualization tool to aid in this decision. These plots are easily understood by stakeholders, and can serve as basis for discussion with them. In addition, accuracy-rejection curves allow to compare different models throughout the coverage axis.&lt;/p&gt;
+&lt;p&gt;An interesting point to mention is that practitioners often believe that the better the model at classifying the whole population (without rejection), the better it would be for any non-zero rejection rate. But this is not true, and it is important to compare models on the whole spectrum of rejection. Accuracy-rejection curves can highlight this non-monotonic behaviour.&lt;/p&gt;
+&lt;img src=&#34;arc.png&#34; width=550 height=550 align=&#34;middle&#34;&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;summary&#34;&gt;Summary&lt;/h2&gt;
+&lt;p&gt;Classification with rejection is a very useful framework when applying prediction models to automation problems. I have a feeling that it is either underutilized, or used but without the proper framing and tooling discussed here. Practitioners may apply some hard-coded filters to reject error-prone cases, but they usually won&amp;rsquo;t use an algorithm to decide which instances to accpet or reject. In the few cases of using a model for rejection, it would probably be some simple hueristic like an outlier detector or using the raw output scores of the classifer.
+I believe that a proper adoption of this framework would greatly benefit algorithmic automation problems, and I hope to see it receive more attention in the upcoming years.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>On the Hazards of Proxies I</title>
