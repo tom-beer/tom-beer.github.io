@@ -5,12 +5,107 @@
     <link>https://tom-beer.github.io/post/</link>
       <atom:link href="https://tom-beer.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     <description>Posts</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Thu, 28 Apr 2022 10:13:42 +0300</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 25 Jul 2022 10:13:42 +0300</lastBuildDate>
     <image>
       <url>https://tom-beer.github.io/images/icon_huce93ec8a6fd7e12c2beec32639fe78a0_7050_512x512_fill_lanczos_center_2.png</url>
       <title>Posts</title>
       <link>https://tom-beer.github.io/post/</link>
     </image>
+    
+    <item>
+      <title>Revisiting the bias variance tradeoff</title>
+      <link>https://tom-beer.github.io/post/revisiting_bias_variance/</link>
+      <pubDate>Mon, 25 Jul 2022 10:13:42 +0300</pubDate>
+      <guid>https://tom-beer.github.io/post/revisiting_bias_variance/</guid>
+      <description>&lt;h3 id=&#34;background&#34;&gt;Background&lt;/h3&gt;
+&lt;p&gt;A while ago I was tasked with developing a model predicting whether patients would be referred to the emergency room,
+based on their medical presentation, demographics, etc.
+The random forest was performing much better on the train set than on the test set.
+Technically, it&amp;rsquo;s a case of overfitting, but there was a disagreement among my peers if this was a bad thing or not.
+After all, it was better than models that did not exhibit a train-test gap (e.g. logistic regression).
+But still I was not able to convince that test performance is all that should matter.
+So I had a little literature review, and presented it in our weekly journal club.
+This post is a summary of that presentation.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;intro&#34;&gt;Intro&lt;/h3&gt;
+&lt;p&gt;Every intro to ML course or textbook teaches us the bias variance tradeoff as universal truth -
+that test error curve follows a U-shape with respect to model complexity.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“This is a fundamental property of statistical learning that holds regardless of the particular data set at hand and regardless of the statistical method being used.”&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Quote and figure from 
+&lt;a href=&#34;https://hastie.su.domains/ISLR2/ISLRv2_website.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ISLRv2, 2021&lt;/a&gt;&lt;/p&gt;
+&lt;img src=&#34;image5.png&#34; width=600 height=600 align=&#34;middle&#34;&gt;
+&lt;p&gt;Yet everywhere around us we see evidence that “bigger models are always better”
+&lt;sup&gt;
+&lt;a href=&#34;https://microsoft.com/en-us/research/blog/using-deepspeed-and-megatron-to-train-megatron-turing-nlg-530b-the-worlds-largest-and-most-powerful-generative-language-model/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;1&lt;/a&gt;,
+
+&lt;a href=&#34;http://proceedings.mlr.press/v97/tan19a/tan19a.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;img src=&#34;image4.png&#34; width=1400 height=1400 align=&#34;middle&#34;&gt;
+&lt;p&gt;How do we relieve this tension? Is it just the difference between traditional machine learning and deep learning?
+Is the tradeoff real at all? Let’s take a stab at settling this.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;the-defense&#34;&gt;The Defense&lt;/h3&gt;
+&lt;p&gt;On the one hand, there is empirical grounding for the tradeoff - it can be shown to exist in models like KNN, polynomial regression, kernel regression, decision trees and more.&lt;/p&gt;
+&lt;p&gt;There is some theoretical justification for it too. Generalization bounds that grow with complexity (VC/Rademacher) are interpreted as if simple models are preferable.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“In real applications, learning models with lower VC(H) tend to generalize better”, Learning From Data, 2021&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;img src=&#34;image6.png&#34; width=1400 height=1400 align=&#34;middle&#34;&gt;
+&lt;img src=&#34;image8.png&#34; width=1400 height=1400 align=&#34;middle&#34;&gt;
+&lt;p&gt;As an ML history fun fact, the tradeoff was not popularized until the 1992 paper
+“Neural Networks and the Bias/Variance Dilemma” by Geman et. al.
+This same paper also introduced the &lt;strong&gt;decomposition&lt;/strong&gt; of the MSE to bias and variance components.
+As the decomposition is usually discussed in the same context, it adds to the strong intuition of the tradeoff (even though it does not imply it).&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;the-cracks&#34;&gt;The Cracks&lt;/h3&gt;
+&lt;p&gt;The empirical and theoretical arguments seem fair, but let&amp;rsquo;s see if they stand up to some scrutiny.&lt;/p&gt;
+&lt;p&gt;As far back as 95’ there have been works showing that variance remains low for models with increasing complexity.
+Curiously, inconsistencies between classical and neural models are demonstrated even in the 92&#39; paper that popularized the tradeoff:&lt;/p&gt;
+&lt;img src=&#34;image7.png&#34; width=600 height=600 align=&#34;middle&#34;&gt;
+&lt;p&gt;but the authors dismiss them as related to the training procedure and not a fundamental property of the model class.&lt;/p&gt;
+&lt;p&gt;As for the generalization bounds, they are too loose to accurately reflect the test error’s trend in practice.&lt;/p&gt;
+&lt;p&gt;While these were not sufficient to change the community’s opinion on the tradeoff, it seems that the tide has started to shift in the last 4 years.
+In 2019 
+&lt;a href=&#34;https://www.pnas.org/doi/10.1073/pnas.1903070116&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Mikhail Belkin and colleagues&lt;/a&gt; coined &lt;em&gt;double descent&lt;/em&gt; to describe a fairly prevalent phenomenon where the
+standard bias-variance picture breaks down once zero training error is attained - what they call the
+&lt;em&gt;interpolation threshold&lt;/em&gt;. Before the interpolation threshold, the tradeoff holds and increasing model
+complexity leads to overfitting. After the interpolation threshold, however, they found that test error actually starts to go down as you keep increasing model complexity.
+This is shown for fully connected networks, random forest and a random fourier feature model.&lt;/p&gt;
+&lt;img src=&#34;image9.png&#34;&gt;
+&lt;p&gt;Concurrent work by 
+&lt;a href=&#34;https://mltheory.org/deep.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Nakkiran et al.&lt;/a&gt; has proved that double descent w.r.t &lt;em&gt;model width&lt;/em&gt; is a robust phenomenon that occurs in a variety of tasks, architectures (CNNs, ResNets, Transformers), and optimization methods.&lt;/p&gt;
+&lt;img src=&#34;image2.png&#34;&gt;
+&lt;p&gt;But more interesting is the phenomenon of training time double descent - training for more epochs decreases performance (before improving again),&lt;/p&gt;
+&lt;img src=&#34;image3.png&#34;&gt;
+&lt;p&gt;And dataset size double descent - using more training samples (x4.5 more in their experiments) decreases performance before improving again.&lt;/p&gt;
+&lt;img src=&#34;image1.png&#34;&gt;
+&lt;p&gt;In some experiments, a single descent (rather than double descent) was observed. But a U-shaped loss curve was never observed for neural nets! Which aligns with the modern practice of “bigger is better”.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;reconciling-theory-and-practice&#34;&gt;Reconciling theory and practice&lt;/h3&gt;
+&lt;p&gt;There are some suggestive explanations for this deflection between theory and practice.
+Many revolve around the notion of complexity - that we just don’t have a proper measure of it.
+One for which larger models could actually be simpler.
+Regardless of whether you accept one of the hypotheses, you can’t argue with the science.
+After all, theory is subordinate to science, as this
+
+&lt;a href=&#34;https://twitter.com/tomgoldsteincs/status/1484609273162309634?lang=en&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;great talk&lt;/a&gt;
+by Tom Goldstein calls for.&lt;/p&gt;
+&lt;p&gt;
+&lt;a href=&#34;https://arxiv.org/abs/1912.08286&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Brady Neal’s work&lt;/a&gt; on this very subject is subtitled “Textbooks need an update”.
+And indeed recent books include double descent in their discussion of the bias variance tradeoff.
+Examples include 
+&lt;a href=&#34;https://hastie.su.domains/ISLR2/ISLRv2_website.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ISLRv2&lt;/a&gt;,
+
+&lt;a href=&#34;https://di.ens.fr/~fbach/ltfp_book.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;LTFP&lt;/a&gt;
+and 
+&lt;a href=&#34;https://mlstory.org/pdf/patterns.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ML Story&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Still, more effort should be put in teaching that the bias variance tradeoff is not a universal truth, at least based on the measures of complexity we use in our everyday practice. This has implications on how we select and evaluate ML models.&lt;/p&gt;
+&lt;p&gt;As a personal note, what’s still missing for me is a rule of thumb for determining if some case of overfitting
+(train error &amp;laquo; test error) is benign, or should it suggest that a different model should be selected.&lt;/p&gt;
+&lt;hr&gt;
+</description>
+    </item>
     
     <item>
       <title>On the Hazards of Proxies II</title>
