@@ -5,12 +5,102 @@
     <link>https://tom-beer.github.io/</link>
       <atom:link href="https://tom-beer.github.io/index.xml" rel="self" type="application/rss+xml" />
     <description>Tom Beer</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 25 Jul 2022 10:13:42 +0300</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 31 Oct 2022 03:07:42 +0300</lastBuildDate>
     <image>
       <url>https://tom-beer.github.io/images/icon_huce93ec8a6fd7e12c2beec32639fe78a0_7050_512x512_fill_lanczos_center_2.png</url>
       <title>Tom Beer</title>
       <link>https://tom-beer.github.io/</link>
     </image>
+    
+    <item>
+      <title>Predicting recipe popularity</title>
+      <link>https://tom-beer.github.io/post/food_blog_popularity/</link>
+      <pubDate>Mon, 31 Oct 2022 03:07:42 +0300</pubDate>
+      <guid>https://tom-beer.github.io/post/food_blog_popularity/</guid>
+      <description>&lt;h3 id=&#34;my-favorite-food-blog&#34;&gt;My favorite food blog&lt;/h3&gt;
+&lt;p&gt;I&amp;rsquo;m an avid reader of a multitude of food blogs.
+While I wish I read books, I just can&amp;rsquo;t prioritize it high enough, and apart from professional material, the only reading I do is food blogs.
+I love 
+&lt;a href=&#34;https://www.davidlebovitz.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;David Lebovitz&lt;/a&gt; for the french drinks and apéros, and 
+&lt;a href=&#34;https://greenkitchenstories.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Green Kitchen Stories&lt;/a&gt; for healthy, kid friendly (Yaar loves 
+&lt;a href=&#34;https://greenkitchenstories.com/apple-almond-buckwheat-muffins/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;these muffins&lt;/a&gt;) recipes.
+In Hebrew, I check 
+&lt;a href=&#34;https://www.ptitim.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Ptitim&lt;/a&gt;, 
+&lt;a href=&#34;https://www.limortiroche.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Limor Tiroche&lt;/a&gt; and 
+&lt;a href=&#34;https://www.michalwaxman.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Michal Waxman&lt;/a&gt; on a weekly basis and read every word in every post.&lt;/p&gt;
+&lt;p&gt;But above all these, my favorite food blog is 
+&lt;a href=&#34;https://smittenkitchen.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Smitten Kitchen&lt;/a&gt;.
+My metric here (we&amp;rsquo;re in a quantitative field after all) is the total number of recipes made.
+This proxy may be skewed by ultra-recurrent recipes
+(like the 
+&lt;a href=&#34;https://smittenkitchen.com/2010/05/oatmeal-pancakes/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;oatmeal pancakes&lt;/a&gt; I make every Saturday morning for the last ~18 months),
+but it&amp;rsquo;s still a useful metric.&lt;/p&gt;
+&lt;p&gt;Having wanted to play around with web scraping and parsing,
+I thought it would be a fun weekend project to build a popularity prediction model for Smitten Kitchen recipes.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;dataset&#34;&gt;Dataset&lt;/h3&gt;
+&lt;p&gt;Beautiful Soup helped with basic parsing,
+on top of which specific features like the publish date, categories, post title, introduction and the recipe itself were extracted.
+The number of comments was defined as the measure of recipe popularity (more on this decision in the last section).&lt;br&gt;
+The resulting dataset (not showing the category column) has 505 recipes and looks like this:
+&lt;img src=&#34;df2.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;As can be expected, the number of comments is heavy tailed.
+But this tail is rather fat - the standard deviation is almost as large as the median:
+&lt;img src=&#34;n_comments_hist.png&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;setting-the-baseline&#34;&gt;Setting the baseline&lt;/h3&gt;
+&lt;p&gt;RMSE on the test set (~100 recipes) was chosen as the evaluation criteria for all models.&lt;/p&gt;
+&lt;p&gt;A useful baseline for regression tasks is simply to predict the target&amp;rsquo;s mean.
+This yields an RMSE of &lt;strong&gt;202&lt;/strong&gt;, a bit higher than the target&amp;rsquo;s STD (due to train/test sample variability).&lt;/p&gt;
+&lt;p&gt;It couldn&amp;rsquo;t be hard to beat this error, right? Let&amp;rsquo;s see..&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;recipe-categories&#34;&gt;Recipe Categories&lt;/h3&gt;
+&lt;p&gt;Each recipe has a few categories (tags) - an average of 5 per blog entry.
+The most prevalent are &lt;em&gt;vegetarian, summer, breakfast, cake, salad&lt;/em&gt; and &lt;em&gt;weeknight favorite&lt;/em&gt;.
+The 184 categories were encoded as bits and passed to a CatBoost model with default parameters.
+The RMSE decreased to &lt;strong&gt;194&lt;/strong&gt; - quite underwhelming.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;the-direction-of-time&#34;&gt;The Direction of Time&lt;/h3&gt;
+&lt;p&gt;Time is a significant predictor of popularity, especially in the early days of the site.&lt;/p&gt;
+&lt;img src=&#34;time.png&#34;&gt;
+&lt;p&gt;Using the annual means from the train set as an estimator for recipe popularity yields an
+RMSE of &lt;strong&gt;181&lt;/strong&gt; - now we&amp;rsquo;re getting somewhere!&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;incorporating-free-text&#34;&gt;Incorporating free text&lt;/h3&gt;
+&lt;p&gt;The dataset includes three fields of free text: post title, an introduction and the recipe itself.&lt;/p&gt;
+&lt;p&gt;
+&lt;a href=&#34;https://www.sbert.net/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Sentence Transformers&lt;/a&gt; provides a convenient API for encoding chunks of text,
+but they don&amp;rsquo;t play nicely with scikit-learn pipelines. Recently I came across a compact library called
+
+&lt;a href=&#34;https://github.com/koaning/embetter&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;em&gt;Embetter&lt;/em&gt;&lt;/a&gt; which does just that - a scikit-learn compatible interface
+for sentence transformers.
+It also has an interface over 
+&lt;a href=&#34;https://github.com/rwightman/pytorch-image-models&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;timm&lt;/a&gt; for image use cases.
+With Embetter, predicting a target from text is as easy as:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;pipe = make_pipeline(ColumnGrabber(&amp;quot;title&amp;quot;), SentenceEncoder(&#39;all-MiniLM-L6-v2&#39;), RandomForestRegressor())
+pipe.fit(df_train, df_train.n_comments)
+mean_squared_error(df_val.n_comments, pipe.predict(df_val), squared=False)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;After some experiments, I settled on the following pipeline:&lt;/p&gt;
+&lt;img src=&#34;pipe.png&#34; width=600 height=600&gt;
+&lt;p&gt;Embedding the other text fields did not add predictive power.
+Applying PCA and using other regressors just made things worse.
+The RMSE for this setup was &lt;strong&gt;174&lt;/strong&gt; - only slightly better than using the year alone. Meh.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;closing-thoughts&#34;&gt;Closing thoughts&lt;/h3&gt;
+&lt;p&gt;While this was a lot of fun, I can&amp;rsquo;t help but feel a bit disappointed in failing to predict recipe popularity.
+The thing is, I equated popularity with the number of comments.
+But it&amp;rsquo;s a mere proxy for popularity. And as we&amp;rsquo;ve seen in a
+
+&lt;a href=&#34;https://tom-beer.github.io/post/proxies_ml/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;previous post&lt;/a&gt;,
+this has implications for the feasibility and usability of the models built upon it.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;takeaways&#34;&gt;Takeaways&lt;/h3&gt;
+&lt;p&gt;
+&lt;a href=&#34;https://smittenkitchen.com/2019/06/chocolate-budino/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;This is a fabulous dessert&lt;/a&gt;. Go make it.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;img.png&#34; alt=&#34;img.png&#34;&gt;&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Revisiting the bias variance tradeoff</title>
