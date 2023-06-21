@@ -5,11 +5,16 @@
     <link>https://tom-beer.github.io/author/tom-beer/</link>
       <atom:link href="https://tom-beer.github.io/author/tom-beer/index.xml" rel="self" type="application/rss+xml" />
     <description>Tom Beer</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Wed, 26 Aug 2020 21:54:37 +0300</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language>
     <image>
       <url>https://tom-beer.github.io/images/icon_huce93ec8a6fd7e12c2beec32639fe78a0_7050_512x512_fill_lanczos_center_2.png</url>
       <title>Tom Beer</title>
       <link>https://tom-beer.github.io/author/tom-beer/</link>
+    </image>
+    
+  </channel>
+</rss>
+author/tom-beer/</link>
     </image>
     
     <item>

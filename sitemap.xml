@@ -3,17 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://tom-beer.github.io/post/</loc>
-    <lastmod>2022-10-31T03:07:42+03:00</lastmod>
+    <loc>https://tom-beer.github.io/post/hotel_recommender/</loc>
+    <lastmod>2023-06-18T03:07:42+03:00</lastmod>
   </url>
   
   <url>
-    <loc>https://tom-beer.github.io/post/food_blog_popularity/</loc>
-    <lastmod>2022-10-31T03:07:42+03:00</lastmod>
+    <loc>https://tom-beer.github.io/post/</loc>
+    <lastmod>2023-06-18T03:07:42+03:00</lastmod>
   </url>
   
   <url>
     <loc>https://tom-beer.github.io/</loc>
+    <lastmod>2023-06-18T03:07:42+03:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://tom-beer.github.io/post/food_blog_popularity/</loc>
     <lastmod>2022-10-31T03:07:42+03:00</lastmod>
   </url>
   
