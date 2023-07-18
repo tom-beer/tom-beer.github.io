@@ -13,15 +13,37 @@
     </image>
     
     <item>
-      <title>Hotel Recommender - WIP</title>
+      <title>A Simple Hotel Recommender - WIP</title>
       <link>https://tom-beer.github.io/post/hotel_recommender/</link>
       <pubDate>Sun, 18 Jun 2023 03:07:42 +0300</pubDate>
       <guid>https://tom-beer.github.io/post/hotel_recommender/</guid>
-      <description>&lt;script
+      <description>&lt;p&gt;A fun evening (or three) project to toy around with LLM APIs. When searching for a hotel, the process of
+sifting through numerous reviews to decipher the overall sentiment is tiresome and inefficient.
+A natural language interface can greatly improve this experience, acting as a human like travel agent.
+This is a POC for an app that receives a location as input and generates a paragraph that summarizes and
+synthesizes the key points from various reviews. Try it yourself!&lt;/p&gt;
+&lt;script
 	type=&#34;module&#34;
 	src=&#34;https://gradio.s3-us-west-2.amazonaws.com/3.34.0/gradio.js&#34;
 &gt;&lt;/script&gt;
 &lt;p&gt;&lt;gradio-app src=&#34;https://tom-beer-hotel-recommender.hf.space&#34;&gt;&lt;/gradio-app&gt;&lt;/p&gt;
+&lt;h3 id=&#34;implementation-details&#34;&gt;Implementation Details&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Source code is available in 
+&lt;a href=&#34;https://huggingface.co/spaces/tom-beer/hotel-recommender/tree/main&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;this HF space&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;The app uses data from the 
+&lt;a href=&#34;https://www.cs.cmu.edu/~jiweil/html/hotel-review.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CMU Hotel Review Dataset&lt;/a&gt;, consisting of almost 1M reviews crawled from TripAdvisor.&lt;/li&gt;
+&lt;li&gt;A (random) hotel is recommended if it satisfies the following:
+&lt;ul&gt;
+&lt;li&gt;Its average score is in the top 80% for that city&lt;/li&gt;
+&lt;li&gt;It has more than 100 reviews&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;The app generates a paragraph for the recommended hotel based on four random reviews.
+Only reviews that were found helpful by at least 10 users are considered.&lt;/li&gt;
+&lt;li&gt;Three of the four reviews are positive (score = 5), and one is negative (score &amp;lt;= 2).&lt;/li&gt;
+&lt;li&gt;The LLM is asked to generate a compelling yet honest argument.&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
