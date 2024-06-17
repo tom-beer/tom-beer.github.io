@@ -5,12 +5,150 @@
     <link>https://tom-beer.github.io/post/</link>
       <atom:link href="https://tom-beer.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     <description>Posts</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 18 Jun 2023 03:07:42 +0300</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 03 Jun 2024 07:08:17 +0300</lastBuildDate>
     <image>
       <url>https://tom-beer.github.io/images/icon_huce93ec8a6fd7e12c2beec32639fe78a0_7050_512x512_fill_lanczos_center_2.png</url>
       <title>Posts</title>
       <link>https://tom-beer.github.io/post/</link>
     </image>
+    
+    <item>
+      <title>Uplift Modeling</title>
+      <link>https://tom-beer.github.io/post/uplift_part1/</link>
+      <pubDate>Mon, 03 Jun 2024 07:08:17 +0300</pubDate>
+      <guid>https://tom-beer.github.io/post/uplift_part1/</guid>
+      <description>&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Which patients are most likely to attend a colon cancer screening after receiving an invitation?&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Which customers would be most likely to stay with their internet provider if they got a persuasive call?&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Which past charity donors are most likely to make another contribution if approached with a compelling request?&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;These examples sound like prediction problems, but they&amp;rsquo;re not: they ask about the effect of an intervention. Why does it matter? Grab a seat!&lt;/p&gt;
+&lt;p&gt;In traditional prediction models, the goal is to estimate the likelihood of a particular outcome, such as whether a patient will attend a screening or a customer will remain loyal. However, these models do not reliably estimate the potential impact of specific actions or interventions. This is where uplift modeling comes into play.&lt;/p&gt;
+&lt;h4 id=&#34;what-is-uplift-modeling&#34;&gt;What is Uplift Modeling?&lt;/h4&gt;
+&lt;p&gt;Uplift modeling, also known as incremental modeling or true lift modeling, focuses on predicting the &lt;em&gt;incremental&lt;/em&gt; (more on this later) impact of an intervention. Instead of simply forecasting an outcome, uplift models estimate the difference in outcomes between those who receive the intervention and those who do not. This sounds better than pure prediction models..so why isn&amp;rsquo;t everyone using it? Uplift modelling, being a flavor of causal machine learning, is more complex than simple prediction. It comes with a high entry barrier: we need detailed knowledge about how the data was generated. These requirements are known as the assumptions of causal inference, which will detailed next.&lt;/p&gt;
+&lt;h4 id=&#34;requirements-for-causal-inference&#34;&gt;Requirements for causal inference&lt;/h4&gt;
+&lt;p&gt;Stable Unit Treatment Value Assumption (SUTVA): The effect of intervention on one individual should not influence the effect on another individual. For example, if a participant in a marketing study shares their positive experience with a targeted product with another participant, and this influences the second participant’s decision to try the product, then SUTVA is violated.&lt;/p&gt;
+&lt;p&gt;Exchangeability: All factors that influence both the treatment assignment and the outcome should be observed and accounted for in the model. To demonstrate, consider the following scenario in a hospital: We observe that every patient who receives a certain medication ends up dying. If we assume that the two treatment groups are comparable, we could conclude that the medication is causing these death. But this is likely not the case - maybe there are additional factors, such as the fact that doctors prescribe this medication only to the most critically ill patients, for whom all other treatments have failed. If we account for the severity of the patients&#39; conditions (and all other factors influencing the decision to treat and the outcome), then we can assume that both groups are exchangeable, hence comparable. And if we don&amp;rsquo;t have access to these factors, then exchangeability is violated. This assumption is also called uncondoundedness or ignorability.&lt;/p&gt;
+&lt;p&gt;Positivity: Every individual in the data should have a chance (a positive probability, hence the name) of receiving each treatment. If only patients above the age of 50 are eligible for a certain drug, then positivity is violated and we can&amp;rsquo;t infer its effect on the young population. This assumption is also called &lt;em&gt;overlap&lt;/em&gt; or &lt;em&gt;common support&lt;/em&gt;, in the sense that the whole population has a shared range of characteristics across treatment groups.&lt;/p&gt;
+&lt;p&gt;There are two more assumptions that are prerequisites for uplift modeling: consistency, which means the treatment effect we observe should match the true treatment effect for each individual, and the absence of hidden variations in the treatment. These assumptions are straightforward and are generally less challenging to address.&lt;/p&gt;
+&lt;p&gt;Consider linking the assumptions to the fundamental problem of causal inference&lt;/p&gt;
+&lt;h4 id=&#34;rcts-satisfy-causal-requirements&#34;&gt;RCTs satisfy causal requirements&lt;/h4&gt;
+&lt;p&gt;We see that causal modeling in general and uplift modeling specifically demand a high price before we even start working. Among the requirements, the hardest to satisfy in most cases is the exchangeability assumption. It is unverifiable from data alone, meaning we cannot look at the data and inspect if it holds or not. We need external information about how the data was generated. To demonstrate, see the example in 
+&lt;a href=&#34;https://tom-beer.github.io/post/proxies_ci/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;this post&lt;/a&gt; where two different processes create an identical distribution for $P(X,Y)$. If we know the data was generated from an RCT, where treatment was randomly allocated, then exchangeability holds because no factors influence both treatment assignment and outcome. Without control over the treatment assignment process, we can never know that we have hold of all factors influencing it, and we cannot guarantee exchangeability.&lt;/p&gt;
+&lt;p&gt;The modern practice of uplift modelling relies heavily on the availability of randomized data. In fact, data from an RCT is often considered a requirement for uplift modeling. Randomized data also ensures positivity, as the treatment groups have identical feature distributions $P(X∣T=0)=P(X∣T=1)$ (assuming a sufficiently large sample size relative to the feature vector&amp;rsquo;s cardinality). As for SUTVA, randomized data does not guarantee it, and we need subject-matter knowledge to address it.&lt;/p&gt;
+&lt;p&gt;As we know from the clinical domain, RCTs are costly and often impractical. Can we perform uplift modelling without randomized data? We&amp;rsquo;ll explore this question in Part III of this series. For now, we&amp;rsquo;ll focus on the industry standard of using randomized data.&lt;/p&gt;
+&lt;h5 id=&#34;practice&#34;&gt;Practice&lt;/h5&gt;
+&lt;p&gt;After reviewing the requirements, let&amp;rsquo;s practice some uplift modeling. The basic recipe has just two steps:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Causal modeling: Train a model that generates estimates of individual-level treatment effects, also called uplift scores in the context of uplift modeling.&lt;/li&gt;
+&lt;li&gt;Evaluation and decision-making: Use the causal model to define a policy for determining whom to treat.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The remainder of this post will focus on the first step, and the next post will handle the evaluation step.&lt;/p&gt;
+&lt;h5 id=&#34;data&#34;&gt;Data&lt;/h5&gt;
+&lt;p&gt;The data we&amp;rsquo;ll be using is the 
+&lt;a href=&#34;https://ods.ai/competitions/x5-retailhero-uplift-modeling/data&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Retail Hero competition dataset&lt;/a&gt;, preprocessed according to 
+&lt;a href=&#34;https://github.com/juanitorduz/website_projects/blob/master/Python/uplift.ipynb&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Juan Orduz&lt;/a&gt;&amp;rsquo;s suggestion. The processed version is available to download from 
+&lt;a href=&#34;https://dagshub.com/tom1beer/uplift&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Some key properties about this dataset:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;It is an RCT - treatment is randomly assigned&lt;/li&gt;
+&lt;li&gt;The treatment is being contacted by the retail company&lt;/li&gt;
+&lt;li&gt;The target is the user making a transaction&lt;/li&gt;
+&lt;li&gt;The treatment is almost perfectly balanced between intervention and control (50%/50%), though this is not required for valid uplift modelling.&lt;/li&gt;
+&lt;li&gt;The average response rate among the treated individuals is 63.7%, while for the control group, it is 60.4%. Since this is an RCT, we can infer that the average treatment effect, which is also called the total uplift, is around 3.3%:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;data_df.groupby(treatment_col)[target_col].mean().diff()[1]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This means that if we had intervened upon the entire population, we could have expected an extra 3% in purchases compared to contacting no one at all.&lt;/p&gt;
+&lt;h5 id=&#34;modeling&#34;&gt;Modeling&lt;/h5&gt;
+&lt;p&gt;To develop an intuition for the modeling approach, let&amp;rsquo;s clearly define its objective. In uplift modeling, we aim to identify and separate individuals who would be positively affected by the treatment from those who would not be. More specifically, we can categorize individuals into four types based on their responses to different treatments:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Would respond positively regardless of whether they receive the treatment.&lt;/li&gt;
+&lt;li&gt;Would not respond regardless of the treatment.&lt;/li&gt;
+&lt;li&gt;Would respond positively only if they receive the treatment.&lt;/li&gt;
+&lt;li&gt;Would respond positively only if they do not receive the treatment.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Each of these types has specific terminology in the uplift modeling domain, and they are usually presented in a contingency table format, such as this one from 
+&lt;a href=&#34;https://blog.dataiku.com/motivation-for-causal-inference&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Dataiku&lt;/a&gt;:
+&lt;img src=&#34;type_matrix.png&#34; width=400 height=400&gt;&lt;/p&gt;
+&lt;p&gt;So our goal is to identify the persuadables with high precision. Targeting the sleeping dogs is the worst case because it leads to a loss in whatever we are optimizing (revenue, number of cancer screening tests, etc.). Additionally, targeting the lost causes and the sure things is also unwanted, as the intervention itself usually has a cost (such as placing a phone call). Therefore, a useful model will generate &lt;em&gt;persuadability&lt;/em&gt; scores, which we can use to target the individuals with the highest scores.&lt;/p&gt;
+&lt;h5 id=&#34;t-learner&#34;&gt;T-learner&lt;/h5&gt;
+&lt;p&gt;To achieve this, we can build two models: one for each treatment group. One model will predict the potential outcome if an individual is treated, and the other will predict the potential outcome if not treated. By subtracting the predictions of the two models, we arrive at the persuadability score. This score, also known as the uplift score, helps us determine who is most likely to benefit from the treatment.&lt;/p&gt;
+&lt;p&gt;$$\widehat{uplift}(x) = \mu _T (x) - \mu _C (x)$$&lt;/p&gt;
+&lt;p&gt;This modeling choice is called a T-learner, where &amp;ldquo;T&amp;rdquo; stands for &amp;ldquo;two&amp;rdquo; because it involves two models. It is a flexible and powerful meta-model, allowing the practitioner to choose any base classifier, from a simple logistic regression to a deep learning model. If the individuals&#39; responses were precisely predictable from the data, we would expect the following:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The persuadables would have uplift scores close to 1&lt;/li&gt;
+&lt;li&gt;The lost causes and sure things would have uplift scores close to 0&lt;/li&gt;
+&lt;li&gt;The sleeping dogs would have uplift scores close to -1&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;There are many great open source python packages that implement meta-learners for causal inference and uplift modeling, 
+&lt;a href=&#34;https://causalml.readthedocs.io/en/latest/index.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;causalml&lt;/a&gt; and 
+&lt;a href=&#34;https://www.uplift-modeling.com/en/latest/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;scikit-uplift&lt;/a&gt; are two examples. Here, we&amp;rsquo;ll implement the model from scratch to demonstrate how simple and intuitive it is:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import pandas as pd
+from pathlib import Path
+from xgboost.sklearn import XGBClassifier
+from sklearn.model_selection import train_test_split
+
+src_dir = Path().cwd()
+data_dir = src_dir.parent / &amp;quot;data&amp;quot;
+
+data_df = pd.read_csv(data_dir / &#39;retailhero-uplift&#39; / &#39;data&#39; / &amp;quot;processed_data.csv&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;y = data_df.target
+t = data_df.treatment_flg
+x = data_df.drop(columns=[&amp;quot;treatment_flg&amp;quot;, &amp;quot;target&amp;quot;, &amp;quot;client_id&amp;quot;])
+
+idx_train, idx_val = train_test_split(
+    data_df.index,
+    test_size=0.3,
+    random_state=17,
+    stratify=(y.astype(str) + &amp;quot;_&amp;quot; + t.astype(str)),
+)
+
+x_train = x.loc[idx_train]
+x_val = x.loc[idx_val]
+
+t_train = t.loc[idx_train]
+t_val = t.loc[idx_val]
+
+y_train = y.loc[idx_train]
+y_val = y.loc[idx_val]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;model_treatment, model_control = XGBClassifier(), XGBClassifier()
+
+model_treatment.fit(x_train[t_train == 1], y_train[t_train == 1])
+model_control.fit(x_train[t_train == 0], y_train[t_train == 0])
+
+uplift_scores = (model_treatment.predict_proba(x_val) - model_control.predict_proba(x_val))[:, 1]
+
+df = pd.DataFrame({&amp;quot;y&amp;quot;: y_val, &amp;quot;t&amp;quot;: t_val, &amp;quot;uplift_score&amp;quot;: uplift_scores.flatten()})
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df.sort_values(&amp;quot;uplift_score&amp;quot;).head()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;img src=&#34;dataf.png&#34; width=250 height=250&gt;
+&lt;h5 id=&#34;other-modelling-approaches&#34;&gt;Other modelling approaches&lt;/h5&gt;
+&lt;p&gt;In this post we have chosen the T-learner as causal model, but there are many other good choices. Two notable example are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Transformed outcome model: This method transforms the problem into a single regression task by adjusting the observed outcomes, allowing standard regression techniques to estimate treatment effects directly.&lt;/li&gt;
+&lt;li&gt;End to end modeling: Though we haven&amp;rsquo;t talked about evaluation of uplift models yet, we can already guess that the base model&amp;rsquo;s loss function (cross entropy or some other classification loss) might not be best aligned with what we care about in uplift modeling. Some methods try to directly optimize uplift metrics, aiming to align the model&amp;rsquo;s training process more closely with the goal of maximizing uplift. However, these methods are often not used in practice due to their complexity and computational demands.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;summary&#34;&gt;Summary&lt;/h4&gt;
+&lt;p&gt;That&amp;rsquo;s a wrap for part I! Let&amp;rsquo;s summarize what we&amp;rsquo;ve covered so far:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Uplift models are used to create individual-level targeting policies.&lt;/li&gt;
+&lt;li&gt;They improve upon prediction models by using tools from causal inference and modeling all potential outcomes.&lt;/li&gt;
+&lt;li&gt;Their objective is to identify and target the persuadable individuals within the population.&lt;/li&gt;
+&lt;li&gt;Meta-learners are a flexible and simple approach to achieving this.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Next up, we&amp;rsquo;ll dive deep into the befuddled world of uplift evaluation metrics, with a mission to demystify their names and formulas.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>A Simple Hotel Recommender - WIP</title>
