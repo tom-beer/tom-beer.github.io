@@ -1,0 +1,1114 @@
+<!DOCTYPE html><html lang="en-us" >
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.8.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Tom Beer">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Part 2: Decision making and evaluation metrics">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://tom-beer.github.io/post/uplift_part2/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  <script src="/js/mathjax-config.js"></script>
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" integrity="" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.css">
+
+  
+
+
+
+
+  
+
+
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/images/icon_huce93ec8a6fd7e12c2beec32639fe78a0_7050_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon_huce93ec8a6fd7e12c2beec32639fe78a0_7050_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="https://tom-beer.github.io/post/uplift_part2/">
+
+  
+  
+  
+  
+  
+  
+  
+    
+  
+  
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="twitter:site" content="@aTomBeer">
+  <meta property="twitter:creator" content="@aTomBeer">
+  
+  <meta property="og:site_name" content="Tom Beer">
+  <meta property="og:url" content="https://tom-beer.github.io/post/uplift_part2/">
+  <meta property="og:title" content="Uplift Modeling II | Tom Beer">
+  <meta property="og:description" content="Part 2: Decision making and evaluation metrics"><meta property="og:image" content="https://tom-beer.github.io/post/uplift_part2/featured.png">
+  <meta property="twitter:image" content="https://tom-beer.github.io/post/uplift_part2/featured.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2024-08-11T21:11:55&#43;03:00">
+    
+    <meta property="article:modified_time" content="2024-08-11T21:11:55&#43;03:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://tom-beer.github.io/post/uplift_part2/"
+  },
+  "headline": "Uplift Modeling II",
+  
+  "image": [
+    "https://tom-beer.github.io/post/uplift_part2/featured.png"
+  ],
+  
+  "datePublished": "2024-08-11T21:11:55+03:00",
+  "dateModified": "2024-08-11T21:11:55+03:00",
+  
+  "author": {
+    "@type": "Person",
+    "name": "Tom Beer"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Tom Beer",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://tom-beer.github.io/images/icon_huce93ec8a6fd7e12c2beec32639fe78a0_7050_192x192_fill_lanczos_center_2.png"
+    }
+  },
+  "description": "Part 2: Decision making and evaluation metrics"
+}
+</script>
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  <title>Uplift Modeling II | Tom Beer</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">Tom Beer</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">Tom Beer</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts"><span>Posts</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#publications"><span>Publications</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+
+      
+      <li class="nav-item dropdown theme-dropdown">
+        <a href="#" class="nav-link js-theme-selector" data-toggle="dropdown" aria-haspopup="true">
+          <i class="fas fa-palette" aria-hidden="true"></i>
+        </a>
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item js-set-theme-light">
+            <span>Light</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-dark">
+            <span>Dark</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-auto">
+            <span>Automatic</span>
+          </a>
+        </div>
+      </li>
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>Uplift Modeling II</h1>
+
+  
+  <p class="page-subtitle">Part 2: Decision making and evaluation metrics</p>
+  
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    Aug 11, 2024
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    11 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      <p>In the 
+<a href="https://tom-beer.github.io/post/uplift_part1/" target="_blank" rel="noopener">previous post</a>, we explored how uplift models are crucial for understanding individual-level treatment effects and how the theory and practice of causal machine learning can generate uplift scores.
+This second part of the series will focus on translating those uplift scores into a policy for determining who should be treated, and on evaluating the performance of uplift models.</p>
+<h3 id="incremental-modeling">Incremental modeling</h3>
+<p>Uplift modeling is also known as incremental modeling. This terminology stems from the expected output of an uplift model, which is to identify optimal subsets incrementally. An uplift model can be seen as a function that maps subset sizes to instances. For example, if k=1, we expect the model to identify the single individual with the highest propensity for gain. If k=100, we expect the model to identify the top 100 candidates for intervention, and so forth. Hence the notion of incrementality.</p>
+<p>Why focus on incremental gains rather than intervening across the entire population? In Part 1, we observed that for the Retail Hero data, intervening on everyone should yield a net benefit (this is not always true for every data generating process, but let&rsquo;s assume it is for this discussion). However, there are two main reasons why we should not target everyone:</p>
+<ol>
+<li>
+<p>Sleeping dogs:<br>
+Some individuals may respond negatively to treatment, meaning they generate a positive outcome when not treated but would alter their behavior unfavorably under treatment. A good uplift model will identify these individuals and assign them a low uplift score, allowing us to avoid intervening on them.</p>
+</li>
+<li>
+<p>Cost of intervention:
+Often, interventions carry costs (e.g., time spent on phone calls), and it is more efficient to target only those likely to yield the highest return on investment (ROI). We aim to maximize gain while ensuring costs remain within budget constraints:
+$\max \text{ gain  } \text{s.t. cost}  \leq \text{budget}$.
+Many individuals exhibit a net loss, whether they are sure things, lost causes, or sleeping dogs (see the previous post for the customary classification of individual types). This means that if we could predict the potential responses under the two treatment allocations, we could perform much better than a uniform sampling of the population. This is exactly the value proposition of uplift modeling and why an incremental approach is so powerful.</p>
+</li>
+</ol>
+<hr>
+<h3 id="ranking">Ranking</h3>
+<p>We&rsquo;ve seen that uplift scores estimate the treatment effect for individuals.
+For example, if CATE (Conditional Average Treatment Effect) = 0.01, it means that intervening adds 0.01 to the probability of responding.
+However, it&rsquo;s important to understand that perfect calibration of these scores is rare and, in fact, not necessary for practical applications.</p>
+<p>What really matters in uplift modeling is not the absolute values of the scores, but rather how the model ranks the population.
+In other words, we&rsquo;re more concerned with whether the model can accurately predict who has a higher treatment effect relative to others, rather than predicting the exact magnitude of those effects.</p>
+<p>For this reason, a regular step in uplift modeling is to sort the scores in descending order as soon as they come out of the model.
+This ranking allows us to implement the incremental approach we discussed earlier, targeting individuals with the highest expected uplift first and moving down the list as resources allow.</p>
+<p>This ranking approach also aligns well with the practical constraints we often face, such as limited budgets for interventions.
+By focusing on relative rankings rather than absolute scores, we can more easily adjust our targeting strategy to fit within these constraints while still maximizing the overall impact of our interventions.</p>
+<hr>
+<h3 id="the-fundamental-problem-of-uplift-modeling">The fundamental problem of uplift modeling</h3>
+<p>As we develop uplift models, we&rsquo;re confronted with a critical question: How can we compare the performance of different models? Or, how can we determine if a candidate model shows any benefit over a naive approach, such as random sampling of the population?</p>
+<p>In traditional machine learning, we would typically use evaluation metrics like accuracy or precision. For uplift modeling, we might be tempted to define an accuracy metric that calculates the proportion of persuadables (those we&rsquo;re trying to identify) from the entire subgroup:</p>
+<p>$$acc_k = \frac{1}{k} \sum_{i \in \pi(D,k)} [[Y_i(1)=1]] \cdot [[Y_i(0)=0]]$$</p>
+<details>
+<summary>Details on notation ⬇️</summary>
+<ul>
+<li>$\pi(D,k)$ are the k first instances in dataset $D$ according to the ordering obtained by the uplift model</li>
+<li>$[[ x ]]$ is the Iverson bracket</li>
+<li>$Y_i(t)$ is the potential outcome of instance $i$ under treatment $t$</li>
+</ul>
+</details>
+<p>However, there&rsquo;s a fundamental problem: we don&rsquo;t have the ground truth data required to calculate these metrics.
+The formula above includes both potential outcomes - the response under treatment $Y_i(1)$ and the response under control $Y_i(0)$.
+But in reality, no individual is both treated and non-treated simultaneously.
+This is known as the fundamental problem of causal inference.</p>
+<p>How can we produce reliable evaluations without reliable ground truth data? Remember the assumptions of causal inference from part 1? Have you had a thought along the lines of &ldquo;why on earth do we need to admit ourselves to stringent, unverifiable assumptions?&rdquo; Exactly for this - Let&rsquo;s see how:</p>
+<p>$$
+\mathbb{E}[Y(1)] - \mathbb{E}[Y(0)] = \mathbb{E}[Y(1) \mid T = 1] - \mathbb{E}[Y(0) \mid T = 0] \<br>
+= \mathbb{E}[Y \mid T = 1] - \mathbb{E}[Y \mid T = 0]
+$$
+(The first equation is due to exchangeability, and the second due to consistency)</p>
+<p>This equation shows that under the causal assumptions, we can use observed quantities to represent unmeasurable concepts like potential outcomes. This is the key that unlocks our ability to evaluate uplift models, despite the fundamental problem of causal inference.</p>
+<hr>
+<h3 id="evaluation-from-first-principles">Evaluation from first principles</h3>
+<p>Our causal assumptions tell us that the treatment and control groups are comparable.
+This means we can calculate metrics on each treatment group separately and then compare them (often by subtracting).
+While we can&rsquo;t compute instance-level metrics, we can aggregate over subgroups.</p>
+<p>Let&rsquo;s start by defining some basic quantities:</p>
+<ol>
+<li>
+<p>Number of treated and control instances among the top-k:
+$$N_\pi^T(D,k) = \sum_{i \in \pi(D,k)}[[t_i=1]]$$
+$$N_\pi^C(D,k) = \sum_{i \in \pi(D,k)}[[t_i=0]]$$</p>
+</li>
+<li>
+<p>Number of treated and control responders:
+$$R_\pi^T(D,k) = \sum_{i \in \pi(D,k)} [[y_i=1]] \cdot [[t_i=1]]$$
+$$R_\pi^C(D,k) = \sum_{i \in \pi(D,k)} [[y_i=1]] \cdot [[t_i=0]]$$</p>
+</li>
+</ol>
+<p>Here, $\pi(D,k)$ represents the top-k instances in dataset $D$ according to the uplift model&rsquo;s ranking.</p>
+<h4 id="constructing-uplift-metrics">Constructing Uplift Metrics</h4>
+<p>Using these building blocks, we can define several performance metrics. For simplicity, we&rsquo;ll omit $\pi$ in the following formulas. Here are three common metrics:</p>
+<p>$$(1) \quad R^T(D,k)-R^C(D,k)\frac{N^T(D,k)}{N^C(D,k)}$$
+$$(2) \quad (\frac{R^T(D,k)}{N^T(D,k)}-\frac{R^C(D,k)}{N^C(D,k)}) \cdot (N^T(D,k)+N^C(D,k))$$
+$$(3) \quad \frac{R^T(D,k)}{|T|}-\frac{R^C(D,k)}{|C|}$$</p>
+<p>We see many similarities between these metrics.
+They all compute response rates among the treated group and compare (subtract) them to the control group, with various scaling factors related to group sizes.</p>
+<p>In the literature, these metrics are known by different names, which can sometimes lead to confusion.
+The first is usually called a <em>qini</em> curve, and the second is commonly referred to as an <em>uplift</em> curve.
+It&rsquo;s customary to plot these metrics as a function of $k$, hence the term &ldquo;curve&rdquo; in their names.</p>
+<h4 id="joint-vs-separate-evaluation">Joint vs Separate Evaluation</h4>
+<p>In the metrics above, the top-k ranked instances include both treated and control groups.
+This is known as joint evaluation.
+However, we can also directly compare the highest-scoring treated instances to the highest-scoring controls, which is called separate evaluation.
+In this setting, we decide how many treated and how many controls are in the evaluation subgroup.</p>
+<p>Separate evaluation allows us to deliberately address imbalances between treatment arms. We can replace $k \in {1, \ldots, N}$ with $p \in [0,1]$ and use it to scale the group sizes.
+For example, if $|T|=100$ and $|C|=200$, it makes sense to evaluate the uplift for 10 treatment units and 20 control units, or 30 treatment and 60 control units, and so forth.</p>
+<p>For separate evaluation, we define:
+$$R_\pi(T,k) = \sum_{i \in \pi(T,k)} [[y_i=1]]$$
+$$R_\pi(C,k) = \sum_{i \in \pi(C,k)} [[y_i=1]]$$</p>
+<p>Then we can define three more metrics for uplift:
+$$(4) \quad R(T,p|T|)-R(C,p|C|)\frac{|T|}{|C|}$$
+$$(5) \quad \frac{R(T,p|T|)}{|T|}-\frac{R(C,p|C|)}{|C|}$$
+$$(6) \quad R(T,p|T|)-R(C,p|C|)$$</p>
+<p>Note that $(4)$ is similar to $(1)$, $(5)$ is similar to $(3)$, and $(6)$ is a bit different in that it does not include any normalization factor.</p>
+<hr>
+<h3 id="choosing-a-performance-metric">Choosing a performance metric</h3>
+<p>How shall we choose a metric that best helps to compare gains from different models?
+While the uplift modeling literature doesn&rsquo;t always give this topic the attention it deserves, we will try to give motivation or intuition for some of these metrics.</p>
+<h4 id="area-under-the-uplift-curve-auuc">Area Under the Uplift Curve (AUUC)</h4>
+<p>Before getting into the considerations, it&rsquo;s worth noting that any curve-based metric can be integrated to give a single scalar value.
+This is known as the Area Under the Uplift Curve (AUUC):
+$$AUUC = \sum_{k=1}^N V(k)$$
+Where $V$ is any curve metric we&rsquo;ve discussed.
+The AUUC can be useful as a benchmark for comparing models, especially when we don&rsquo;t know the specific fraction of the population we plan to target. However, if we do know our intended operating point (i.e., the fraction of the population we&rsquo;ll intervene on), it&rsquo;s often more informative to evaluate the curve at that specific point.</p>
+<h4 id="key-considerations-in-metric-selection">Key Considerations in Metric Selection</h4>
+<ol>
+<li>Joint vs. Separate Evaluation:</li>
+</ol>
+<p>Joint evaluation (where top-k includes both treated and control) is generally preferable.
+Reasons to prefer joint evaluation:
+a) It aligns better with real-world targeting scenarios.
+b) It avoids potential violations of the exchangeability assumption.</p>
+<ol start="2">
+<li>Units of Measurement:</li>
+</ol>
+<p>Absolute metrics (e.g., metrics $(1)$, $(4)$, and $(6)$) measure &ldquo;How many people will respond to the intervention?&rdquo;
+Relative metrics (e.g., metrics $(2)$, $(3)$, and $(5)$) measure &ldquo;What fraction of the population can we persuade?&rdquo;
+The choice between absolute and relative units often depends on organizational preferences and how value is measured within your context.</p>
+<h4 id="recommended-approach">Recommended Approach</h4>
+<p>Based on these considerations, here&rsquo;s a suggested approach:</p>
+<ol>
+<li>Start with joint evaluation metrics unless you have a compelling reason for separate evaluation.</li>
+<li>If you know your intended targeting depth (e.g., top 10% of the population), evaluate the selected curve at that specific point.</li>
+<li>If you don&rsquo;t know your targeting depth, consider using the are under the curve as a general performance indicator.</li>
+<li>Choose between absolute and relative units based on what&rsquo;s most meaningful for your specific use case and stakeholders.</li>
+<li>Always compare your model&rsquo;s performance to a random targeting baseline to ensure you&rsquo;re achieving meaningful gains.</li>
+</ol>
+<hr>
+<h3 id="implementation">Implementation</h3>
+<p>Now that we&rsquo;ve discussed the theory behind uplift evaluation metrics, let&rsquo;s see how to implement them in practice.</p>
+<h4 id="preparing-the-data">Preparing the Data</h4>
+<p>Recall from the end of our last post that we had a DataFrame containing the treatment, outcome, and uplift scores:
+<img src="dataf.png" width=250 height=250></p>
+<h4 id="calculating-joint-metrics">Calculating Joint Metrics</h4>
+<p>Let&rsquo;s start by implementing the joint metrics we discussed earlier:</p>
+<pre><code class="language-python">df[&quot;nt&quot;] = (df[&quot;t&quot;] == 1).cumsum()
+df[&quot;nc&quot;] = (df[&quot;t&quot;] == 0).cumsum()
+df[&quot;rt&quot;] = ((df[&quot;t&quot;] == 1) &amp; (df[&quot;y&quot;] == 1)).cumsum()
+df[&quot;rc&quot;] = ((df[&quot;t&quot;] == 0) &amp; (df[&quot;y&quot;] == 1)).cumsum()
+df[&quot;V1&quot;] = df[&quot;rt&quot;] - (df[&quot;rc&quot;] * df[&quot;nt&quot;] / df[&quot;nc&quot;])
+df[&quot;V2&quot;] = ((df[&quot;rt&quot;] / df[&quot;nt&quot;]) - (df[&quot;rc&quot;] / df[&quot;nc&quot;])) * (df[&quot;nt&quot;] + df[&quot;nc&quot;])
+df[&quot;V3&quot;] = (df[&quot;rt&quot;] / (df.t == 1).sum()) - (df[&quot;rc&quot;] / (df.t == 0).sum())
+</code></pre>
+<h4 id="calculating-separate-metrics">Calculating Separate Metrics</h4>
+<p>For the separate setting, we need a bit more preparation:</p>
+<pre><code class="language-python">size_control = (df.t == 0).sum()
+size_treatment = (df.t == 1).sum()
+
+grid_control = np.round(np.linspace(0, size_control-1, min(size_control, size_treatment)))
+grid_treatment = np.round(np.linspace(0, size_treatment-1, min(size_control, size_treatment)))
+
+rc_sep = df.loc[df.t == 0, &quot;rc&quot;].reset_index(drop=True).iloc[grid_control].values
+rt_sep = df.loc[df.t == 1, &quot;rt&quot;].reset_index(drop=True).iloc[grid_treatment].values
+
+V4 = rt_sep - rc_sep * (size_treatment / size_control)
+V5 = rt_sep / size_treatment - rc_sep / size_control
+V6 = rt_sep - rc_sep
+</code></pre>
+<h4 id="visualizing-the-results">Visualizing the Results</h4>
+<p>Let&rsquo;s visualize one of these metrics, say $V1$ (often called the &lsquo;Qini curve&rsquo;), as a function of the population size:
+<img src="V1_alone.png"></p>
+<p>Interpreting this plot:</p>
+<ul>
+<li>The x-axis represents the number of individuals targeted, from 0 to the entire population.</li>
+<li>The y-axis shows the V1 metric, which represents the incremental number of positive responses due to the treatment.</li>
+<li>A rising curve indicates that as we target more individuals according to our model&rsquo;s ranking, we continue to see positive uplift.</li>
+</ul>
+<p>Cool! But that doesn&rsquo;t help us decide if we should use this model as a targeting policy.
+To put our model&rsquo;s performance in context, let&rsquo;s compare it to a random targeting policy and an alternative model:</p>
+<img src="V1_compare.png">
+Interpreting this comparison:
+<ul>
+<li>Both the XGBoost T-Learner and Random Forest S-Learner outperform the random policy up to about 75% of the population.</li>
+<li>The two models show some differences, but they&rsquo;re relatively small and may not be statistically significant.</li>
+<li>After targeting about 75% of the population, the uplift models' performance converges with the random policy, suggesting diminishing returns for targeting beyond this point.</li>
+</ul>
+<hr>
+<h3 id="summary">Summary</h3>
+<p>In this post, we&rsquo;ve explored aspects of evaluating uplift models and translating their outputs into actionable targeting policies.
+Here are the three key takeaways:</p>
+<ol>
+<li><strong>From Scores to strategy</strong>:
+We discussed why uplift modeling is called incremental modeling and the importance of ranking. Uplift scores are most valuable for their relative ordering rather than absolute values. This ranking allows us to incrementally target individuals, considering factors like intervention costs and potential negative responses (&ldquo;sleeping dogs&rdquo;). The goal is to optimize interventions based on expected impact and available resources.</li>
+<li><strong>Overcoming the fundamental problem of causal inference</strong>:
+We addressed the challenge of evaluating uplift models when we can&rsquo;t observe both potential outcomes for any individual.
+Using the assumptions of causal inference, we introduced several evaluation metrics for both joint and separate settings.
+These metrics allow us to assess model performance despite the inherent limitations of observational data.</li>
+<li><strong>Practical implementation and comparison</strong>:
+We demonstrated how to implement, visualize and interpret uplift evaluation metrics.
+We emphasized the need to compare uplift model performance against a random targeting baseline and between different models.</li>
+</ol>
+<h3 id="next-up-uplift-modeling-beyond-rcts">Next Up: Uplift Modeling Beyond RCTs</h3>
+<p>RCTs (Randomized Controlled Trials) are often considered the gold standard for uplift modeling.
+However, they can be costly, require significant organizational effort (such as implementing an experimentation platform), and are sometimes simply infeasible.
+This raises an important question:
+If we don&rsquo;t have access to data from an RCT, does it mean we can&rsquo;t use uplift modeling at all?</p>
+<p>In our next post, we&rsquo;ll challenge the commonly held belief that RCTs are an absolute necessity for uplift modeling and explore alternative approaches. Stay tuned!</p>
+
+    </div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+  
+    
+    
+    
+      
+    
+    
+    
+    <div class="media author-card content-widget-hr">
+      
+        
+        <img class="avatar mr-3 avatar-circle" src="/author/tom-beer/avatar_hue144c4d3e37334935a566ed93e6ec2dd_170776_270x270_fill_q90_lanczos_center.jpg" alt="Tom Beer">
+      
+
+      <div class="media-body">
+        <h5 class="card-title"><a href="https://tom-beer.github.io/">Tom Beer</a></h5>
+        
+        
+        <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+    <li>
+      <a href="mailto:tom.beer@khealth.ai" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://twitter.com/aTomBeer" target="_blank" rel="noopener">
+        <i class="fab fa-twitter"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://www.linkedin.com/in/tom-beer/" target="_blank" rel="noopener">
+        <i class="fab fa-linkedin"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/tom-beer" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://huggingface.co/tom-beer" target="_blank" rel="noopener">
+        <i class="fab fa-face-smiling-hands"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://scholar.google.com/citations?user=6wZ70dEAAAAJ&amp;hl=en" target="_blank" rel="noopener">
+        <i class="ai ai-google-scholar"></i>
+      </a>
+    </li>
+  
+</ul>
+
+      </div>
+    </div>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    <script>const isSiteThemeDark = false;</script>
+    
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <script src="/js/academic.min.6f7ce8be710290b8c431bbc97f405d15.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    
+  </p>
+
+  
+  
+
+
+
+
+
+
+  <p class="powered-by">
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

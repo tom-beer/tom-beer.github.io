@@ -5,7 +5,7 @@
     <link>https://tom-beer.github.io/</link>
       <atom:link href="https://tom-beer.github.io/index.xml" rel="self" type="application/rss+xml" />
     <description>Tom Beer</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 03 Jun 2024 07:08:17 +0300</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 11 Aug 2024 21:11:55 +0300</lastBuildDate>
     <image>
       <url>https://tom-beer.github.io/images/icon_huce93ec8a6fd7e12c2beec32639fe78a0_7050_512x512_fill_lanczos_center_2.png</url>
       <title>Tom Beer</title>
@@ -13,7 +13,215 @@
     </image>
     
     <item>
-      <title>Uplift Modeling</title>
+      <title>Uplift Modeling II</title>
+      <link>https://tom-beer.github.io/post/uplift_part2/</link>
+      <pubDate>Sun, 11 Aug 2024 21:11:55 +0300</pubDate>
+      <guid>https://tom-beer.github.io/post/uplift_part2/</guid>
+      <description>&lt;p&gt;In the 
+&lt;a href=&#34;https://tom-beer.github.io/post/uplift_part1/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;previous post&lt;/a&gt;, we explored how uplift models are crucial for understanding individual-level treatment effects and how the theory and practice of causal machine learning can generate uplift scores.
+This second part of the series will focus on translating those uplift scores into a policy for determining who should be treated, and on evaluating the performance of uplift models.&lt;/p&gt;
+&lt;h3 id=&#34;incremental-modeling&#34;&gt;Incremental modeling&lt;/h3&gt;
+&lt;p&gt;Uplift modeling is also known as incremental modeling. This terminology stems from the expected output of an uplift model, which is to identify optimal subsets incrementally. An uplift model can be seen as a function that maps subset sizes to instances. For example, if k=1, we expect the model to identify the single individual with the highest propensity for gain. If k=100, we expect the model to identify the top 100 candidates for intervention, and so forth. Hence the notion of incrementality.&lt;/p&gt;
+&lt;p&gt;Why focus on incremental gains rather than intervening across the entire population? In Part 1, we observed that for the Retail Hero data, intervening on everyone should yield a net benefit (this is not always true for every data generating process, but let&amp;rsquo;s assume it is for this discussion). However, there are two main reasons why we should not target everyone:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Sleeping dogs:&lt;br&gt;
+Some individuals may respond negatively to treatment, meaning they generate a positive outcome when not treated but would alter their behavior unfavorably under treatment. A good uplift model will identify these individuals and assign them a low uplift score, allowing us to avoid intervening on them.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Cost of intervention:
+Often, interventions carry costs (e.g., time spent on phone calls), and it is more efficient to target only those likely to yield the highest return on investment (ROI). We aim to maximize gain while ensuring costs remain within budget constraints:
+$\max \text{ gain  } \text{s.t. cost}  \leq \text{budget}$.
+Many individuals exhibit a net loss, whether they are sure things, lost causes, or sleeping dogs (see the previous post for the customary classification of individual types). This means that if we could predict the potential responses under the two treatment allocations, we could perform much better than a uniform sampling of the population. This is exactly the value proposition of uplift modeling and why an incremental approach is so powerful.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;ranking&#34;&gt;Ranking&lt;/h3&gt;
+&lt;p&gt;We&amp;rsquo;ve seen that uplift scores estimate the treatment effect for individuals.
+For example, if CATE (Conditional Average Treatment Effect) = 0.01, it means that intervening adds 0.01 to the probability of responding.
+However, it&amp;rsquo;s important to understand that perfect calibration of these scores is rare and, in fact, not necessary for practical applications.&lt;/p&gt;
+&lt;p&gt;What really matters in uplift modeling is not the absolute values of the scores, but rather how the model ranks the population.
+In other words, we&amp;rsquo;re more concerned with whether the model can accurately predict who has a higher treatment effect relative to others, rather than predicting the exact magnitude of those effects.&lt;/p&gt;
+&lt;p&gt;For this reason, a regular step in uplift modeling is to sort the scores in descending order as soon as they come out of the model.
+This ranking allows us to implement the incremental approach we discussed earlier, targeting individuals with the highest expected uplift first and moving down the list as resources allow.&lt;/p&gt;
+&lt;p&gt;This ranking approach also aligns well with the practical constraints we often face, such as limited budgets for interventions.
+By focusing on relative rankings rather than absolute scores, we can more easily adjust our targeting strategy to fit within these constraints while still maximizing the overall impact of our interventions.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;the-fundamental-problem-of-uplift-modeling&#34;&gt;The fundamental problem of uplift modeling&lt;/h3&gt;
+&lt;p&gt;As we develop uplift models, we&amp;rsquo;re confronted with a critical question: How can we compare the performance of different models? Or, how can we determine if a candidate model shows any benefit over a naive approach, such as random sampling of the population?&lt;/p&gt;
+&lt;p&gt;In traditional machine learning, we would typically use evaluation metrics like accuracy or precision. For uplift modeling, we might be tempted to define an accuracy metric that calculates the proportion of persuadables (those we&amp;rsquo;re trying to identify) from the entire subgroup:&lt;/p&gt;
+&lt;p&gt;$$acc_k = \frac{1}{k} \sum_{i \in \pi(D,k)} [[Y_i(1)=1]] \cdot [[Y_i(0)=0]]$$&lt;/p&gt;
+&lt;details&gt;
+&lt;summary&gt;Details on notation ⬇️&lt;/summary&gt;
+&lt;ul&gt;
+&lt;li&gt;$\pi(D,k)$ are the k first instances in dataset $D$ according to the ordering obtained by the uplift model&lt;/li&gt;
+&lt;li&gt;$[[ x ]]$ is the Iverson bracket&lt;/li&gt;
+&lt;li&gt;$Y_i(t)$ is the potential outcome of instance $i$ under treatment $t$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/details&gt;
+&lt;p&gt;However, there&amp;rsquo;s a fundamental problem: we don&amp;rsquo;t have the ground truth data required to calculate these metrics.
+The formula above includes both potential outcomes - the response under treatment $Y_i(1)$ and the response under control $Y_i(0)$.
+But in reality, no individual is both treated and non-treated simultaneously.
+This is known as the fundamental problem of causal inference.&lt;/p&gt;
+&lt;p&gt;How can we produce reliable evaluations without reliable ground truth data? Remember the assumptions of causal inference from part 1? Have you had a thought along the lines of &amp;ldquo;why on earth do we need to admit ourselves to stringent, unverifiable assumptions?&amp;rdquo; Exactly for this - Let&amp;rsquo;s see how:&lt;/p&gt;
+&lt;p&gt;$$
+\mathbb{E}[Y(1)] - \mathbb{E}[Y(0)] = \mathbb{E}[Y(1) \mid T = 1] - \mathbb{E}[Y(0) \mid T = 0] \&lt;br&gt;
+= \mathbb{E}[Y \mid T = 1] - \mathbb{E}[Y \mid T = 0]
+$$
+(The first equation is due to exchangeability, and the second due to consistency)&lt;/p&gt;
+&lt;p&gt;This equation shows that under the causal assumptions, we can use observed quantities to represent unmeasurable concepts like potential outcomes. This is the key that unlocks our ability to evaluate uplift models, despite the fundamental problem of causal inference.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;evaluation-from-first-principles&#34;&gt;Evaluation from first principles&lt;/h3&gt;
+&lt;p&gt;Our causal assumptions tell us that the treatment and control groups are comparable.
+This means we can calculate metrics on each treatment group separately and then compare them (often by subtracting).
+While we can&amp;rsquo;t compute instance-level metrics, we can aggregate over subgroups.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s start by defining some basic quantities:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Number of treated and control instances among the top-k:
+$$N_\pi^T(D,k) = \sum_{i \in \pi(D,k)}[[t_i=1]]$$
+$$N_\pi^C(D,k) = \sum_{i \in \pi(D,k)}[[t_i=0]]$$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Number of treated and control responders:
+$$R_\pi^T(D,k) = \sum_{i \in \pi(D,k)} [[y_i=1]] \cdot [[t_i=1]]$$
+$$R_\pi^C(D,k) = \sum_{i \in \pi(D,k)} [[y_i=1]] \cdot [[t_i=0]]$$&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Here, $\pi(D,k)$ represents the top-k instances in dataset $D$ according to the uplift model&amp;rsquo;s ranking.&lt;/p&gt;
+&lt;h4 id=&#34;constructing-uplift-metrics&#34;&gt;Constructing Uplift Metrics&lt;/h4&gt;
+&lt;p&gt;Using these building blocks, we can define several performance metrics. For simplicity, we&amp;rsquo;ll omit $\pi$ in the following formulas. Here are three common metrics:&lt;/p&gt;
+&lt;p&gt;$$(1) \quad R^T(D,k)-R^C(D,k)\frac{N^T(D,k)}{N^C(D,k)}$$
+$$(2) \quad (\frac{R^T(D,k)}{N^T(D,k)}-\frac{R^C(D,k)}{N^C(D,k)}) \cdot (N^T(D,k)+N^C(D,k))$$
+$$(3) \quad \frac{R^T(D,k)}{|T|}-\frac{R^C(D,k)}{|C|}$$&lt;/p&gt;
+&lt;p&gt;We see many similarities between these metrics.
+They all compute response rates among the treated group and compare (subtract) them to the control group, with various scaling factors related to group sizes.&lt;/p&gt;
+&lt;p&gt;In the literature, these metrics are known by different names, which can sometimes lead to confusion.
+The first is usually called a &lt;em&gt;qini&lt;/em&gt; curve, and the second is commonly referred to as an &lt;em&gt;uplift&lt;/em&gt; curve.
+It&amp;rsquo;s customary to plot these metrics as a function of $k$, hence the term &amp;ldquo;curve&amp;rdquo; in their names.&lt;/p&gt;
+&lt;h4 id=&#34;joint-vs-separate-evaluation&#34;&gt;Joint vs Separate Evaluation&lt;/h4&gt;
+&lt;p&gt;In the metrics above, the top-k ranked instances include both treated and control groups.
+This is known as joint evaluation.
+However, we can also directly compare the highest-scoring treated instances to the highest-scoring controls, which is called separate evaluation.
+In this setting, we decide how many treated and how many controls are in the evaluation subgroup.&lt;/p&gt;
+&lt;p&gt;Separate evaluation allows us to deliberately address imbalances between treatment arms. We can replace $k \in {1, \ldots, N}$ with $p \in [0,1]$ and use it to scale the group sizes.
+For example, if $|T|=100$ and $|C|=200$, it makes sense to evaluate the uplift for 10 treatment units and 20 control units, or 30 treatment and 60 control units, and so forth.&lt;/p&gt;
+&lt;p&gt;For separate evaluation, we define:
+$$R_\pi(T,k) = \sum_{i \in \pi(T,k)} [[y_i=1]]$$
+$$R_\pi(C,k) = \sum_{i \in \pi(C,k)} [[y_i=1]]$$&lt;/p&gt;
+&lt;p&gt;Then we can define three more metrics for uplift:
+$$(4) \quad R(T,p|T|)-R(C,p|C|)\frac{|T|}{|C|}$$
+$$(5) \quad \frac{R(T,p|T|)}{|T|}-\frac{R(C,p|C|)}{|C|}$$
+$$(6) \quad R(T,p|T|)-R(C,p|C|)$$&lt;/p&gt;
+&lt;p&gt;Note that $(4)$ is similar to $(1)$, $(5)$ is similar to $(3)$, and $(6)$ is a bit different in that it does not include any normalization factor.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;choosing-a-performance-metric&#34;&gt;Choosing a performance metric&lt;/h3&gt;
+&lt;p&gt;How shall we choose a metric that best helps to compare gains from different models?
+While the uplift modeling literature doesn&amp;rsquo;t always give this topic the attention it deserves, we will try to give motivation or intuition for some of these metrics.&lt;/p&gt;
+&lt;h4 id=&#34;area-under-the-uplift-curve-auuc&#34;&gt;Area Under the Uplift Curve (AUUC)&lt;/h4&gt;
+&lt;p&gt;Before getting into the considerations, it&amp;rsquo;s worth noting that any curve-based metric can be integrated to give a single scalar value.
+This is known as the Area Under the Uplift Curve (AUUC):
+$$AUUC = \sum_{k=1}^N V(k)$$
+Where $V$ is any curve metric we&amp;rsquo;ve discussed.
+The AUUC can be useful as a benchmark for comparing models, especially when we don&amp;rsquo;t know the specific fraction of the population we plan to target. However, if we do know our intended operating point (i.e., the fraction of the population we&amp;rsquo;ll intervene on), it&amp;rsquo;s often more informative to evaluate the curve at that specific point.&lt;/p&gt;
+&lt;h4 id=&#34;key-considerations-in-metric-selection&#34;&gt;Key Considerations in Metric Selection&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;Joint vs. Separate Evaluation:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Joint evaluation (where top-k includes both treated and control) is generally preferable.
+Reasons to prefer joint evaluation:
+a) It aligns better with real-world targeting scenarios.
+b) It avoids potential violations of the exchangeability assumption.&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;Units of Measurement:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Absolute metrics (e.g., metrics $(1)$, $(4)$, and $(6)$) measure &amp;ldquo;How many people will respond to the intervention?&amp;rdquo;
+Relative metrics (e.g., metrics $(2)$, $(3)$, and $(5)$) measure &amp;ldquo;What fraction of the population can we persuade?&amp;rdquo;
+The choice between absolute and relative units often depends on organizational preferences and how value is measured within your context.&lt;/p&gt;
+&lt;h4 id=&#34;recommended-approach&#34;&gt;Recommended Approach&lt;/h4&gt;
+&lt;p&gt;Based on these considerations, here&amp;rsquo;s a suggested approach:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Start with joint evaluation metrics unless you have a compelling reason for separate evaluation.&lt;/li&gt;
+&lt;li&gt;If you know your intended targeting depth (e.g., top 10% of the population), evaluate the selected curve at that specific point.&lt;/li&gt;
+&lt;li&gt;If you don&amp;rsquo;t know your targeting depth, consider using the are under the curve as a general performance indicator.&lt;/li&gt;
+&lt;li&gt;Choose between absolute and relative units based on what&amp;rsquo;s most meaningful for your specific use case and stakeholders.&lt;/li&gt;
+&lt;li&gt;Always compare your model&amp;rsquo;s performance to a random targeting baseline to ensure you&amp;rsquo;re achieving meaningful gains.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;implementation&#34;&gt;Implementation&lt;/h3&gt;
+&lt;p&gt;Now that we&amp;rsquo;ve discussed the theory behind uplift evaluation metrics, let&amp;rsquo;s see how to implement them in practice.&lt;/p&gt;
+&lt;h4 id=&#34;preparing-the-data&#34;&gt;Preparing the Data&lt;/h4&gt;
+&lt;p&gt;Recall from the end of our last post that we had a DataFrame containing the treatment, outcome, and uplift scores:
+&lt;img src=&#34;dataf.png&#34; width=250 height=250&gt;&lt;/p&gt;
+&lt;h4 id=&#34;calculating-joint-metrics&#34;&gt;Calculating Joint Metrics&lt;/h4&gt;
+&lt;p&gt;Let&amp;rsquo;s start by implementing the joint metrics we discussed earlier:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df[&amp;quot;nt&amp;quot;] = (df[&amp;quot;t&amp;quot;] == 1).cumsum()
+df[&amp;quot;nc&amp;quot;] = (df[&amp;quot;t&amp;quot;] == 0).cumsum()
+df[&amp;quot;rt&amp;quot;] = ((df[&amp;quot;t&amp;quot;] == 1) &amp;amp; (df[&amp;quot;y&amp;quot;] == 1)).cumsum()
+df[&amp;quot;rc&amp;quot;] = ((df[&amp;quot;t&amp;quot;] == 0) &amp;amp; (df[&amp;quot;y&amp;quot;] == 1)).cumsum()
+df[&amp;quot;V1&amp;quot;] = df[&amp;quot;rt&amp;quot;] - (df[&amp;quot;rc&amp;quot;] * df[&amp;quot;nt&amp;quot;] / df[&amp;quot;nc&amp;quot;])
+df[&amp;quot;V2&amp;quot;] = ((df[&amp;quot;rt&amp;quot;] / df[&amp;quot;nt&amp;quot;]) - (df[&amp;quot;rc&amp;quot;] / df[&amp;quot;nc&amp;quot;])) * (df[&amp;quot;nt&amp;quot;] + df[&amp;quot;nc&amp;quot;])
+df[&amp;quot;V3&amp;quot;] = (df[&amp;quot;rt&amp;quot;] / (df.t == 1).sum()) - (df[&amp;quot;rc&amp;quot;] / (df.t == 0).sum())
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;calculating-separate-metrics&#34;&gt;Calculating Separate Metrics&lt;/h4&gt;
+&lt;p&gt;For the separate setting, we need a bit more preparation:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;size_control = (df.t == 0).sum()
+size_treatment = (df.t == 1).sum()
+
+grid_control = np.round(np.linspace(0, size_control-1, min(size_control, size_treatment)))
+grid_treatment = np.round(np.linspace(0, size_treatment-1, min(size_control, size_treatment)))
+
+rc_sep = df.loc[df.t == 0, &amp;quot;rc&amp;quot;].reset_index(drop=True).iloc[grid_control].values
+rt_sep = df.loc[df.t == 1, &amp;quot;rt&amp;quot;].reset_index(drop=True).iloc[grid_treatment].values
+
+V4 = rt_sep - rc_sep * (size_treatment / size_control)
+V5 = rt_sep / size_treatment - rc_sep / size_control
+V6 = rt_sep - rc_sep
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;visualizing-the-results&#34;&gt;Visualizing the Results&lt;/h4&gt;
+&lt;p&gt;Let&amp;rsquo;s visualize one of these metrics, say $V1$ (often called the &amp;lsquo;Qini curve&amp;rsquo;), as a function of the population size:
+&lt;img src=&#34;V1_alone.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Interpreting this plot:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The x-axis represents the number of individuals targeted, from 0 to the entire population.&lt;/li&gt;
+&lt;li&gt;The y-axis shows the V1 metric, which represents the incremental number of positive responses due to the treatment.&lt;/li&gt;
+&lt;li&gt;A rising curve indicates that as we target more individuals according to our model&amp;rsquo;s ranking, we continue to see positive uplift.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Cool! But that doesn&amp;rsquo;t help us decide if we should use this model as a targeting policy.
+To put our model&amp;rsquo;s performance in context, let&amp;rsquo;s compare it to a random targeting policy and an alternative model:&lt;/p&gt;
+&lt;img src=&#34;V1_compare.png&#34;&gt;
+Interpreting this comparison:
+&lt;ul&gt;
+&lt;li&gt;Both the XGBoost T-Learner and Random Forest S-Learner outperform the random policy up to about 75% of the population.&lt;/li&gt;
+&lt;li&gt;The two models show some differences, but they&amp;rsquo;re relatively small and may not be statistically significant.&lt;/li&gt;
+&lt;li&gt;After targeting about 75% of the population, the uplift models&#39; performance converges with the random policy, suggesting diminishing returns for targeting beyond this point.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;summary&#34;&gt;Summary&lt;/h3&gt;
+&lt;p&gt;In this post, we&amp;rsquo;ve explored aspects of evaluating uplift models and translating their outputs into actionable targeting policies.
+Here are the three key takeaways:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;From Scores to strategy&lt;/strong&gt;:
+We discussed why uplift modeling is called incremental modeling and the importance of ranking. Uplift scores are most valuable for their relative ordering rather than absolute values. This ranking allows us to incrementally target individuals, considering factors like intervention costs and potential negative responses (&amp;ldquo;sleeping dogs&amp;rdquo;). The goal is to optimize interventions based on expected impact and available resources.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Overcoming the fundamental problem of causal inference&lt;/strong&gt;:
+We addressed the challenge of evaluating uplift models when we can&amp;rsquo;t observe both potential outcomes for any individual.
+Using the assumptions of causal inference, we introduced several evaluation metrics for both joint and separate settings.
+These metrics allow us to assess model performance despite the inherent limitations of observational data.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Practical implementation and comparison&lt;/strong&gt;:
+We demonstrated how to implement, visualize and interpret uplift evaluation metrics.
+We emphasized the need to compare uplift model performance against a random targeting baseline and between different models.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;next-up-uplift-modeling-beyond-rcts&#34;&gt;Next Up: Uplift Modeling Beyond RCTs&lt;/h3&gt;
+&lt;p&gt;RCTs (Randomized Controlled Trials) are often considered the gold standard for uplift modeling.
+However, they can be costly, require significant organizational effort (such as implementing an experimentation platform), and are sometimes simply infeasible.
+This raises an important question:
+If we don&amp;rsquo;t have access to data from an RCT, does it mean we can&amp;rsquo;t use uplift modeling at all?&lt;/p&gt;
+&lt;p&gt;In our next post, we&amp;rsquo;ll challenge the commonly held belief that RCTs are an absolute necessity for uplift modeling and explore alternative approaches. Stay tuned!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Uplift Modeling I</title>
       <link>https://tom-beer.github.io/post/uplift_part1/</link>
       <pubDate>Mon, 03 Jun 2024 07:08:17 +0300</pubDate>
       <guid>https://tom-beer.github.io/post/uplift_part1/</guid>
