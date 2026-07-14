@@ -8,9 +8,11 @@ type Props = {
   title: string;
   description: string;
   showHeader?: boolean;
+  backHref?: string;
+  backLabel?: string;
 };
 
-const { title, description, showHeader = true } = Astro.props;
+const { title, description, showHeader = true, backHref, backLabel } = Astro.props;
 
 const fullTitle = title === SITE.NAME ? SITE.NAME : `${title} | ${SITE.NAME}`;
 ---
@@ -21,7 +23,7 @@ const fullTitle = title === SITE.NAME ? SITE.NAME : `${title} | ${SITE.NAME}`;
     <Head title={fullTitle} description={description} />
   </head>
   <body>
-    {showHeader && <Header />}
+    {showHeader && <Header backHref={backHref} backLabel={backLabel} />}
     <main class:list={[!showHeader && "!pt-16"]}>
       <slot />
     </main>

@@ -3,7 +3,6 @@ import { type CollectionEntry, getCollection } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
-import BackToPrev from "@components/BackToPrev.astro";
 import Link from "@components/Link.astro";
 
 export async function getStaticPaths() {
@@ -19,14 +18,9 @@ const pub = Astro.props;
 const { Content } = await pub.render();
 ---
 
-<PageLayout title={pub.data.title} description={pub.data.venue ?? pub.data.title}>
+<PageLayout title={pub.data.title} description={pub.data.venue ?? pub.data.title} backHref="/publications" backLabel="All publications">
   <Container>
-    <div class="animate">
-      <BackToPrev href="/publications">
-        Back to publications
-      </BackToPrev>
-    </div>
-    <div class="space-y-1 my-10">
+    <div class="space-y-1 mb-10">
       <div class="animate text-sm opacity-75">
         <FormattedDate date={pub.data.date} />
       </div>
