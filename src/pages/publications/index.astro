@@ -1,0 +1,67 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import Link from "@components/Link.astro";
+import { PUBLICATIONS } from "@consts";
+
+const data = (await getCollection("publications"))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+type Acc = {
+  [year: string]: CollectionEntry<"publications">[];
+}
+
+const pubs = data.reduce((acc: Acc, pub) => {
+  const year = pub.data.date.getFullYear().toString();
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(pub);
+  return acc;
+}, {});
+
+const years = Object.keys(pubs).sort((a, b) => parseInt(b) - parseInt(a));
+---
+
+<PageLayout title={PUBLICATIONS.TITLE} description={PUBLICATIONS.DESCRIPTION}>
+  <Container>
+    <div class="space-y-10">
+      <div class="animate font-display text-lg font-semibold text-black dark:text-cream">
+        Publications
+      </div>
+      <div class="space-y-8">
+        {years.map(year => (
+          <section class="animate space-y-4">
+            <div class="font-semibold text-black dark:text-cream">
+              {year}
+            </div>
+            <ul class="flex flex-col gap-6">
+              {pubs[year].map(pub => (
+                <li class="space-y-1">
+                  <Link href={`/publications/${pub.slug}`} underline={false}>
+                    <span class="font-semibold text-black dark:text-cream">
+                      {pub.data.title}
+                    </span>
+                  </Link>
+                  <div class="text-sm opacity-75">
+                    {pub.data.authors.join(", ")}
+                  </div>
+                  {pub.data.venue && (
+                    <div class="text-sm italic opacity-75">
+                      {pub.data.venue}
+                    </div>
+                  )}
+                  <div class="flex flex-wrap gap-x-3 gap-y-1 text-sm">
+                    {pub.data.url_pdf && <Link href={pub.data.url_pdf} external>PDF</Link>}
+                    {pub.data.url_code && <Link href={pub.data.url_code} external>Code</Link>}
+                    {pub.data.url_project && <Link href={pub.data.url_project} external>Project</Link>}
+                    {pub.data.doi && <Link href={`https://doi.org/${pub.data.doi}`} external>DOI</Link>}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </div>
+  </Container>
+</PageLayout>

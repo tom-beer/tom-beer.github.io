@@ -1,0 +1,76 @@
+@import "katex/dist/katex.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  overflow-y: scroll;
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html,
+body {
+  @apply size-full;
+}
+
+body {
+  @apply font-sans antialiased;
+  @apply flex flex-col;
+  @apply bg-stone-100 dark:bg-espresso;
+  @apply text-black/65 dark:text-sand;
+}
+
+header {
+  @apply fixed top-0 left-0 right-0 z-50 py-5;
+  @apply bg-stone-100/75 dark:bg-espresso/70;
+  @apply backdrop-blur-sm saturate-200;
+}
+
+main {
+  @apply flex-1 py-32;
+}
+
+footer {
+  @apply py-5 text-sm;
+}
+
+article {
+  @apply max-w-full prose dark:prose-invert prose-img:mx-auto prose-img:my-auto;
+  @apply prose-headings:font-display prose-headings:font-semibold prose-p:font-serif;
+  @apply prose-headings:text-black prose-headings:dark:text-cream;
+  @apply dark:prose-p:text-cream/90 dark:prose-li:text-cream/90 dark:prose-strong:text-cream;
+}
+
+@layer utilities {
+  article a {
+    @apply font-sans text-accent dark:text-accent-dark underline underline-offset-2;
+    @apply decoration-accent/30 dark:decoration-accent-dark/40;
+    @apply transition-colors duration-300 ease-in-out;
+  }
+  article a:hover {
+    @apply text-accent dark:text-accent-dark;
+    @apply decoration-accent/60 dark:decoration-accent-dark/70;
+  }
+}
+
+.animate {
+  @apply opacity-0 translate-y-3;
+  @apply transition-all duration-700 ease-out;
+}
+
+.animate.show {
+  @apply opacity-100 translate-y-0;
+}
+
+html #back-to-top {
+  @apply opacity-0 pointer-events-none;
+}
+
+html.scrolled #back-to-top {
+  @apply opacity-100 pointer-events-auto;
+}

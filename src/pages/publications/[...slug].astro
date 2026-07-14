@@ -1,0 +1,61 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import FormattedDate from "@components/FormattedDate.astro";
+import BackToPrev from "@components/BackToPrev.astro";
+import Link from "@components/Link.astro";
+
+export async function getStaticPaths() {
+  const pubs = await getCollection("publications");
+  return pubs.map((pub) => ({
+    params: { slug: pub.slug },
+    props: pub,
+  }));
+}
+type Props = CollectionEntry<"publications">;
+
+const pub = Astro.props;
+const { Content } = await pub.render();
+---
+
+<PageLayout title={pub.data.title} description={pub.data.venue ?? pub.data.title}>
+  <Container>
+    <div class="animate">
+      <BackToPrev href="/publications">
+        Back to publications
+      </BackToPrev>
+    </div>
+    <div class="space-y-1 my-10">
+      <div class="animate text-sm opacity-75">
+        <FormattedDate date={pub.data.date} />
+      </div>
+      <div class="animate font-display text-2xl font-semibold text-black dark:text-cream">
+        {pub.data.title}
+      </div>
+      <div class="animate text-sm opacity-75">
+        {pub.data.authors.join(", ")}
+      </div>
+      {pub.data.venue && (
+        <div class="animate text-sm italic opacity-75">
+          {pub.data.venue}
+        </div>
+      )}
+      <div class="animate flex flex-wrap gap-x-3 gap-y-1 pt-2 text-sm">
+        {pub.data.url_pdf && <Link href={pub.data.url_pdf} external>PDF</Link>}
+        {pub.data.url_code && <Link href={pub.data.url_code} external>Code</Link>}
+        {pub.data.url_project && <Link href={pub.data.url_project} external>Project</Link>}
+        {pub.data.doi && <Link href={`https://doi.org/${pub.data.doi}`} external>DOI</Link>}
+      </div>
+    </div>
+    {pub.data.abstract && (
+      <article class="animate space-y-2">
+        <div class="font-semibold text-black dark:text-cream">Abstract</div>
+        <p class="opacity-90">{pub.data.abstract}</p>
+      </article>
+    )}
+    <article class="animate mt-8">
+      <Content />
+    </article>
+  </Container>
+</PageLayout>

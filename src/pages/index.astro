@@ -1,0 +1,107 @@
+---
+import { getCollection } from "astro:content";
+import Container from "@components/Container.astro";
+import PageLayout from "@layouts/PageLayout.astro";
+import ArrowCard from "@components/ArrowCard.astro";
+import Link from "@components/Link.astro";
+import SocialIcon from "@components/SocialIcon.astro";
+import { SITE, HOME, SOCIALS } from "@consts";
+
+const blog = (await getCollection("blog"))
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
+
+const publications = (await getCollection("publications"))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, SITE.NUM_PUBLICATIONS_ON_HOMEPAGE);
+---
+
+<PageLayout title={HOME.TITLE} description={HOME.DESCRIPTION} showHeader={false}>
+  <Container size="md">
+    <section class="animate flex items-center gap-5 max-w-3xl">
+      <img
+        src="/avatar.jpg"
+        alt="Tom Beer"
+        width="96"
+        height="96"
+        class="rounded-full size-24 object-cover shrink-0"
+      />
+      <div class="space-y-2 flex-1">
+        <h1 class="font-display text-3xl font-semibold text-black dark:text-cream">
+          Tom Beer
+        </h1>
+        <p class="text-base">
+          Data scientist &amp; researcher — evaluation and actionability of AI&nbsp;systems.
+        </p>
+        <ul class="flex flex-wrap items-center gap-4 pt-1">
+          {SOCIALS.map(SOCIAL => (
+            <li>
+              <a
+                href={SOCIAL.HREF}
+                target={SOCIAL.ICON === "email" ? "_self" : "_blank"}
+                rel={SOCIAL.ICON === "email" ? undefined : "noopener noreferrer"}
+                aria-label={`${SITE.NAME} on ${SOCIAL.NAME}`}
+                title={SOCIAL.NAME}
+                class="block size-5 text-stone-600 dark:text-stone-400 hover:text-accent dark:hover:text-accent-dark transition-colors duration-300"
+              >
+                <SocialIcon icon={SOCIAL.ICON} />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="animate mt-10 max-w-3xl">
+      <article class="space-y-4 text-lg leading-relaxed">
+        <p>
+          I'm a data scientist focused on real-world execution of AI. Currently a Research Scientist at <span class="text-black dark:text-cream">TII</span>, I develop methods to evaluate textual and agentic systems across search, conversation and tool use. My approach to evaluation is rooted in a decade of solving high-stakes data problems. From engineering aerial defense algorithms to deploying clinical decision support models that outperformed physicians, I know what it takes to ship reliable models into production.
+        </p>
+      </article>
+    </section>
+
+    <div class="space-y-16 mt-16">
+      <section class="animate space-y-6">
+        <div class="flex flex-wrap gap-y-2 items-center justify-between">
+          <h2 class="font-display text-xl font-semibold text-black dark:text-cream">
+            Writing
+          </h2>
+          <Link href="/blog">
+            See all posts
+          </Link>
+        </div>
+        <ul class="flex flex-col gap-4">
+          {blog.map(post => (
+            <li>
+              <ArrowCard entry={post} />
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="animate space-y-6">
+        <div class="flex flex-wrap gap-y-2 items-center justify-between">
+          <h2 class="font-display text-xl font-semibold text-black dark:text-cream">
+            Publications
+          </h2>
+        </div>
+        <ul class="flex flex-col gap-3">
+          {publications.map(pub => (
+            <li class="text-base space-y-1">
+              <Link href={`/publications/${pub.slug}`} underline={false}>
+                <span class="font-semibold text-black dark:text-cream">
+                  {pub.data.title}
+                </span>
+              </Link>
+              <div class="text-sm opacity-75">
+                {pub.data.venue}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+    </div>
+  </Container>
+</PageLayout>

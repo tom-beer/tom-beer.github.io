@@ -1,0 +1,49 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+type Props = {
+  entry: CollectionEntry<"blog"> | CollectionEntry<"publications">;
+}
+
+const { entry } = Astro.props;
+
+const isPub = entry.collection === "publications";
+const subtitle = isPub
+  ? entry.data.authors.join(", ")
+  : entry.data.description;
+const thumb = !isPub ? entry.data.thumb : undefined;
+const date = !isPub
+  ? entry.data.date.toLocaleDateString("en-us", { month: "short", year: "numeric" })
+  : undefined;
+---
+
+<a href={`/${entry.collection}/${entry.slug}`} class="relative group flex items-center gap-4 flex-nowrap py-3 px-4 pr-10 rounded-lg border border-black/15 dark:border-white/10 dark:bg-peat hover:bg-black/5 dark:hover:bg-peat/60 hover:text-black dark:hover:text-cream transition-colors duration-300 ease-in-out">
+  {thumb && (
+    <img
+      src={thumb}
+      alt=""
+      loading="lazy"
+      class="hidden sm:block size-14 rounded-md object-cover shrink-0 border border-black/10 dark:border-white/10"
+    />
+  )}
+  <div class="flex flex-col flex-1 truncate">
+    <div class="font-semibold text-black dark:text-cream">
+      {entry.data.title}
+    </div>
+    <div class="text-base truncate">
+      {subtitle}
+    </div>
+    {date && (
+      <div class="text-sm opacity-60 mt-0.5">
+        {date}
+      </div>
+    )}
+  </div>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    class="absolute top-1/2 right-2 -translate-y-1/2 size-5 stroke-2 fill-none stroke-current group-hover:stroke-accent dark:group-hover:stroke-accent-dark transition-colors duration-300 ease-in-out">
+    <line x1="5" y1="12" x2="19" y2="12" class="translate-x-3 group-hover:translate-x-0 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out" />
+    <polyline points="12 5 19 12 12 19" class="-translate-x-1 group-hover:translate-x-0 transition-transform duration-300 ease-in-out" />
+  </svg>
+</a>
