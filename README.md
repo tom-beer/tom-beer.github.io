@@ -33,7 +33,7 @@ See [CLAUDE.md](./CLAUDE.md) for the full set of conventions.
 
 ## Deploy (GitHub Pages)
 
-The site auto-deploys on every push to `master` via
+The site auto-deploys on every push to `main` via
 `.github/workflows/deploy.yml` (build with `withastro/action` → publish to
 Pages). No manual build/upload needed.
 
@@ -46,8 +46,8 @@ at the root domain.
 # 1. Create the repo on GitHub named exactly: tom-beer.github.io
 gh repo create tom-beer.github.io --public --source=. --remote=origin
 
-# 2. Push master (triggers the deploy workflow)
-git push -u origin master
+# 2. Push main (triggers the deploy workflow)
+git push -u origin main
 ```
 
 Then, one time, in the GitHub repo:
@@ -55,7 +55,7 @@ Then, one time, in the GitHub repo:
 
 The first Actions run publishes the site to **https://tom-beer.github.io**.
 Watch progress under the repo's **Actions** tab. After that, every
-`git push` to `master` redeploys automatically.
+`git push` to `main` redeploys automatically.
 
 ### Cutover note
 

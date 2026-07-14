@@ -70,7 +70,7 @@ content collections against their schemas and catches broken image paths.
 
 ## Deploy (GitHub Pages)
 
-- Deployed via `.github/workflows/deploy.yml`: every push to `master` builds
+- Deployed via `.github/workflows/deploy.yml`: every push to `main` builds
   with `withastro/action@v3` and publishes to Pages. Node 20+.
 - `astro.config.mjs` sets `site: "https://tom-beer.github.io"`, no `base`
   (root user-site).
