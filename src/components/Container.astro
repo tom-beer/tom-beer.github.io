@@ -1,9 +1,10 @@
 ---
 type Props = {
   size?: "sm" | "base" | "md";
+  framed?: boolean;
 };
 
-const { size = "sm" } = Astro.props;
+const { size = "sm", framed = false } = Astro.props;
 
 const width =
   size === "md" ? "max-w-4xl" :
@@ -11,6 +12,12 @@ const width =
   "max-w-screen-sm";
 ---
 
-<div class:list={["mx-auto px-5", width]}>
+<div
+  class:list={[
+    "mx-auto px-5",
+    width,
+    framed && "border-t border-rust/25 dark:border-rust-dark/20 sm:border sm:rounded-lg sm:px-8 sm:py-8 sm:bg-ink/[0.015] dark:sm:bg-white/[0.02]",
+  ]}
+>
   <slot />
 </div>

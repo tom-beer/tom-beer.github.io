@@ -18,7 +18,7 @@ const publications = (await getCollection("publications"))
 ---
 
 <PageLayout title={HOME.TITLE} description={HOME.DESCRIPTION} showHeader={false}>
-  <Container size="md">
+  <Container size="md" framed>
     <section class="animate flex items-center gap-5 max-w-3xl">
       <img
         src="/avatar.jpg"
@@ -28,7 +28,7 @@ const publications = (await getCollection("publications"))
         class="rounded-full size-24 object-cover shrink-0"
       />
       <div class="space-y-2 flex-1">
-        <h1 class="font-display text-3xl font-semibold text-black dark:text-cream">
+        <h1 class="font-display text-3xl font-semibold text-ink dark:text-cream">
           Tom Beer
         </h1>
         <p class="text-base">
@@ -56,7 +56,7 @@ const publications = (await getCollection("publications"))
     <section class="animate mt-10 max-w-3xl">
       <article class="space-y-4 text-lg leading-relaxed">
         <p>
-          I'm a data scientist focused on real-world execution of AI. Currently a Research Scientist at <span class="text-black dark:text-cream">TII</span>, I develop methods to evaluate textual and agentic systems across search, conversation and tool use. My approach to evaluation is rooted in a decade of solving high-stakes data problems. From engineering aerial defense algorithms to deploying clinical decision support models that outperformed physicians, I know what it takes to ship reliable models into production.
+          I'm a data scientist focused on real-world execution of AI. Currently a Research Scientist at <span class="text-ink dark:text-cream">TII</span>, I develop methods to evaluate textual and agentic systems across search, conversation and tool use. My approach to evaluation is rooted in a decade of solving high-stakes data problems. From engineering aerial defense algorithms to deploying clinical decision support models that outperformed physicians, I know what it takes to ship reliable models into production.
         </p>
       </article>
     </section>
@@ -64,7 +64,7 @@ const publications = (await getCollection("publications"))
     <div class="space-y-16 mt-16">
       <section class="animate space-y-6">
         <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h2 class="font-display text-xl font-semibold text-black dark:text-cream">
+          <h2 class="font-display text-xl font-semibold text-ink dark:text-cream">
             Writing
           </h2>
           <Link href="/blog">
@@ -82,7 +82,7 @@ const publications = (await getCollection("publications"))
 
       <section class="animate space-y-6">
         <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h2 class="font-display text-xl font-semibold text-black dark:text-cream">
+          <h2 class="font-display text-xl font-semibold text-ink dark:text-cream">
             Publications
           </h2>
         </div>
@@ -90,7 +90,7 @@ const publications = (await getCollection("publications"))
           {publications.map(pub => (
             <li class="text-base space-y-1">
               <Link href={`/publications/${pub.slug}`} underline={false}>
-                <span class="font-semibold text-black dark:text-cream">
+                <span class="font-semibold text-ink dark:text-cream">
                   {pub.data.title}
                 </span>
               </Link>

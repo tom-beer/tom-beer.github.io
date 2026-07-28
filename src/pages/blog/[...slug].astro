@@ -21,18 +21,18 @@ const { Content } = await post.render();
 ---
 
 <PageLayout title={post.data.title} description={post.data.description} backHref="/blog" backLabel="All posts">
-  <Container>
+  <Container framed>
     <div class="space-y-1 mb-10">
       <div class="animate flex items-center gap-1.5">
         <div class="font-base text-sm">
           <FormattedDate date={post.data.date} />
         </div>
-        &bull;
+        <span class="accent-mark">&bull;</span>
         <div class="font-base text-sm">
           {readingTime(post.body)}
         </div>
       </div>
-      <div class="animate font-display text-3xl font-semibold text-black dark:text-cream">
+      <div class="animate font-display text-3xl font-semibold text-ink dark:text-cream">
         {post.data.title}
       </div>
     </div>

@@ -21,13 +21,13 @@ body {
 body {
   @apply font-sans antialiased;
   @apply flex flex-col;
-  @apply bg-stone-100 dark:bg-espresso;
-  @apply text-black/65 dark:text-sand;
+  @apply bg-paper dark:bg-espresso;
+  @apply text-ink/80 dark:text-sand;
 }
 
 header {
   @apply fixed top-0 left-0 right-0 z-50 py-5;
-  @apply bg-stone-100/75 dark:bg-espresso/70;
+  @apply bg-paper/75 dark:bg-espresso/70;
   @apply backdrop-blur-sm saturate-200;
 }
 
@@ -42,7 +42,7 @@ footer {
 article {
   @apply max-w-full prose dark:prose-invert prose-img:mx-auto prose-img:my-auto;
   @apply prose-headings:font-display prose-headings:font-semibold prose-p:font-serif;
-  @apply prose-headings:text-black prose-headings:dark:text-cream;
+  @apply prose-headings:text-ink prose-headings:dark:text-cream;
   @apply dark:prose-p:text-cream/90 dark:prose-li:text-cream/90 dark:prose-strong:text-cream;
 }
 
@@ -56,6 +56,10 @@ article {
     @apply text-accent dark:text-accent-dark;
     @apply decoration-accent/60 dark:decoration-accent-dark/70;
   }
+}
+
+.accent-mark {
+  @apply text-rust dark:text-rust-dark;
 }
 
 .animate {
