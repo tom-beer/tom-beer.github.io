@@ -52,9 +52,13 @@ In more detail, the simulation process consists of a three-step mechanism:
 
     An individual utility $u_{ij}$ with $0 \leq u_{ij} \leq 1$ is assinged to each voter $v_i$ for each time slot $a_j$ indicating her valuation of attending the meeting or event during that time slot. These utilities are called 'individual' as they are not affected by other voters. We assume that there is a global, fixed 'yes-threshold' $\tau_1$ that represents the utility beyond which a voter “typically” votes yes, so each voter $v_i$ is expected to say yes to a time slot $a_j$ when her utility for that slot satisfies $u_{ij} \geq \tau_1$. Then, in order to comply with the hidden poll, we generate individual utilities greater then $\tau_1$ for the approved votes in the original hidden poll, and smaller then $\tau_1$ for the disapproved votes:
 
-$$u^{ind}(a) \sim U[\tau_1,1] \text{ for } a \in A_1$$
+$$
+u^{ind}(a) \sim U[\tau_1,1] \text{ for } a \in A_1
+$$
 
-$$u^{ind}(a) \sim U[0,\tau_1] \text{ for } a \notin A_1$$ 
+$$
+u^{ind}(a) \sim U[0,\tau_1] \text{ for } a \notin A_1
+$$
 
 
    Where $A_1$ is the set of approved time slots for a voter in the original hidden poll.
@@ -78,20 +82,29 @@ The social utility as function of both popularity and relative position is the p
 
 Finally, an open poll is deterministically simulated from the hidden poll and generated utilities in accordance with the social voting model of [Zou et al. (2015)](#references):
 
-$$\text{Approve  } \{ A_1^n,A_2^n \cap  Popular, A_2^n \cap  Unpopular \}$$
+$$
+\text{Approve  } \{ A_1^n,A_2^n \cap  Popular, A_2^n \cap  Unpopular \}
+$$
 
 According to this model, there are three preference levels. A voter approves all of her most preferred slots, irrespective of their popularity. In addition, among the slots at her second preference level, the voter approves those slots that are either very popular or very unpopular. No slot of the third preference level is approved. $\tau_1$ is the decision boundry between $A_1$ and $A_2$, and $\tau_2$ is the decision boundry between $A_2$ and $A_3$.
 
 Therefore, approved votes in the synthetic open poll will be those exceeding the individual threshold (those approved in the original hidden poll), or those that, together with the social utilities, exceed the threshold:
+
+$$
 \begin{align*}
 a: u^{ind}(a) > {\tau_1} \; \cup \; a: u^{ind}(a)+u^{soc}(a) > {\tau_{1}}
 \end{align*}
+$$
 
 An important note is that the magnitude of the social effect should not exceed the difference between the thresholds of the preference groups:
+
+$$
 \begin{align*}
 \text{Maximal Social Utility} \leq \tau_1+\tau_2
 \end{align*}
-    This assures that time slots in the least preferred level ($A_3$) will not be approved, regardless of the social effect.
+$$
+
+This assures that time slots in the least preferred level ($A_3$) will not be approved, regardless of the social effect.
 
 ### Debiasing the open polls
 Now that we have simulated open polls, we can propose a method for circumventing the social effect. Our debiasing strategy is also a three-step process. First, we attempt to recover the social utilities that were in play for each voter and time slot. Then, we use these social utilities to weight the approved votes, with weight representing vote genuinity (a genuine vote is one that would have been approved irrespective of social considerations). Finally, we aggregate the weights to declare a winning time slot. 
@@ -106,7 +119,10 @@ In more detail:
 2. **Calculate weights**
     
     In this step, we weight the voters according to the probability that their votes are genuine. Our weighting mechanism is tightly related to the estimated social utilities. It is defined as follows, where $\hat{S_{ij}}$ are the estimated social utilities, $\alpha$ is a hyperparameter and $W_{ij}$ are the weights:
-$$ W_{ij} = 1-\alpha \cdot \hat{S_{ij}} \text{ for } \alpha < 1 $$
+
+$$
+W_{ij} = 1-\alpha \cdot \hat{S_{ij}} \text{ for } \alpha < 1
+$$
 
 3. **Declare winning time slot**
     

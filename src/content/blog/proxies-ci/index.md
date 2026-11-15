@@ -60,18 +60,29 @@ The true causal effect is constant and equals to 1. The confounding is significa
 
 Consider the following DGP: a one-dimensional latent (unobserved) confounder $U$ generates noisy measurements $X$. The treatment $T$ is assigned according to the latent confounder and the outcome $Y$ is a function of the treatment and the latent confounder. The specific dependency structure of this DGP is given below.
  
+$$
 \begin{align*}
-U \sim \mathcal{N}(0,1) 
+U \sim \mathcal{N}(0,1)
 \end{align*}
+$$
+
+$$
 \begin{align*}
 X \mid U \sim \mathcal{N}(U,\sigma)
 \end{align*}
+$$
+
+$$
 \begin{align*}
 T \mid U \sim \text{Bernoulli}(\text{Sigmoid}(2.5 \cdot U))
 \end{align*}
+$$
+
+$$
 \begin{align*}
 Y \mid U,T \sim \mathcal{N}(U+T,1)
 \end{align*}
+$$
 
 </details>
 </br>

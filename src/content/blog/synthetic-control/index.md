@@ -69,7 +69,9 @@ And how shall one find the optimal weights? This is the point where the road for
 Proposed by Abadie, Diamond and Hainmueller (hence the name) in [this paper](https://www.tandfonline.com/doi/abs/10.1198/jasa.2009.ap08746), this is the seminal proposal for policy evaluation using synthetic controls. Apart from introducing the main idea above, they present the following objective function:
 
 
-$$W^* \in argmin_{W \in {\Delta}^{J}} \lVert \mathbf{X_0-X_{\neg0} \cdot W} \rVert  $$
+$$
+W^* \in argmin_{W \in {\Delta}^{J}} \lVert \mathbf{X_0-X_{\neg0} \cdot W} \rVert
+$$
 
 Some remarks:
 - The similarity between the controls and the treated units is measured with respect to the features $X$, while the synthetic control is constructed using the outcomes $Y$. It might seem more sensible to perform the matching with respect the outcome from the start. After all, we are interested in a good pre-treatment fit for the outcome, and the best fit would be obtained using the outcome and not a proxy for it. Indeed, recent works claim that "*covariates are of less relevance in applications; outcomes tend to be substantially more important than covariates in terms of predictive power*" ([see here](https://arxiv.org/abs/1607.00699))

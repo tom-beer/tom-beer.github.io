@@ -29,7 +29,7 @@ Since automation builds upon the stable ground of humans performing a task, in m
 
 ## Classification with Rejection
 
-In rejection learning, we extend the multiclass output space $\mathcal{Y}= \\{ 1,\ldots,K\\}$ to include $\circledR$ which denotes rejection. In ordinary classification we use the usual zero-one loss $\ell_{01}(f(\boldsymbol{x}), y)=\mathbb{1}_{[f(\boldsymbol{x}) \neq y]}$, and in rejection learning we use an extension of it -- the zero-one-c loss:
+In rejection learning, we extend the multiclass output space $\mathcal{Y}= \{ 1,\ldots,K\}$ to include $\circledR$ which denotes rejection. In ordinary classification we use the usual zero-one loss $\ell_{01}(f(\boldsymbol{x}), y)=\mathbb{1}_{[f(\boldsymbol{x}) \neq y]}$, and in rejection learning we use an extension of it -- the zero-one-c loss:
 
 $$
 \ell_{01c}(f(\boldsymbol{x}), y) = \begin{cases}

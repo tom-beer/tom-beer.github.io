@@ -48,13 +48,18 @@ HSIC can be thought of as a non-linear extension of the cross-covariance between
 
 <details>
   <summary><b>More on HSIC</b></summary>
-        This HSIC loss is calculated in the following manner. For $\mathcal{F, G}$ RKHSs with universal kernels $k$, $l$ we compute the kernel matrices $K_{ij} = k(f_i,f_j)$ and $L_{ij} = l(g_i,g_j)$. Both $k$ and $l$ were selected to be Gaussian kernels:
-        $$ K_{i,j} = e^{\frac{{|| f_i-f_j ||}^2_2}{\sigma^2}} $$
-        With $L_{i,j}$ computed in a similar manner. Then the scaled Hilbert-Schmidt norm of their cross covariance matrix is calculated:
-        $$
-        \widehat{HSIC}(\{(f_i,g_j\}^n_{i=1}; \mathcal{F, G} ) = \frac{1}{(n-1)^2}  \cdot \textbf{tr}(KHLH)
-        $$
-        where $H_{ij}=\delta_{i,j}-\frac{1}{n}$ is a centering matrix.
+
+This HSIC loss is calculated in the following manner. For $\mathcal{F, G}$ RKHSs with universal kernels $k$, $l$ we compute the kernel matrices $K_{ij} = k(f_i,f_j)$ and $L_{ij} = l(g_i,g_j)$. Both $k$ and $l$ were selected to be Gaussian kernels:
+
+$$
+K_{i,j} = e^{\frac{{|| f_i-f_j ||}^2_2}{\sigma^2}}
+$$
+
+With $L_{i,j}$ computed in a similar manner. Then the scaled Hilbert-Schmidt norm of their cross covariance matrix is calculated:
+$$
+\widehat{HSIC}(\{(f_i,g_j\}^n_{i=1}; \mathcal{F, G} ) = \frac{1}{(n-1)^2}  \cdot \textbf{tr}(KHLH)
+$$
+where $H_{ij}=\delta_{i,j}-\frac{1}{n}$ is a centering matrix.
 
 
 </details>

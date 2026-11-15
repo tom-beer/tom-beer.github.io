@@ -74,7 +74,9 @@ So our goal is to identify the persuadables with high precision. Targeting the s
 ##### T-learner
 To achieve this, we can build two models: one for each treatment group. One model will predict the potential outcome if an individual is treated, and the other will predict the potential outcome if not treated. By subtracting the predictions of the two models, we arrive at the persuadability score. This score, also known as the uplift score, helps us determine who is most likely to benefit from the treatment.
 
-$$\widehat{uplift}(x) = \mu _T (x) - \mu _C (x)$$
+$$
+\widehat{uplift}(x) = \mu _T (x) - \mu _C (x)
+$$
 
 This modeling choice is called a T-learner, where "T" stands for "two" because it involves two models. It is a flexible and powerful meta-model, allowing the practitioner to choose any base classifier, from a simple logistic regression to a deep learning model. If the individuals' responses were precisely predictable from the data, we would expect the following:
 * The persuadables would have uplift scores close to 1

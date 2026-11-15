@@ -46,7 +46,9 @@ As we develop uplift models, we're confronted with a critical question: How can 
 
 In traditional machine learning, we would typically use evaluation metrics like accuracy or precision. For uplift modeling, we might be tempted to define an accuracy metric that calculates the proportion of persuadables (those we're trying to identify) from the entire subgroup:
 
-$$acc_k = \frac{1}{k} \sum_{i \in \pi(D,k)} [[Y_i(1)=1]] \cdot [[Y_i(0)=0]]$$
+$$
+acc_k = \frac{1}{k} \sum_{i \in \pi(D,k)} [[Y_i(1)=1]] \cdot [[Y_i(0)=0]]
+$$
 
 <details>
 <summary>Details on notation ⬇️</summary>
@@ -82,21 +84,41 @@ While we can't compute instance-level metrics, we can aggregate over subgroups.
 
 Let's start by defining some basic quantities:
 1. Number of treated and control instances among the top-k:
-$$N_\pi^T(D,k) = \sum_{i \in \pi(D,k)}[[t_i=1]]$$
-$$N_\pi^C(D,k) = \sum_{i \in \pi(D,k)}[[t_i=0]]$$
+
+$$
+N_\pi^T(D,k) = \sum_{i \in \pi(D,k)}[[t_i=1]]
+$$
+
+$$
+N_\pi^C(D,k) = \sum_{i \in \pi(D,k)}[[t_i=0]]
+$$
 
 2. Number of treated and control responders:
-$$R_\pi^T(D,k) = \sum_{i \in \pi(D,k)} [[y_i=1]] \cdot [[t_i=1]]$$
-$$R_\pi^C(D,k) = \sum_{i \in \pi(D,k)} [[y_i=1]] \cdot [[t_i=0]]$$
+
+$$
+R_\pi^T(D,k) = \sum_{i \in \pi(D,k)} [[y_i=1]] \cdot [[t_i=1]]
+$$
+
+$$
+R_\pi^C(D,k) = \sum_{i \in \pi(D,k)} [[y_i=1]] \cdot [[t_i=0]]
+$$
 
 Here, $\pi(D,k)$ represents the top-k instances in dataset $D$ according to the uplift model's ranking.
 
 #### Constructing Uplift Metrics
 Using these building blocks, we can define several performance metrics. For simplicity, we'll omit $\pi$ in the following formulas. Here are three common metrics:
 
-$$(1) \quad R^T(D,k)-R^C(D,k)\frac{N^T(D,k)}{N^C(D,k)}$$
-$$(2) \quad (\frac{R^T(D,k)}{N^T(D,k)}-\frac{R^C(D,k)}{N^C(D,k)}) \cdot (N^T(D,k)+N^C(D,k))$$
-$$(3) \quad \frac{R^T(D,k)}{|T|}-\frac{R^C(D,k)}{|C|}$$
+$$
+(1) \quad R^T(D,k)-R^C(D,k)\frac{N^T(D,k)}{N^C(D,k)}
+$$
+
+$$
+(2) \quad (\frac{R^T(D,k)}{N^T(D,k)}-\frac{R^C(D,k)}{N^C(D,k)}) \cdot (N^T(D,k)+N^C(D,k))
+$$
+
+$$
+(3) \quad \frac{R^T(D,k)}{|T|}-\frac{R^C(D,k)}{|C|}
+$$
 
 We see many similarities between these metrics. 
 They all compute response rates among the treated group and compare (subtract) them to the control group, with various scaling factors related to group sizes.
@@ -115,13 +137,28 @@ Separate evaluation allows us to deliberately address imbalances between treatme
 For example, if $|T|=100$ and $|C|=200$, it makes sense to evaluate the uplift for 10 treatment units and 20 control units, or 30 treatment and 60 control units, and so forth.
 
 For separate evaluation, we define:
-$$R_\pi(T,k) = \sum_{i \in \pi(T,k)} [[y_i=1]]$$
-$$R_\pi(C,k) = \sum_{i \in \pi(C,k)} [[y_i=1]]$$
+
+$$
+R_\pi(T,k) = \sum_{i \in \pi(T,k)} [[y_i=1]]
+$$
+
+$$
+R_\pi(C,k) = \sum_{i \in \pi(C,k)} [[y_i=1]]
+$$
 
 Then we can define three more metrics for uplift:
-$$(4) \quad R(T,p|T|)-R(C,p|C|)\frac{|T|}{|C|}$$
-$$(5) \quad \frac{R(T,p|T|)}{|T|}-\frac{R(C,p|C|)}{|C|}$$
-$$(6) \quad R(T,p|T|)-R(C,p|C|)$$
+
+$$
+(4) \quad R(T,p|T|)-R(C,p|C|)\frac{|T|}{|C|}
+$$
+
+$$
+(5) \quad \frac{R(T,p|T|)}{|T|}-\frac{R(C,p|C|)}{|C|}
+$$
+
+$$
+(6) \quad R(T,p|T|)-R(C,p|C|)
+$$
 
 Note that $(4)$ is similar to $(1)$, $(5)$ is similar to $(3)$, and $(6)$ is a bit different in that it does not include any normalization factor.
 
@@ -134,7 +171,11 @@ While the uplift modeling literature doesn't always give this topic the attentio
 #### Area Under the Uplift Curve (AUUC)
 Before getting into the considerations, it's worth noting that any curve-based metric can be integrated to give a single scalar value. 
 This is known as the Area Under the Uplift Curve (AUUC):
-$$AUUC = \sum_{k=1}^N V(k)$$
+
+$$
+AUUC = \sum_{k=1}^N V(k)
+$$
+
 Where $V$ is any curve metric we've discussed.
 The AUUC can be useful as a benchmark for comparing models, especially when we don't know the specific fraction of the population we plan to target. However, if we do know our intended operating point (i.e., the fraction of the population we'll intervene on), it's often more informative to evaluate the curve at that specific point.
 

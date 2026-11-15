@@ -47,7 +47,9 @@ The premise is that a relative target like "keep 95% of the importance" transfer
 
 To be mathy about it: denote the normalized importances, sorted from largest to smallest, as $s_{(1)} \ge s_{(2)} \ge \dots \ge s_{(D)}$. We keep the smallest number of top features whose importance reaches the target $\theta$:
 
-$$k = \min\left\{ m : \sum_{i=1}^{m} s_{(i)} \ge \theta \right\}$$
+$$
+k = \min\left\{ m : \sum_{i=1}^{m} s_{(i)} \ge \theta \right\}
+$$
 
 In code it's about 10 lines:
 
