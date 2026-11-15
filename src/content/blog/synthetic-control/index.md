@@ -5,9 +5,9 @@ date: "2020-07-08T23:14:30+03:00"
 thumb: "/blog/synthetic-control/featured.png"
 ---
 
-> This post was generated from a Jupyter notebook; it can be found <a href='https://github.com/tom-beer/Synthetic-Control-Examples'>here</a> 
+<p class="note">This post was generated from a Jupyter notebook; it can be found <a href="https://github.com/tom-beer/Synthetic-Control-Examples">here</a>.</p>
 
-### Motivation
+## Motivation
 Suppose we want to estimate the causal effect of:
 * An anti smoking taxation program in California on cigarette consumption
 
@@ -24,7 +24,7 @@ What would be a sensible approach to answer these questions? For practitioners c
 
 Take the German reunification as an example - it is only Germany that was reunified, and the task is to infer the causal effect of that historic event. As for the other examples - sure, California was not the first to implement an anti-smoking program, and Uber is active in many cities over the globe apart from Paris. But the task considered here is to use only the intervention data for the unit in question.
 ***
-### The qualitative approach
+## The qualitative approach
 
 It seems insensible to make inferences on a single unit - what credibility could we attain? What would be the statistical properties of the estimator? 
 
@@ -32,7 +32,7 @@ But for decades, qualitative analyses that seem unsensible were carried out by e
 
 This approach has some merit - the resulting estimator is interpretable, transparent and simple. It is easy to communicate it and argue about the choice of control units. Yet it's clear that it is not the optimal approach, at least for practitioners of the quantitative / statistical learning schools. So the question is - can we do better? Can we devise a data-driven approach for causal effect estimation of aggregate interventions? Can we phrase a clear objective for the estimator?
 ***
-### Synthetic Controls
+## Synthetic Controls
 Introduced in 2003 and formalized in 2010 by Alberto Abadie and colleagues, the synthetic control aims to bridge between the traditional qualitative approaches of the social sciences and the modern data driven approaches. It strikes a balance between the two by offering a clear objective function to optimize while constraining the model to remain transparent, interpretable and simple. It is applicable to almost any domain, and became very popular thanks to its lenient assumptions. Esteemed economists Susan Athey and Guido Imbens have called it "arguably the most important innovation in the policy evaluation literature in the last 15 years". Sounds interesting? Let's dive in.
 ***
 ### The main idea
@@ -51,7 +51,7 @@ The qualitative approach calls for a manual selection of control units from a po
 
 
 We see that the task of causal effect estimation boils down to finding the optimal weighting of the control units.
-And how shall one find the optimal weights? This is the point where the road forks - there are many suggestions for phrasing of the optimization problem, each with its own pros and cons. The next section will describe one possibility, which is the originally proposed apparoch by Abadie et al; A discussion of its limitations in face of more contemporary approaches will follow. But first - some (minimal) notation.
+And how shall one find the optimal weights? This is the point where the road forks - there are many suggestions for phrasing of the optimization problem, each with its own pros and cons. The next section will describe one possibility, which is the originally proposed approach by Abadie et al; A discussion of its limitations in face of more contemporary approaches will follow. But first - some (minimal) notation.
 
 ***
 
@@ -83,14 +83,13 @@ These are valid and thoughtful concerns. I think it would be best to take the ma
 
 ***
 
-## An example use case
-### Estimating the effect of California’s tobacco control program
+## An example use case: estimating the effect of California’s tobacco control program
 This section will demonstrate the described method on a specific use case. The case of California's tobacco control program was one of the first applications of the synthetic control method, and it was introduced in [this paper](https://www.tandfonline.com/doi/abs/10.1198/jasa.2009.ap08746). I will recover all steps: data processing, feature extraction, synthetic control construction and causal effect estimation - exactly as shown in the paper and described above (no modifications at all to the original method). If something wasn't clear above - hopefully this example will clarify things up.
 
-##### The research question
+### The research question
 In 1988 California implemented a large scale tobacco control program, called proposition 99, that increased  California’s cigarette excise tax by 25 cents per pack, earmarked the tax revenues to health and anti-smoking education budgets, funded anti-smoking media campaigns, and spurred local clean indoor-air ordinances throughout the state. The question we are interested here it to evaluate the policy's effect in terms of per-capita cigarette consumption. The potential controls in this case are all US states (that's an [RAS](https://en.wikipedia.org/wiki/RAS_syndrome)).
 
-##### Data
+### Data
 - The main outcome is annual per-capita cigarette consumption. The data for this can be found [here](https://github.com/johnson-shuffle/mixtape/tree/master/data).
 - In addition to the main outcome, we will utilize some features that correlate with it (GDP, ages, beer consumption etc). This data is taken from [here](https://github.com/jehangiramjad/tslib/tree/master/tests/testdata).
 
@@ -128,19 +127,6 @@ df_outcome.head()
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -335,7 +321,7 @@ plt.show()
 
 
 Now let's extract the covariates used in the paper. 
-> Note that some of the boilerplate code has been rendered out of the html file, but it can be found in the original notebook [here]()
+<p class="note">Some of the boilerplate code has been left out of this post, but it can be found in the original notebook <a href="https://github.com/tom-beer/Synthetic-Control-Examples">here</a>.</p>
 
 ```python
 control_predictors = []
@@ -348,7 +334,7 @@ for state in df_outcome['LocationDesc'].unique():
 
 control_predictors = np.hstack(control_predictors)
 ```
-#### Construction of synthetic control
+### Construction of synthetic control
 And here is how we optimize the objective function. 
 
 Note that in the original paper, the authors suggested to add feature importance weights $V$ to be tuned simultaneously with the control weights $W$. I am not convinced that these are required, especially if all features are scaled properly. But in order to reproduce the same results as in the paper, these importance weights are tuned here too. Without them, the optimization would have been a single line of least squares..
@@ -398,19 +384,6 @@ display(pd.DataFrame(np.hstack([X1, X0.dot(W).reshape(-1,1), mean_predictors.res
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -531,5 +504,5 @@ plt.show()
 
 
 With this plot, we can carefully conclude that the implementation of proposition 99 has caused a per-capita reduction of around 26 packs of cigarettes each year. Not bad!
-#### Summary
+### Summary
 This post introduced the synthetic control method for policy evaluation and demonstrated its use on a famous example. I think this is a very interesting and fun topic that does not receive the attention it deserves. It is widely applicable and requires minimal and reasonable assumptions. The next post will go through another example that has not been addressed yet - what is the effect of Haifa's newly introduced low emission zone (LEZ)? Stay tuned!

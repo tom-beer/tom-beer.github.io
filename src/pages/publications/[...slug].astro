@@ -18,6 +18,14 @@ const pub = Astro.props;
 const { Content } = await pub.render();
 
 const abstract = pub.data.abstract;
+// Structured abstracts ("Background: … Objective: …") read better one section per paragraph.
+const abstractSections = (abstract ?? "")
+  .split(/(?<=^|\.\s)(?=[A-Z][\w &]{2,30}:\s)/)
+  .map(part => {
+    const m = part.match(/^([A-Z][\w &]{2,30}):\s([\s\S]*)$/);
+    return m ? { label: m[1], text: m[2].trim() } : { label: undefined, text: part.trim() };
+  })
+  .filter(section => section.text);
 const description = abstract
   ? (abstract.length > 200 ? `${abstract.slice(0, 200).replace(/\s+\S*$/, "")}…` : abstract)
   : (pub.data.venue ?? pub.data.title);
@@ -50,7 +58,11 @@ const description = abstract
     {pub.data.abstract && (
       <article class="animate space-y-2">
         <div class="font-semibold text-ink dark:text-cream">Abstract</div>
-        <p class="opacity-90">{pub.data.abstract}</p>
+        {abstractSections.map(section => (
+          <p class="opacity-90">
+            {section.label && <strong>{section.label}:</strong>} {section.text}
+          </p>
+        ))}
       </article>
     )}
     <article class="animate mt-8">

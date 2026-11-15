@@ -6,7 +6,7 @@ thumb: "/blog/food-blog-popularity/featured.png"
 featured: true
 ---
 
-### My favorite food blog
+## My favorite food blog
 I'm an avid reader of a multitude of food blogs. 
 While I wish I read books, I just can't prioritize it high enough, and apart from professional material, the only reading I do is food blogs.
 I love [David Lebovitz](https://www.davidlebovitz.com/) for the french drinks and apéros, and [Green Kitchen Stories](https://greenkitchenstories.com/) for healthy, kid friendly (Yaar loves [these muffins](https://greenkitchenstories.com/apple-almond-buckwheat-muffins/)) recipes.
@@ -25,7 +25,7 @@ I thought it would be a fun weekend project to build a popularity prediction mod
 [//]: # (Other recurrent recipes are the corn and butter farro, which is)
 
 ---
-### Dataset
+## Dataset
 
 Beautiful Soup helped with basic parsing, 
 on top of which specific features like the publish date, categories, post title, introduction and the recipe itself were extracted.
@@ -40,7 +40,7 @@ But this tail is rather fat - the standard deviation is almost as large as the m
 [//]: # ( eda as we go)
 
 ---
-### Setting the baseline
+## Setting the baseline
 RMSE on the test set (~100 recipes) was chosen as the evaluation criteria for all models.
 
 A useful baseline for regression tasks is simply to predict the target's mean.
@@ -50,14 +50,14 @@ It couldn't be hard to beat this error, right? Let's see..
 
 
 ---
-### Recipe Categories
+## Recipe Categories
 Each recipe has a few categories (tags) - an average of 5 per blog entry. 
 The most prevalent are *vegetarian, summer, breakfast, cake, salad* and *weeknight favorite*. 
 The 184 categories were encoded as bits and passed to a CatBoost model with default parameters.
 The RMSE decreased to **194** - quite underwhelming.
 
 ---
-### The Direction of Time
+## The Direction of Time
 
 Time is a significant predictor of popularity, especially in the early days of the site.
 
@@ -67,7 +67,7 @@ Using the annual means from the train set as an estimator for recipe popularity 
 RMSE of **181** - now we're getting somewhere! 
 
 ---
-### Incorporating free text
+## Incorporating free text
 
 The dataset includes three fields of free text: post title, an introduction and the recipe itself.
 
@@ -92,7 +92,7 @@ Applying PCA and using other regressors just made things worse.
 The RMSE for this setup was **174** - only slightly better than using the year alone. Meh.
 
 ---
-### Closing thoughts
+## Closing thoughts
 
 While this was a lot of fun, I can't help but feel a bit disappointed in failing to predict recipe popularity.
 The thing is, I equated popularity with the number of comments. 
@@ -102,7 +102,7 @@ this has implications for the feasibility and usability of the models built upon
 
 
 ---
-### Takeaways
+## Takeaways
 
 [This is a fabulous dessert](https://smittenkitchen.com/2019/06/chocolate-budino/). Go make it.
 

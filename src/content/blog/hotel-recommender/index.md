@@ -18,7 +18,7 @@ synthesizes the key points from various reviews. Try it yourself!
 
 <gradio-app src="https://tom-beer-hotel-recommender.hf.space"></gradio-app>
 
-### Implementation Details
+## Implementation Details
 * Source code is available in [this HF space](https://huggingface.co/spaces/tom-beer/hotel-recommender/tree/main).
 * The app uses data from the [CMU Hotel Review Dataset](https://www.cs.cmu.edu/~jiweil/html/hotel-review.html), consisting of almost 1M reviews crawled from TripAdvisor.
 * A (random) hotel is recommended if it satisfies the following:

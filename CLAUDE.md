@@ -47,6 +47,16 @@ content collections against their schemas and catches broken image paths.
   Keep every image under `public/blog/<slug>/` (subfolders are fine), and give
   it real alt text.
 
+- **Raw HTML in posts needs blank lines around it.** A line of text directly
+  after an `<img>`/`<div>` line is swallowed into the HTML block (renders as
+  unstyled sans text, or as literal CSS for pandas `<style scoped>` blocks).
+  Editorial notes use `<p class="note">…</p>` (links inside as `<a>`), not `>`
+  blockquotes — blockquotes are styled as real quotations.
+
+- **Verify rendering, not just the build.** `npm run build` passing says nothing
+  about how posts look; check pages in the browser in both themes and at phone
+  width (math, tables and code blocks are the usual overflow culprits).
+
 - **Math requires `.md`, not `.mdx`.** Posts contain LaTeX (`$...$`, `$$...$$`)
   and raw HTML with unquoted attrs (e.g. `<img src="x.png" width=250>`). MDX
   parses those as JSX and breaks. The math plugins (`remark-math` +

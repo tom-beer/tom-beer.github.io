@@ -5,15 +5,15 @@ date: "2020-04-02T19:08:22+03:00"
 thumb: "/blog/debiasing-doodle-polls/featured.jpg"
 ---
 
-> The full notebook and code can be found [here](https://github.com/tom-beer/Debiasing-Doodle-Polls) 
+<p class="note">The full notebook and code can be found <a href="https://github.com/tom-beer/Debiasing-Doodle-Polls">here</a>.</p>
 
-Did you know that Doodle polls are significantly affected by social bias? It turns out that open polls, where voters can see previous votes and their votes are visible to others, have different voting profiles compared to hidden polls. In a recent paper, [Zou et al. (2015)](#references) show that voters act stratigically in open polls, and this change in behaviour includes:
+Did you know that Doodle polls are significantly affected by social bias? It turns out that open polls, where voters can see previous votes and their votes are visible to others, have different voting profiles compared to hidden polls. In a recent paper, [Zou et al. (2015)](#references) show that voters act strategically in open polls, and this change in behaviour includes:
 1. Open polls have higher response rates for very popular time slots
 2. Open polls have higher response rates for very unpopular time slots
 3. The average reported availability is higher in open polls compared to hidden polls
 
 The first point not surprising - responders vote more for the popular time slots either because these alternatives are simply better for most voters, or because they feel the need to be cooperative with the group's choices.
-The second point however does not make sense at first - why would a repsonder vote for a time slot that is clearly not going to be selected? The authors suggest that this is because voters in open polls have an incentive to appear more cooperative:
+The second point however does not make sense at first - why would a responder vote for a time slot that is clearly not going to be selected? The authors suggest that this is because voters in open polls have an incentive to appear more cooperative:
 > "There is an implicit social expectation that every responder will mark as many slots as possible. Therefore a responder in open polls may be motivated to mark more slots. In other words, bearing in mind that other participants can see her name and vote, a participant may want to approve more time slots to appear more cooperative even if they are less convenient for herself."
 
 The third point is likely a consequence of the first two points.
@@ -28,7 +28,7 @@ One might think there's nothing wrong that voters in open polls behave different
 
 ## What can be done?
 While we can't change human nature, we can come up with suggestions for models and algorithms that would cancel out the social bias. Since hidden polls have a higher chance of maximizing social utility, these algorithms should approximate what voting profile would have been recorded if the poll had been hidden.
-In this short project, a collaboration with Bar Eini-Porat, we propose a simple solution to this problem. This notebook desribes the data and simulation we rely on, details the design considerations we faced, and shows the results of our suggested approach.
+In this short project, a collaboration with Bar Eini-Porat, we propose a simple solution to this problem. This notebook describes the data and simulation we rely on, details the design considerations we faced, and shows the results of our suggested approach.
 
 ## Outline
 The rest of this notebook is organized as follows.
@@ -40,7 +40,7 @@ The data used for this project is a small slice of the dataset that was introduc
 
 
 ### Simulating open polls from hidden polls
-The foundamental problem of causal inference is what makes the problem of evaluating a proposed solution so difficult. Meaning we never have access to the two parallel worlds of both an open poll and a hidden poll describing the same scheduling problem with the same group of people. Following [Alrawi et al. (2016)](#references), we treat the hidden polls of the dataset as ground truth: In a hidden poll each participant casts a vote based solely on their true availability, without introducing social considerations. This is the reason we chose to use only the hidden polls of the dataset. 
+The fundamental problem of causal inference is what makes the problem of evaluating a proposed solution so difficult. Meaning we never have access to the two parallel worlds of both an open poll and a hidden poll describing the same scheduling problem with the same group of people. Following [Alrawi et al. (2016)](#references), we treat the hidden polls of the dataset as ground truth: In a hidden poll each participant casts a vote based solely on their true availability, without introducing social considerations. This is the reason we chose to use only the hidden polls of the dataset. 
 
 From each hidden poll we simulate an open poll using the following approach. 
 We keep the number of participants and the number of time slots unchanged.
@@ -50,7 +50,7 @@ As for the next responders, their approved time slots may change according to th
 In more detail, the simulation process consists of a three-step mechanism:
 1. **Generate individual utilities**
 
-    An individual utility $u_{ij}$ with $0 \leq u_{ij} \leq 1$ is assinged to each voter $v_i$ for each time slot $a_j$ indicating her valuation of attending the meeting or event during that time slot. These utilities are called 'individual' as they are not affected by other voters. We assume that there is a global, fixed 'yes-threshold' $\tau_1$ that represents the utility beyond which a voter “typically” votes yes, so each voter $v_i$ is expected to say yes to a time slot $a_j$ when her utility for that slot satisfies $u_{ij} \geq \tau_1$. Then, in order to comply with the hidden poll, we generate individual utilities greater then $\tau_1$ for the approved votes in the original hidden poll, and smaller then $\tau_1$ for the disapproved votes:
+    An individual utility $u_{ij}$ with $0 \leq u_{ij} \leq 1$ is assinged to each voter $v_i$ for each time slot $a_j$ indicating her valuation of attending the meeting or event during that time slot. These utilities are called 'individual' as they are not affected by other voters. We assume that there is a global, fixed 'yes-threshold' $\tau_1$ that represents the utility beyond which a voter “typically” votes yes, so each voter $v_i$ is expected to say yes to a time slot $a_j$ when her utility for that slot satisfies $u_{ij} \geq \tau_1$. Then, in order to comply with the hidden poll, we generate individual utilities greater than $\tau_1$ for the approved votes in the original hidden poll, and smaller than $\tau_1$ for the disapproved votes:
 
 $$
 u^{ind}(a) \sim U[\tau_1,1] \text{ for } a \in A_1
@@ -86,7 +86,7 @@ $$
 \text{Approve  } \{ A_1^n,A_2^n \cap  Popular, A_2^n \cap  Unpopular \}
 $$
 
-According to this model, there are three preference levels. A voter approves all of her most preferred slots, irrespective of their popularity. In addition, among the slots at her second preference level, the voter approves those slots that are either very popular or very unpopular. No slot of the third preference level is approved. $\tau_1$ is the decision boundry between $A_1$ and $A_2$, and $\tau_2$ is the decision boundry between $A_2$ and $A_3$.
+According to this model, there are three preference levels. A voter approves all of her most preferred slots, irrespective of their popularity. In addition, among the slots at her second preference level, the voter approves those slots that are either very popular or very unpopular. No slot of the third preference level is approved. $\tau_1$ is the decision boundary between $A_1$ and $A_2$, and $\tau_2$ is the decision boundary between $A_2$ and $A_3$.
 
 Therefore, approved votes in the synthetic open poll will be those exceeding the individual threshold (those approved in the original hidden poll), or those that, together with the social utilities, exceed the threshold:
 
@@ -130,7 +130,7 @@ $$
     
     We define the DDA score to be number of votes for each time slot. We define the debiased score to be the sum of weights for each time slot. The DDA winner and debiased winner are the maximal scoring time slot in each scoring regime.
     
-    We choose to output a winner according to the reweighting mechanism only in cases with relatively high confidence: We recommend the highest scoring alternative in our model only in cases witg substantial score difference. Our final winning candidate for the open poll is defined as:
+    We choose to output a winner according to the reweighting mechanism only in cases with relatively high confidence: We recommend the highest scoring alternative in our model only in cases with substantial score difference. Our final winning candidate for the open poll is defined as:
     
     $\text{if DDA score - debiased score} \geq \beta \cdot \text{debiased score:} $
     
@@ -155,6 +155,7 @@ Following is a summary of obtained benefits as function of the number of voters 
 
 If the method is restricted to these cases only, we obtain the following statistics:
 <div> <img src="/blog/debiasing-doodle-polls/Images/errors_constrained.png" width="500"/> </div>
+
 Which means that it is possible to devise a new voting rule that has a strictly positive benefit.
 
 ### Discussion, limitations and future work

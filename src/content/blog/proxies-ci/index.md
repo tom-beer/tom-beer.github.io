@@ -85,7 +85,6 @@ Y \mid U,T \sim \mathcal{N}(U+T,1)
 $$
 
 </details>
-</br>
 
 In the limit of infinite variance for the measured covariates' noise, the estimated causal effect would converge to the associative difference between treatment groups, as the covariates would lose all information they hold.
 

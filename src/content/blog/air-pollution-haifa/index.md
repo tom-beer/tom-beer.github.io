@@ -9,7 +9,7 @@ As part of a project evaluating the effect of Haifa's low emission zone (LEZ) us
 
 Disclaimer: I have no expertise in air quality analysis, in fact this is the first time I look at data collected from an air pollution monitoring system.
 
-> This post was generated from a Jupyter notebook, which can be downloaded from [here](https://github.com/tom-beer/Air-Pollution). 
+<p class="note">This post was generated from a Jupyter notebook, which can be downloaded from <a href="https://github.com/tom-beer/Air-Pollution">here</a>.</p>
 
 The notebook goes through the following steps:
 - Dataset cleaning and tidying
@@ -22,7 +22,7 @@ At a later stage, these sections will be added:
 - Simple air pollution modelling
 - Validation of the inference conducted for the ministry regarding the effect of Haifa's LEZ.
 
-### Dataset sources
+## Dataset sources
 - Air quality monitoring data was downloaded from the website of Israel's Ministry of Environmental Protection. The interface can be found [here](https://www.svivaaqm.net/).
 - Temperature data was downloaded from Israel Meteorological Service's website. The interface can be found [here](https://ims.data.gov.il/ims/1).
 
@@ -37,19 +37,6 @@ df_aqm
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -217,7 +204,7 @@ df_aqm
 
 
 
-### Dataset Cleaning 
+## Dataset Cleaning 
 
 The following steps are needed to clean the dataset:
 - Delete the first column, which contains only the station's name
@@ -260,19 +247,6 @@ df_aqm.loc["2018-04":"2018-05"]
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -463,19 +437,6 @@ df_aqm.describe()
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -611,7 +572,7 @@ Since I don't have a substantiated answer to any of these questions, I tried to 
 
 If we want to follow these guidelines, we need to decide for each negative measurement if it the former case or the latter. This will be coded at a later stage.
 
-### Checking for systematic data collection flaws
+## Checking for systematic data collection flaws
 It is important to make sure that our dataset does not have any systematic flaws in the data collection process.
 For example, later we would like to demonstrate the fluctuations of pollutants as function of the weekday.
 In this case, if some days are recorded significantly less often than other days, any conclusion we would like to state as for the weekday trend might be invalidated.
@@ -648,19 +609,6 @@ df_aqm[pollutants].isna().groupby(df_aqm['Weekday Name']).mean()
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -851,7 +799,7 @@ ax = sns.boxplot(data=df_aqm, x='Weekday Name', y='CO',
 ![Box plot of CO by day of the week](/blog/air-pollution-haifa/Exploration_files/output_27_0.png)
 
 
-And we also see the discrete nature of the CO measurements, as noted earlier. Another way to look at the weekly flactations would be to plot the raw measurements for a specific period of time:
+And we also see the discrete nature of the CO measurements, as noted earlier. Another way to look at the weekly fluctuations would be to plot the raw measurements for a specific period of time:
 
 ```python
 df_sub = df_aqm.loc['2019-07':'2019-09'] 
@@ -888,7 +836,7 @@ Some notes about this plot:
 - I'm no expert on the sources of each pollutant, be it transportation, industry, the port or natural factors. So I don't know if any of these hypotheses make any sort of sense.
 
 
-### Air pollution and temperatures
+## Air pollution and temperatures
 
 The above trends show a clear correlation between the season/month and the average measured pollutants (at least for nitrogen oxides and benzene). But what is the cause of this modulation - is it the time itself? Or maybe it is the temperature? There could be many potential causes, and estimating each of these effects is a difficult problem, according to the identification strategies of causal inference. Instead, we can choose to stay in the realm of mere correlations, and while they do not imply causation, we could speculate what is a reasonable claim and what is not.
 
@@ -920,19 +868,6 @@ df_temp.tail()
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1017,19 +952,6 @@ df_pol_temp.tail()
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -1129,7 +1051,7 @@ warnings.filterwarnings(action='default')
 
 With a significant correlation of -0.58, the measured NOx values can be explained to some degree by the temperatures. It would be interesting to see if other meteorological factors, like humidity and wind, can explain even more of the NOx fluctuations.
 
-### Closing remarks
+## Closing remarks
 This notebook described a preliminary exploration of the air quality monitoring data in Haifa. It is by no means an exhaustive analysis, it is just a set of steps used to increase the understanding of the dataset. If you have any comment - an analysis that you think should be done, a peculiar result that should be examined or anything else - I would love to know!
 
 This is not a conclusion, as it is only the start of the analysis. In the next chapter, I will evaluate the causal effect of Haifa's new low emission zone using the synthetic control method. Stay tuned!

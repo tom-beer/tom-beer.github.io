@@ -46,6 +46,62 @@ article {
   @apply dark:prose-p:text-cream/90 dark:prose-li:text-cream/90 dark:prose-strong:text-cream;
 }
 
+/* Quoted text in posts already carries its own quotation marks; don't add more. */
+article blockquote p:first-of-type::before,
+article blockquote p:last-of-type::after {
+  content: none;
+}
+
+/* Wide tables (e.g. pandas DataFrames) scroll sideways instead of spilling out
+   of the text column; narrow ones keep their natural width. */
+article table {
+  @apply block w-max max-w-full overflow-x-auto;
+}
+
+/* On narrow screens, long equations scroll on their own instead of widening the page. */
+article .katex-display {
+  @apply overflow-x-auto overflow-y-hidden;
+}
+
+/* Long inline code (e.g. pandas chains) wraps rather than overflowing. */
+article :not(pre) > code {
+  overflow-wrap: anywhere;
+}
+
+/* Notebook charts are transparent PNGs with black axis text, which vanishes on
+   the dark background; give every content image a light backdrop in dark mode. */
+.dark article img {
+  @apply bg-white rounded-sm;
+}
+
+/* Inline code: a subtle chip instead of the plugin's bold text in literal backticks. */
+article :not(pre) > code {
+  @apply font-medium px-1 py-0.5 rounded bg-ink/[0.06] dark:bg-white/[0.08];
+}
+article :not(pre) > code::before,
+article :not(pre) > code::after {
+  content: none;
+}
+
+/* Table header cells are data labels, not headings: use the UI font, and give
+   row labels (pandas index) the same padding and alignment as the cells. */
+article th {
+  @apply font-sans;
+}
+article tbody th {
+  @apply text-left align-baseline;
+  padding: 0.5714286em;
+}
+article .dataframe thead th {
+  @apply text-right;
+}
+
+/* Editorial asides ("this post was generated from a notebook…"), not quotes. */
+article .note {
+  @apply font-sans text-sm not-italic px-4 py-3 rounded-md;
+  @apply bg-ink/[0.04] dark:bg-white/[0.04] text-ink/70 dark:text-sand;
+}
+
 @layer utilities {
   article a {
     @apply font-sans text-accent dark:text-accent-dark underline underline-offset-2;

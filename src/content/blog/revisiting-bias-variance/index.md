@@ -6,7 +6,7 @@ thumb: "/blog/revisiting-bias-variance/featured.png"
 featured: true
 ---
 
-### Background
+## Background
 A while ago I was tasked with developing a model predicting whether patients would be referred to the emergency room, 
 based on their medical presentation, demographics, etc. 
 The random forest was performing much better on the train set than on the test set.
@@ -17,7 +17,7 @@ So I had a little literature review, and presented it in our weekly journal club
 This post is a summary of that presentation.  
 
 ---
-### Intro
+## Intro
 
 Every intro to ML course or textbook teaches us the bias variance tradeoff as universal truth - 
 that test error curve follows a U-shape with respect to model complexity.
@@ -38,7 +38,7 @@ How do we relieve this tension? Is it just the difference between traditional ma
 Is the tradeoff real at all? Let’s take a stab at settling this.
 
 ---
-### The Defense  
+## The Defense  
 
 On the one hand, there is empirical grounding for the tradeoff - it can be shown to exist in models like KNN, polynomial regression, kernel regression, decision trees and more. 
 
@@ -56,7 +56,7 @@ As the decomposition is usually discussed in the same context, it adds to the st
 
 
 ---
-### The Cracks  
+## The Cracks  
 
 The empirical and theoretical arguments seem fair, but let's see if they stand up to some scrutiny. 
 
@@ -93,7 +93,7 @@ And dataset size double descent - using more training samples (x4.5 more in thei
 In some experiments, a single descent (rather than double descent) was observed. But a U-shaped loss curve was never observed for neural nets! Which aligns with the modern practice of “bigger is better”.
 
 ---
-### Reconciling theory and practice  
+## Reconciling theory and practice  
 
 There are some suggestive explanations for this deflection between theory and practice. 
 Many revolve around the notion of complexity - that we just don’t have a proper measure of it. 
@@ -113,5 +113,3 @@ Still, more effort should be put in teaching that the bias variance tradeoff is 
 
 As a personal note, what’s still missing for me is a rule of thumb for determining if some case of overfitting 
 (train error << test error) is benign, or should it suggest that a different model should be selected.
-
----

@@ -25,7 +25,7 @@ But it's exactly the super efficient representation extraction capabilities that
 ## Main idea
 To do that, we need two things:
 1. A way to understand which aspect of the signal the latent representation captures and focuses on. We use [class activations maps](http://cnnlocalization.csail.mit.edu/Zhou_Learning_Deep_Features_CVPR_2016_paper.pdf) (CAMs) for this aim.
-2. A way to make the network *remove* a feature from the latent representation's hypothesis space. We solve this by modifying the network's architechture and loss function: concatenating the external feature to the latent representation layer, and imposing statistical independence between the two.
+2. A way to make the network *remove* a feature from the latent representation's hypothesis space. We solve this by modifying the network's architecture and loss function: concatenating the external feature to the latent representation layer, and imposing statistical independence between the two.
 
 The reason we need a mechanism to *unlearn* a predefined feature from the network's representation is that we imagine an iterative discovery process. At first, no domain knowledge is available, and so we can learn the task without constraints, using some visualization scheme (like CAMs) to derive a first set of useful, interpretable features. Next, we would like to extract only the residual information - what is not encoded in the first set of features. To do this we need a notion of independence, or orthogonality, between two representations. Only when the network's representation is independent from the already known features could we hope to discover a new feature set. This process goes on and on, until no more information is extracted from the network.
 
@@ -63,13 +63,12 @@ where $H_{ij}=\delta_{i,j}-\frac{1}{n}$ is a centering matrix.
 
 
 </details>
-</br>
 
 **Setting the bandwidth $\sigma$**
 
 For each kernel matrix, the bandwidth $\sigma$ is set to be the median pairwise distance of the data points, a heuristic described [here](https://doi.org/10.1145/1553374.1553470). Since $f$ is a fixed representation space, its median pairwise distance can be computed once before training. However $g$ changes every training step, so its bandwidth is updated accordingly at every training step based on a moving average between the current median pairwise distance and the previously set bandwidth.
 
-**Concatentation**
+**Concatenation**
 
 The hand-engineered features $f$ are usually highly predictive for the selected task. In order to further encourage the DNN latent representation $g$ to be distinct from $f$, the two representations are concatenated before passing them on to the final layer of the network. This is done to prevent, as much as possible, from the network representation $g$ to try and replicate $f$, even when under the HSIC constraint. We have found that it is not possible to achieve both reasonable classification accuracy on the original task and sufficient independence from the external representation without this concatenation step.
 
@@ -98,7 +97,7 @@ The HSIC term in our loss function is meant to induce statistical independence b
 
 **Residual Information**
 
-To confirm that the obtained representation $g$ holds useful information for the task in question, we run the following evaluation: Our method is trained on a sample set $train_1$ . Then we apply the representation function $g$ to a separate sample set $train_2$. We fit a vanilla 3-layer network, which we call *Rep2Label*, predicting $y$ from $g$ on the training set $train_2$. Finally, we evaluate the accuracy of *Rep2Label* on a held-out test set. An accuracy greater then chance indicates that the latent representation still holds valuable information about the label and can be analyzed for our goal of scientific discovery. 
+To confirm that the obtained representation $g$ holds useful information for the task in question, we run the following evaluation: Our method is trained on a sample set $train_1$ . Then we apply the representation function $g$ to a separate sample set $train_2$. We fit a vanilla 3-layer network, which we call *Rep2Label*, predicting $y$ from $g$ on the training set $train_2$. Finally, we evaluate the accuracy of *Rep2Label* on a held-out test set. An accuracy greater than chance indicates that the latent representation still holds valuable information about the label and can be analyzed for our goal of scientific discovery. 
 
 
 ### Feature discovery through visualization
@@ -111,6 +110,7 @@ For a physiological signal the output of CAM is, for each sample, a time series 
 This approach is demonstrated for two types of signals and tasks: Atrial fibrillation detection in ECG signals and REM detection in EEG signals. Both these tasks were very well studied in the medical literature over the last decades, so we do not aim to discover anything new here. Instead, we aim to discover the already known domain knowledge. Because *discovery* is a qualitative notion and we do not have any quantitative measures of success, it was important to select example tasks that could serve as benchmarks for our approach. 
 
 The full results are in the paper, including details about the experimental setup. Here I will focus on one type of result from the ECG use case. 
+
 **Data and task**
 
 

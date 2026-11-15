@@ -10,7 +10,7 @@ This post introduces the framework of rejection learning with applications to al
 
 ## Responsible Prediction
 
-In high stakes domains like healthcare, machine learning systems must exhibit some sort of accountability and sensibility for them to be safely deployed. While it is still a difficult and ill-defined task, there are many approaches to making prediction models behave responsibly. For example, we can manipulate the raw model outputs, to make sure that it alligns with a predefined set of rules. Another example is to defer the decision to a simpler model, like a medical protocol. 
+In high stakes domains like healthcare, machine learning systems must exhibit some sort of accountability and sensibility for them to be safely deployed. While it is still a difficult and ill-defined task, there are many approaches to making prediction models behave responsibly. For example, we can manipulate the raw model outputs, to make sure that it aligns with a predefined set of rules. Another example is to defer the decision to a simpler model, like a medical protocol. 
 
 Using a rejection mechanism is one aspect often neglected in the design of prediction models. When a model has the ability to [abstain](https://www.nature.com/articles/s41746-020-00367-3) from making a prediction, the resulting system is expected to be a lot more sensible. In healthcare, this would mean models that are safer, better performing, and trusted by  physicians.
 
@@ -38,12 +38,12 @@ $$
 \end{cases}
 $$
 
-This loss funcion means that we pay a cost of $c$ if we choose to reject the instance, and otherwise pay a cost of $1$ for a missclassification.
+This loss function means that we pay a cost of $c$ if we choose to reject the instance, and otherwise pay a cost of $1$ for a misclassification.
 
 ---
 
 ## Optimal Classifier
-The optimal solution for a function minimizing the expected risk w.r.t $\ell_{01c}$ was formulated backn in the 1950s by [Chow](https://ieeexplore.ieee.org/document/5222035):
+The optimal solution for a function minimizing the expected risk w.r.t $\ell_{01c}$ was formulated back in the 1950s by [Chow](https://ieeexplore.ieee.org/document/5222035):
 $$
 f^*(x) = \begin{cases}
     \circledR & \text{max}_y \text{ }P(y|x) \le 1-c \\ \newline
@@ -51,13 +51,13 @@ f^*(x) = \begin{cases}
 \end{cases}
 $$
 
-This classification rule dicatates that we should reject an instance if the posterior probabilities for all $K$ classes are smaller than $1-c$.
+This classification rule dictates that we should reject an instance if the posterior probabilities for all $K$ classes are smaller than $1-c$.
 
 ---
 
 ## Determining the rejection cost $c$
 
-The cost of rejection is a hyperparameter we need to set before learning a classification rule. A larger cost means that more instances are rejected, so it should be set by considering a tradeoff between the coverage rate (the fraction of accepted cases) and cost of missclassification. 
+The cost of rejection is a hyperparameter we need to set before learning a classification rule. A larger cost means that more instances are rejected, so it should be set by considering a tradeoff between the coverage rate (the fraction of accepted cases) and cost of misclassification. 
 
 A discussion on this tradeoff follows towards the end of the post, but a rule of thumb applicable for any task is this: $c$ should be smaller than the cost induced by a random guess (otherwise we would obtain an unhelpful, trivial classifier). Assuming the classes are balanced, this rule of thumb implies that: 
 
@@ -73,7 +73,7 @@ and in the general case of imbalanced data, $c$ should be smaller than one minus
 
 How can we learn a classification with rejection rule? The literature describes two possible approaches. 
 
-First is the **confidence approach**. Chow’s optimal rule suggests that classification with rejection is solved if we know the posterior distributions of the classes given the data. Hence the confidence approach is a straightforward solution: train a classifier and use the output of the classifier as a confidence score, drawing inferences by substituting the confidence scores in Chow's rule. The main drawback here is that reliabely estimating class-posterior probabilities is difficult (to say the least). For example, neural networks are notoriously known for their overconfident scores.
+First is the **confidence approach**. Chow’s optimal rule suggests that classification with rejection is solved if we know the posterior distributions of the classes given the data. Hence the confidence approach is a straightforward solution: train a classifier and use the output of the classifier as a confidence score, drawing inferences by substituting the confidence scores in Chow's rule. The main drawback here is that reliably estimating class-posterior probabilities is difficult (to say the least). For example, neural networks are notoriously known for their overconfident scores.
 
 Second is the **classifier-rejector** approach. If we take another look at Chow's rule, we can rewrite it as two functions:
 
@@ -96,7 +96,7 @@ Many heuristics fit in this approach – for example, we can use an outlier dete
 
 ## Theoretical Guarantees
 
-Over the years, many solutions of both approaches have been proposed for the problem of learning with rejection. Unfortunately, none of them were able to show theoretical justifications for the muliclass case -- only for binary classification.
+Over the years, many solutions of both approaches have been proposed for the problem of learning with rejection. Unfortunately, none of them were able to show theoretical justifications for the multiclass case -- only for binary classification.
 
 The reason for this is that it is hard to satisfy calibration for the learned classifier, which is required in order to say something about the classifier's behaviour. This point is discussed in detail [here](https://arxiv.org/abs/1901.10655).
 
@@ -104,7 +104,7 @@ The reason for this is that it is hard to satisfy calibration for the learned cl
 ---
 
 ## Cost sensitive learning
-A notable exception in the multiclass case is [this work](https://arxiv.org/abs/2010.11748), which managed to propose a theroetically sound solution for this problem. The authors use the framework of cost sensitive learning to derive a learning rule. Cost sensitive learning allows to assign weights to the different missclassification errors. For the binary case, a cost sensitive loss function would look like this:
+A notable exception in the multiclass case is [this work](https://arxiv.org/abs/2010.11748), which managed to propose a theoretically sound solution for this problem. The authors use the framework of cost sensitive learning to derive a learning rule. Cost sensitive learning allows to assign weights to the different misclassification errors. For the binary case, a cost sensitive loss function would look like this:
 
 $$
 l_{01}^\alpha(f(x), y)=\alpha \cdot \mathbb{1}_{[f(x) \neq y=-1]} + (1-\alpha) \cdot \mathbb{1}_{[f(x)=y=+1]}
@@ -130,7 +130,7 @@ f^*(x) = \begin{cases}
 \end{cases}
 $$
 
-Where we replace the $\alpha$ parameter of cost senstive learning with $c$ and $1-c$ of the rejection framework.
+Where we replace the $\alpha$ parameter of cost sensitive learning with $c$ and $1-c$ of the rejection framework.
 
 Similarily, to extend this rule to the more interesting case of multiclass classification, we can use this reduction:
 
@@ -162,5 +162,5 @@ An interesting point to mention is that practitioners often believe that the bet
 
 ## Summary
 
-Classification with rejection is a very useful framework when applying prediction models to automation problems. I have a feeling that it is either underutilized, or used but without the proper framing and tooling discussed here. Practitioners may apply some hard-coded filters to reject error-prone cases, but they usually won't use an algorithm to decide which instances to accpet or reject. In the few cases of using a model for rejection, it would probably be some simple hueristic like an outlier detector or using the raw output scores of the classifer. 
+Classification with rejection is a very useful framework when applying prediction models to automation problems. I have a feeling that it is either underutilized, or used but without the proper framing and tooling discussed here. Practitioners may apply some hard-coded filters to reject error-prone cases, but they usually won't use an algorithm to decide which instances to accept or reject. In the few cases of using a model for rejection, it would probably be some simple heuristic like an outlier detector or using the raw output scores of the classifier. 
 I believe that a proper adoption of this framework would greatly benefit algorithmic automation problems, and I hope to see it receive more attention in the upcoming years.
