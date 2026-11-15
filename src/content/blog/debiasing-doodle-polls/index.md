@@ -5,7 +5,7 @@ date: "2020-04-02T19:08:22+03:00"
 thumb: "/blog/debiasing-doodle-polls/featured.jpg"
 ---
 
-> The full notebook and code can be found [here](https://github.com/tom-beer/Strategic-Doodle-Sim) 
+> The full notebook and code can be found [here](https://github.com/tom-beer/Debiasing-Doodle-Polls) 
 
 Did you know that Doodle polls are significantly affected by social bias? It turns out that open polls, where voters can see previous votes and their votes are visible to others, have different voting profiles compared to hidden polls. In a recent paper, [Zou et al. (2015)](#references) show that voters act stratigically in open polls, and this change in behaviour includes:
 1. Open polls have higher response rates for very popular time slots

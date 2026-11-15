@@ -67,7 +67,7 @@ where $H_{ij}=\delta_{i,j}-\frac{1}{n}$ is a centering matrix.
 
 **Setting the bandwidth $\sigma$**
 
-For each kernel matrix, the bandwidth $\sigma$ is set to be the median pairwise distance of the data points, a heuristic described [here](http://is.tuebingen.mpg.de/fileadmin/user_upload/files/publications/ICML2009-Mooij_[0].pdf). Since $f$ is a fixed representation space, its median pairwise distance can be computed once before training. However $g$ changes every training step, so its bandwidth is updated accordingly at every training step based on a moving average between the current median pairwise distance and the previously set bandwidth.
+For each kernel matrix, the bandwidth $\sigma$ is set to be the median pairwise distance of the data points, a heuristic described [here](https://doi.org/10.1145/1553374.1553470). Since $f$ is a fixed representation space, its median pairwise distance can be computed once before training. However $g$ changes every training step, so its bandwidth is updated accordingly at every training step based on a moving average between the current median pairwise distance and the previously set bandwidth.
 
 **Concatentation**
 

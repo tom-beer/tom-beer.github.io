@@ -24,7 +24,7 @@ that test error curve follows a U-shape with respect to model complexity.
 
 > “This is a fundamental property of statistical learning that holds regardless of the particular data set at hand and regardless of the statistical method being used.”
 
-Quote and figure from [ISLRv2, 2021](https://hastie.su.domains/ISLR2/ISLRv2_website.pdf)
+Quote and figure from [ISLRv2, 2021](https://www.karlin.mff.cuni.cz/~pesta/NMFM334/StatLearning/Book2nd/ISLRv2_website.pdf)
 
 <img src="/blog/revisiting-bias-variance/image5.png" width=600 height=600 align="middle">
 
@@ -78,7 +78,7 @@ This is shown for fully connected networks, random forest and a random fourier f
 
 <img src="/blog/revisiting-bias-variance/image9.png">
 
-Concurrent work by [Nakkiran et al.](https://mltheory.org/deep.pdf) has proved that double descent w.r.t *model width* is a robust phenomenon that occurs in a variety of tasks, architectures (CNNs, ResNets, Transformers), and optimization methods.
+Concurrent work by [Nakkiran et al.](https://arxiv.org/abs/1912.02292) has proved that double descent w.r.t *model width* is a robust phenomenon that occurs in a variety of tasks, architectures (CNNs, ResNets, Transformers), and optimization methods.
 
 <img src="/blog/revisiting-bias-variance/image2.png">
 
@@ -105,8 +105,8 @@ by Tom Goldstein calls for.
 
 [Brady Neal’s work](https://arxiv.org/abs/1912.08286) on this very subject is subtitled “Textbooks need an update”. 
 And indeed recent books include double descent in their discussion of the bias variance tradeoff.
-Examples include [ISLRv2](https://hastie.su.domains/ISLR2/ISLRv2_website.pdf), 
-[LTFP](https://di.ens.fr/~fbach/ltfp_book.pdf) 
+Examples include [ISLRv2](https://www.karlin.mff.cuni.cz/~pesta/NMFM334/StatLearning/Book2nd/ISLRv2_website.pdf), 
+[LTFP](https://www.di.ens.fr/~fbach/ltfp_book.pdf) 
 and [ML Story](https://mlstory.org/pdf/patterns.pdf).
 
 Still, more effort should be put in teaching that the bias variance tradeoff is not a universal truth, at least based on the measures of complexity we use in our everyday practice. This has implications on how we select and evaluate ML models.

@@ -93,7 +93,7 @@ In the limit of infinite variance for the measured covariates' noise, the estima
 
 ## Prevalence and mitigation
 
-To what extent does this issue impact empirical causal inference analyses -- what is its prevalence and magnitude? It is hard to know. A few studies tried to shed light on this by measuring potential confounders *and* proxies for these variables, like in [this work](https://link.springer.com/article/10.2307/2648118). Other studies managed to show that attenuation bias did indeed occur, like in [this work](https://bpspsychub.onlinelibrary.wiley.com/doi/abs/10.1111/bmsp.12146?casa_token=d0jDi0c8ROAAAAAA%3AyM6kJWHzFZSX8guP7ayeWKnWwqDz5Mv5SAiTw0bZrKfcnMIWD-R0XE-piFFzlXouuzCA7r0watzzrg).
+To what extent does this issue impact empirical causal inference analyses -- what is its prevalence and magnitude? It is hard to know. A few studies tried to shed light on this by measuring potential confounders *and* proxies for these variables, like in [this work](https://link.springer.com/article/10.2307/2648118). Other studies managed to show that attenuation bias did indeed occur, like in [this work](https://doi.org/10.1111/bmsp.12146).
 
 
 Some works have attempted to find solutions for this obstacle, dating back to the [beginning of the previous century](https://www.jstor.org/stable/1422689), but this has proved to be a challenging task. Suggested methods either require stringent assumptions or offer no guarantees on the quality of the solution. Notable examples are works using [matrix factorization](https://papers.nips.cc/paper/2018/file/86a1793f65aeef4aeef4b479fc9b2bca-Paper.pdf) and [deep learning](https://proceedings.neurips.cc/paper/2017/file/94b5bde6de888ddf9cde6748ad2523d1-Paper.pdf). 
