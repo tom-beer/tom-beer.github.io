@@ -331,7 +331,7 @@ plt.show()
 ```
 
 
-![png](/intro_files/output_8_0.png)
+![Per-capita cigarette sales in California versus the rest of the U.S.](/blog/synthetic-control/intro_files/output_8_0.png)
 
 
 Now let's extract the covariates used in the paper. 
@@ -504,7 +504,7 @@ plt.show()
 ```
 
 
-![png](/intro_files/output_18_0.png)
+![Per-capita cigarette sales in California versus synthetic California](/blog/synthetic-control/intro_files/output_18_0.png)
 
 
 The pre-intervention fit is reasonable, so we can move on with confidence to calculate the causal effect. This is as simple as subtracting the two lines:
@@ -527,7 +527,7 @@ plt.show()
 ```
 
 
-![png](/intro_files/output_20_0.png)
+![Per-capita cigarette sales gap between California and synthetic California](/blog/synthetic-control/intro_files/output_20_0.png)
 
 
 With this plot, we can carefully conclude that the implementation of proposition 99 has caused a per-capita reduction of around 26 packs of cigarettes each year. Not bad!

@@ -67,8 +67,10 @@ This is known as the fundamental problem of causal inference.
 How can we produce reliable evaluations without reliable ground truth data? Remember the assumptions of causal inference from part 1? Have you had a thought along the lines of "why on earth do we need to admit ourselves to stringent, unverifiable assumptions?" Exactly for this - Let's see how:
 
 $$
-\mathbb{E}[Y(1)] - \mathbb{E}[Y(0)] = \mathbb{E}[Y(1) \mid T = 1] - \mathbb{E}[Y(0) \mid T = 0] \\
-= \mathbb{E}[Y \mid T = 1] - \mathbb{E}[Y \mid T = 0]
+\begin{aligned}
+\mathbb{E}[Y(1)] - \mathbb{E}[Y(0)] &= \mathbb{E}[Y(1) \mid T = 1] - \mathbb{E}[Y(0) \mid T = 0] \\
+&= \mathbb{E}[Y \mid T = 1] - \mathbb{E}[Y \mid T = 0]
+\end{aligned}
 $$
 (The first equation is due to exchangeability, and the second due to consistency)
 

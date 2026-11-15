@@ -44,6 +44,8 @@ content collections against their schemas and catches broken image paths.
   Reference them with **absolute paths**: `![alt](/blog/<slug>/img.png)` and
   `<img src="/blog/<slug>/img.png">`. A relative path like `![](img.png)` makes
   Astro try to resolve it as a local asset import and **the build fails**.
+  Keep every image under `public/blog/<slug>/` (subfolders are fine), and give
+  it real alt text.
 
 - **Math requires `.md`, not `.mdx`.** Posts contain LaTeX (`$...$`, `$$...$$`)
   and raw HTML with unquoted attrs (e.g. `<img src="x.png" width=250>`). MDX
@@ -53,18 +55,25 @@ content collections against their schemas and catches broken image paths.
   content files as `.md`.** KaTeX CSS is imported at the top of `global.css`
   (must precede the `@tailwind` directives).
 
-- **Dark mode is a warm editorial palette**, not default gray. Tokens in
-  `tailwind.config.mjs`: `espresso` (bg), `peat` (cards), `cream` (headings/
-  strong text), `sand` (body text). Accent: `accent` (light, amber-700) /
-  `accent-dark` (dark, amber-500). Use these tokens, not raw Tailwind grays.
+- **Both themes use a warm editorial palette**, not default gray. Tokens in
+  `tailwind.config.mjs` — light: `paper` (bg), `ink` (text), `taupe`
+  (secondary text); dark: `espresso` (bg), `peat` (cards), `cream` (headings/
+  strong text), `sand` (body text). Accent: `accent` / `accent-dark` (amber,
+  links); `rust` / `rust-dark` for small flourishes (`.accent-mark`). Use these
+  tokens, not raw Tailwind grays.
 
 - **Container widths** come from `Container.astro`: `sm`, `base` (max-w-3xl),
   `md` (max-w-4xl). The home page uses one wide container with inner
   `max-w-3xl` on header/bio to keep a shared left edge.
 
-- **Header back-link:** post/publication detail pages pass `backHref` +
-  `backLabel` to `PageLayout`, which renders a plain-text back link on the right
-  of the header (same line as "Tom Beer"). See `src/pages/blog/[...slug].astro`.
+- **Header:** the right side shows Blog / Publications nav links, except on
+  post/publication detail pages, which pass `backHref` + `backLabel` to
+  `PageLayout` to render a back link there instead. See
+  `src/pages/blog/[...slug].astro`. The home page hides the header entirely.
+
+- **Social previews:** blog posts pass their `thumb` as `image` to
+  `PageLayout` (used for `og:image`); pages without one fall back to the
+  avatar with a small Twitter card.
 
 - Fonts: Fraunces (display/headings), Lora (body serif), Inter (UI sans).
 

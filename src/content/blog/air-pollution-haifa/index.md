@@ -779,7 +779,7 @@ axes=df_aqm[pollutants].plot(marker='.', alpha=0.5, linestyle='None', figsize=(1
 ```
 
 
-![png](/Exploration_files/output_19_0.png)
+![Raw scatter plots of every pollutant over the full measurement period](/blog/air-pollution-haifa/Exploration_files/output_19_0.png)
 
 
 
@@ -801,7 +801,7 @@ df_aqm.rolling(
 ```
 
 
-![png](/Exploration_files/output_21_0.png)
+![Four-week rolling averages of every pollutant over time](/blog/air-pollution-haifa/Exploration_files/output_21_0.png)
 
 
 This plot shows rolling averages of the measurements, with windows of 4 weeks and an overlap of 2 weeks. A similar result could be obtained using a simple groupby with a monthly frequency:
@@ -822,7 +822,7 @@ plt.xlabel('Day of the Year');
 ```
 
 
-![png](/Exploration_files/output_23_0.png)
+![Eight-year daily averages of every pollutant by day of the year](/blog/air-pollution-haifa/Exploration_files/output_23_0.png)
 
 
 The annual trend of NO, NO2, NOx and benzene is validated through this plot. In addition, we can notice a peculiar drop in CO values around day 240. A closer look reveals that this drop is at day 243. This day is August 31st, the last day of summer vacation for 1.5 million kids. Coincidence? I don't know. What do you think?
@@ -836,7 +836,7 @@ ax = sns.boxplot(data=df_aqm, x='Weekday Name', y='NOX',
 ```
 
 
-![png](/Exploration_files/output_25_0.png)
+![Box plot of NOx by day of the week](/blog/air-pollution-haifa/Exploration_files/output_25_0.png)
 
 
 For NOx, there is a clear weekly trend in the amount of air pollution measured. Note that the outliers have been cropped out of the plot. For other pollutants, the trend is not as impressive:
@@ -848,7 +848,7 @@ ax = sns.boxplot(data=df_aqm, x='Weekday Name', y='CO',
 ```
 
 
-![png](/Exploration_files/output_27_0.png)
+![Box plot of CO by day of the week](/blog/air-pollution-haifa/Exploration_files/output_27_0.png)
 
 
 And we also see the discrete nature of the CO measurements, as noted earlier. Another way to look at the weekly flactations would be to plot the raw measurements for a specific period of time:
@@ -864,7 +864,7 @@ ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'));
 ```
 
 
-![png](/Exploration_files/output_29_0.png)
+![Daily median NOx from July to September 2019, with Saturdays marked](/blog/air-pollution-haifa/Exploration_files/output_29_0.png)
 
 
 For this 3-month period, the lowest measured values were always on Saturdays, agreeing with the boxplot above.
@@ -877,7 +877,7 @@ plt.xticks(["08:00","12:00", "16:00", "20:00", "00:00", "04:00"]);
 ```
 
 
-![png](/Exploration_files/output_31_0.png)
+![Average of every pollutant by hour of the day](/blog/air-pollution-haifa/Exploration_files/output_31_0.png)
 
 
 Some notes about this plot:
@@ -991,7 +991,7 @@ g.axes[0,0].set_xlabel('Temperature [Celsius]');
 ```
 
 
-![png](/Exploration_files/output_36_0.png)
+![Distribution of minimal and maximal daily temperatures](/blog/air-pollution-haifa/Exploration_files/output_36_0.png)
 
 
 To merge (fuse?) the datasets, we need to calculate an aggregate value for the pollutants for each day (because temperatures are measured only once a day). Averaging the measurements of each day is the simplest thing to do.
@@ -1124,7 +1124,7 @@ warnings.filterwarnings(action='default')
 ```
 
 
-![png](/Exploration_files/output_39_0.png)
+![Joint plot of minimal temperature against NOx, with a regression fit](/blog/air-pollution-haifa/Exploration_files/output_39_0.png)
 
 
 With a significant correlation of -0.58, the measured NOx values can be explained to some degree by the temperatures. It would be interesting to see if other meteorological factors, like humidity and wind, can explain even more of the NOx fluctuations.

@@ -8,3 +8,5 @@ url_pdf: "https://arxiv.org/abs/2008.10936"
 url_code: "https://github.com/tom-beer/deep-scientific-discovery"
 featured: true
 ---
+
+I wrote a longer, less formal walkthrough of this work [on the blog](/blog/deep-scientific-discovery).

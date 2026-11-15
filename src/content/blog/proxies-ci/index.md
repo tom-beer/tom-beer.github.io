@@ -2,7 +2,7 @@
 title: "On the Hazards of Proxies I"
 description: "Part 1: Causal Inference"
 date: "2021-02-23T20:13:42+03:00"
-thumb: "/blog/proxies-ci/featured.gif"
+thumb: "/blog/proxies-ci/featured.png"
 featured: true
 ---
 

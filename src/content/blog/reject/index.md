@@ -1,6 +1,6 @@
 ---
 title: "Responsible Automation by Learning to Reject"
-description: "This post introduces the framework of rejection learning with applications to algorithmic automation problems."
+description: "Rejection learning for algorithmic automation"
 date: "2021-05-19T10:13:42+03:00"
 thumb: "/blog/reject/featured.png"
 featured: true

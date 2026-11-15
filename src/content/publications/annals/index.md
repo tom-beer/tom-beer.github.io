@@ -8,3 +8,5 @@ abstract: "Background: Whether AI assistance relates to care quality is uncertai
 url_pdf: "https://www.acpjournals.org/doi/10.7326/ANNALS-24-03283"
 featured: true
 ---
+
+The story behind the study, the data science work and its impact are [on the blog](/blog/ai-vs-physicians-urgent-care).
