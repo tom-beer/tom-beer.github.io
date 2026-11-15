@@ -9,7 +9,7 @@ export const SITE: Site = {
 
 export const HOME: Metadata = {
   TITLE: "Tom Beer",
-  DESCRIPTION: "Tom Beer — researcher in causality, actionability and transportability of machine learning systems.",
+  DESCRIPTION: "Tom Beer — data scientist and researcher working on evaluation and actionability of AI systems.",
 };
 
 export const BLOG: Metadata = {
@@ -39,7 +39,7 @@ export const SOCIALS: Socials = [
     HREF: "https://huggingface.co/tom-beer",
   },
   {
-    NAME: "Twitter",
+    NAME: "X (Twitter)",
     ICON: "twitter",
     HREF: "https://twitter.com/aTomBeer",
   },

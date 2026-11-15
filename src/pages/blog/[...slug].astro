@@ -20,7 +20,7 @@ const post = Astro.props;
 const { Content } = await post.render();
 ---
 
-<PageLayout title={post.data.title} description={post.data.description} backHref="/blog" backLabel="All posts">
+<PageLayout title={post.data.title} description={post.data.description} backHref="/blog" backLabel="All posts" image={post.data.thumb} article={{ published: post.data.date }}>
   <Container framed>
     <div class="space-y-1 mb-10">
       <div class="animate flex items-center gap-1.5">
@@ -32,9 +32,9 @@ const { Content } = await post.render();
           {readingTime(post.body)}
         </div>
       </div>
-      <div class="animate font-display text-3xl font-semibold text-ink dark:text-cream">
+      <h1 class="animate font-display text-3xl font-semibold text-ink dark:text-cream">
         {post.data.title}
-      </div>
+      </h1>
     </div>
     <article class="animate">
       <Content />

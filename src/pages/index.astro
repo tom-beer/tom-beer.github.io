@@ -43,7 +43,7 @@ const publications = (await getCollection("publications"))
                 rel={SOCIAL.ICON === "email" ? undefined : "noopener noreferrer"}
                 aria-label={`${SITE.NAME} on ${SOCIAL.NAME}`}
                 title={SOCIAL.NAME}
-                class="block size-5 text-stone-600 dark:text-stone-400 hover:text-accent dark:hover:text-accent-dark transition-colors duration-300"
+                class="block size-5 text-taupe dark:text-sand hover:text-accent dark:hover:text-accent-dark transition-colors duration-300"
               >
                 <SocialIcon icon={SOCIAL.ICON} />
               </a>
@@ -85,6 +85,9 @@ const publications = (await getCollection("publications"))
           <h2 class="font-display text-xl font-semibold text-ink dark:text-cream">
             Publications
           </h2>
+          <Link href="/publications">
+            See all publications
+          </Link>
         </div>
         <ul class="flex flex-col gap-3">
           {publications.map(pub => (

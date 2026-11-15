@@ -25,15 +25,15 @@ const years = Object.keys(pubs).sort((a, b) => parseInt(b) - parseInt(a));
 <PageLayout title={PUBLICATIONS.TITLE} description={PUBLICATIONS.DESCRIPTION}>
   <Container framed>
     <div class="space-y-10">
-      <div class="animate font-display text-lg font-semibold text-ink dark:text-cream">
+      <h1 class="animate font-display text-lg font-semibold text-ink dark:text-cream">
         Publications
-      </div>
+      </h1>
       <div class="space-y-8">
         {years.map(year => (
           <section class="animate space-y-4">
-            <div class="font-semibold text-ink dark:text-cream">
+            <h2 class="font-semibold text-ink dark:text-cream">
               {year}
-            </div>
+            </h2>
             <ul class="flex flex-col gap-6">
               {pubs[year].map(pub => (
                 <li class="space-y-1">

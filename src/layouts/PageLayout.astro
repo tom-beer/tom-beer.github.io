@@ -10,9 +10,11 @@ type Props = {
   showHeader?: boolean;
   backHref?: string;
   backLabel?: string;
+  image?: string;
+  article?: { published: Date };
 };
 
-const { title, description, showHeader = true, backHref, backLabel } = Astro.props;
+const { title, description, showHeader = true, backHref, backLabel, image, article } = Astro.props;
 
 const fullTitle = title === SITE.NAME ? SITE.NAME : `${title} | ${SITE.NAME}`;
 ---
@@ -20,7 +22,7 @@ const fullTitle = title === SITE.NAME ? SITE.NAME : `${title} | ${SITE.NAME}`;
 <!doctype html>
 <html lang="en">
   <head>
-    <Head title={fullTitle} description={description} />
+    <Head title={fullTitle} description={description} image={image} article={article} />
   </head>
   <body>
     {showHeader && <Header backHref={backHref} backLabel={backLabel} />}

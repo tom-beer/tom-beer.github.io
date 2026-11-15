@@ -9,6 +9,11 @@ type Props = {
 };
 
 const { backHref, backLabel } = Astro.props;
+
+const NAV = [
+  { href: "/blog", label: "Blog" },
+  { href: "/publications", label: "Publications" },
+];
 ---
 
 <header>
@@ -19,7 +24,7 @@ const { backHref, backLabel } = Astro.props;
           {SITE.NAME}
         </div>
       </Link>
-      {backHref && (
+      {backHref ? (
         <a
           href={backHref}
           class="group flex items-center gap-1.5 text-sm text-ink/60 dark:text-sand hover:text-ink dark:hover:text-cream transition-colors duration-300 ease-in-out">
@@ -32,6 +37,23 @@ const { backHref, backLabel } = Astro.props;
           </svg>
           {backLabel}
         </a>
+      ) : (
+        <nav class="flex items-center gap-5 text-sm">
+          {NAV.map(item => {
+            const active = Astro.url.pathname.startsWith(item.href);
+            return (
+              <a
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                class:list={[
+                  "transition-colors duration-300 ease-in-out hover:text-ink dark:hover:text-cream",
+                  active ? "text-ink dark:text-cream" : "text-ink/60 dark:text-sand",
+                ]}>
+                {item.label}
+              </a>
+            );
+          })}
+        </nav>
       )}
     </div>
   </Container>

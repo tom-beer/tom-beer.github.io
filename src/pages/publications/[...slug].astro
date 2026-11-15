@@ -16,17 +16,22 @@ type Props = CollectionEntry<"publications">;
 
 const pub = Astro.props;
 const { Content } = await pub.render();
+
+const abstract = pub.data.abstract;
+const description = abstract
+  ? (abstract.length > 200 ? `${abstract.slice(0, 200).replace(/\s+\S*$/, "")}…` : abstract)
+  : (pub.data.venue ?? pub.data.title);
 ---
 
-<PageLayout title={pub.data.title} description={pub.data.venue ?? pub.data.title} backHref="/publications" backLabel="All publications">
+<PageLayout title={pub.data.title} description={description} article={{ published: pub.data.date }} backHref="/publications" backLabel="All publications">
   <Container framed>
     <div class="space-y-1 mb-10">
       <div class="animate text-sm opacity-75">
         <FormattedDate date={pub.data.date} />
       </div>
-      <div class="animate font-display text-2xl font-semibold text-ink dark:text-cream">
+      <h1 class="animate font-display text-2xl font-semibold text-ink dark:text-cream">
         {pub.data.title}
-      </div>
+      </h1>
       <div class="animate text-sm opacity-75">
         {pub.data.authors.join(", ")}
       </div>
