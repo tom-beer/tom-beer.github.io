@@ -35,7 +35,7 @@ An exhaustive search like RFECV solves the adaptability problem by brute force, 
 
 ## The solution: borrow the PCA trick
 
-If the optimal number of features is a property of the dataset, the principled approach is to estimate it directly rather than guess an integer or brute-force a search. We can't derive that number in advance, so we need a [proxy for it](https://tom-beer.github.io/blog/proxies-ml/).
+If the optimal number of features is a property of the dataset, the principled approach is to estimate it directly rather than guess an integer or brute-force a search. We can't derive that number in advance, so we need a [proxy for it](/blog/proxies-ml/).
 
 We already have feature importance scores; we just need to trust them to rank the columns by predictive power. Once the features are sorted, the only remaining question is *when* to stop.
 

@@ -1,6 +1,6 @@
-# tom-beer.github.io
+# tom.beer
 
-Personal website of Tom Beer, built with [Astro](https://astro.build) using the
+Personal website of Tom Beer at **https://tom.beer**, built with [Astro](https://astro.build) using the
 [astro-nano](https://github.com/markhorn-dev/astro-nano) starter (Astro 5 +
 Tailwind + TypeScript).
 
@@ -57,7 +57,18 @@ The first Actions run publishes the site to **https://tom-beer.github.io**.
 Watch progress under the repo's **Actions** tab. After that, every
 `git push` to `main` redeploys automatically.
 
-### Cutover note
+### Custom domain (tom.beer)
 
-The current live site is the old Hugo build. Point the domain at this new build
-only when you're ready — see the migration plan for cutover options.
+The domain is registered at Cloudflare, which also hosts its DNS:
+
+| Type  | Name  | Content |
+|-------|-------|---------|
+| A     | `@`   | `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` |
+| AAAA  | `@`   | `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153` |
+| CNAME | `www` | `tom-beer.github.io` |
+| TXT   | `_github-pages-challenge-tom-beer` | GitHub domain-verification code |
+
+All records are **DNS only** (grey cloud) so GitHub can issue the HTTPS
+certificate. The domain is set under the repo's **Settings → Pages → Custom
+domain** with **Enforce HTTPS** on. No `CNAME` file is needed: Actions deploys
+ignore it. tom-beer.github.io redirects to tom.beer.

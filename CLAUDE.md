@@ -91,8 +91,13 @@ content collections against their schemas and catches broken image paths.
 
 - Deployed via `.github/workflows/deploy.yml`: every push to `main` builds
   with `withastro/action@v3` and publishes to Pages. Node 20+.
-- `astro.config.mjs` sets `site: "https://tom-beer.github.io"`, no `base`
-  (root user-site).
+- Served at the custom domain **https://tom.beer** (repo `tom-beer.github.io`;
+  the github.io URL redirects there). `astro.config.mjs` sets
+  `site: "https://tom.beer"`, no `base`.
+- The custom domain is set in **Settings → Pages → Custom domain**, not by a
+  `CNAME` file (Actions deploys ignore it). DNS is on Cloudflare: apex A/AAAA
+  records to GitHub Pages, `www` CNAME to `tom-beer.github.io`, all "DNS only"
+  (grey cloud) so GitHub can issue the HTTPS certificate.
 - One-time repo setting: **Settings → Pages → Source: "GitHub Actions".**
 
 See the README for first-push setup steps.
