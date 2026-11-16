@@ -2,7 +2,7 @@ import type { Site, Metadata, Socials } from "@types";
 
 export const SITE: Site = {
   NAME: "Tom Beer",
-  EMAIL: "tom1beer@gmail.com",
+  EMAIL: "hi@tom.beer",
   NUM_POSTS_ON_HOMEPAGE: 6,
   NUM_PUBLICATIONS_ON_HOMEPAGE: 3,
 };
@@ -51,6 +51,6 @@ export const SOCIALS: Socials = [
   {
     NAME: "Email",
     ICON: "email",
-    HREF: "mailto:tom1beer@gmail.com",
+    HREF: "mailto:hi@tom.beer",
   },
 ];
